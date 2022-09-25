@@ -1,7 +1,7 @@
 import React from "react";
 import Scheduler, { Resource } from "devextreme-react/scheduler";
 
-import { resourcesData, priorityData, data } from "../data.js";
+import { subjectData, taskData, data } from "../data";
 
 const currentDate = new Date(2021, 1, 2);
 const groups = ["priority"];
@@ -31,17 +31,17 @@ const Schedule = () => {
         editing={true}
       >
         <Resource
-          fieldExpr="ownerId"
+          fieldExpr="subject"
           allowMultiple={true}
-          dataSource={resourcesData}
-          label="Owner"
+          dataSource={subjectData}
+          label="Subject"
           useColorAsDefault={true}
         />
         <Resource
-          fieldExpr="priority"
-          allowMultiple={false}
-          dataSource={priorityData}
-          label="Priority"
+          fieldExpr="task"
+          allowMultiple={true}
+          dataSource={taskData}
+          label="Task"
         />
       </Scheduler>
     </div>
