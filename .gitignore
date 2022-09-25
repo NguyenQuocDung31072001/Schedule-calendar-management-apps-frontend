@@ -1,0 +1,6 @@
+
+/frontend/node_modules
+
+# misc
+/frontend/.env.local
+
