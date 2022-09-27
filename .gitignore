@@ -3,4 +3,6 @@
 
 # misc
 /frontend/.env.local
+/frontend/yarn.lock
+/frontend/package.lock
 
