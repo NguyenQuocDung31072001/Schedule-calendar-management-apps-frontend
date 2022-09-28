@@ -1,5 +1,4 @@
 import React from "react";
-import SideBar from "../components/SideBar";
 import Schedule from "../components/Schedule";
 import { Box, Grid, styled, Paper } from "@mui/material";
 import NavBar from "../components/NavBar";
@@ -18,11 +17,6 @@ const HomePages = () => {
       <NavBar />
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
-          <Grid item xs={2}>
-            <Item>
-              <SideBar />
-            </Item>
-          </Grid>
           <Grid item xs={10}>
             <Item>
               <Schedule />

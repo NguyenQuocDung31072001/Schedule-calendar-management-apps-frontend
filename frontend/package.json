@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "test-react-18",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,12 +8,16 @@
     "@devexpress/dx-react-scheduler-material-ui": "3.0.4",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
-    "@mui/icons-material": "^5.0.4",
+    "@mui/icons-material": "^5.10.6",
     "@mui/lab": "^5.0.0-alpha.51",
     "@mui/material": "^5.0.4",
     "@mui/x-date-pickers": "^5.0.0-alpha.7",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -40,8 +44,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "devextreme-themebuilder": "^22.1.3"
   }
 }
