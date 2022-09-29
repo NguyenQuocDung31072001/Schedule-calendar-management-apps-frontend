@@ -471,6 +471,7 @@ export default class Schedule extends React.PureComponent {
           <ViewSwitcher />
           <AppointmentForm
             overlayComponent={this.appointmentForm}
+            layoutComponent={<>hyhuhuhuxhauishi</>}
             visible={editingFormVisible}
             onVisibilityChange={this.toggleEditingFormVisibility}
           />
