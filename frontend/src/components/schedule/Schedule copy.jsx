@@ -311,7 +311,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
 }
 
 /* eslint-disable-next-line react/no-multi-comp */
-export default class Schedule extends React.PureComponent {
+export default class ScheduleCopy extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -372,11 +372,13 @@ export default class Schedule extends React.PureComponent {
     });
   }
 
-  componentDidUpdate() {
-    this.appointmentForm.update();
-  }
+  // componentDidUpdate() {
+  //   console.log("update")
+  //   this.appointmentForm.update();
+  // }
 
   onEditingAppointmentChange(editingAppointment) {
+    console.log({ editingAppointment })
     this.setState({ editingAppointment });
   }
 
@@ -404,9 +406,9 @@ export default class Schedule extends React.PureComponent {
 
   toggleConfirmationVisible() {
     const { confirmationVisible } = this.state;
-    this.setState({ confirmationVisible: !confirmationVisible });
+    this.setState();
+    console.log("meo")
   }
-
   commitDeletedAppointment() {
     this.setState((state) => {
       const { data, deletedAppointmentId } = state;
@@ -451,6 +453,7 @@ export default class Schedule extends React.PureComponent {
       startDayHour,
       endDayHour,
     } = this.state;
+    console.log(this.state)
 
     return (
       <Paper>
@@ -471,7 +474,6 @@ export default class Schedule extends React.PureComponent {
           <ViewSwitcher />
           <AppointmentForm
             overlayComponent={this.appointmentForm}
-            layoutComponent={<>hyhuhuhuxhauishi</>}
             visible={editingFormVisible}
             onVisibilityChange={this.toggleEditingFormVisibility}
           />

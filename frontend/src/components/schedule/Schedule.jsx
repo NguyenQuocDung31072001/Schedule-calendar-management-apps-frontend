@@ -305,73 +305,81 @@ export default function Schedule() {
     isNewAppointment: false,
   })
 
-
   //appointmentForm.update()
+
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
-    setState({ editingAppointment });
+    setState({ ...state, editingAppointment });
   }
 
   const onAddedAppointmentChange = (addedAppointment) => {
-    setState({ addedAppointment });
+    setState({ ...state, addedAppointment });
     const { editingAppointment } = state;
     if (editingAppointment !== undefined) {
       setState({
+        ...state,
         previousAppointment: editingAppointment,
       });
     }
-    setState({ editingAppointment: undefined, isNewAppointment: true });
+    setState({ ...state, editingAppointment: undefined, isNewAppointment: true });
   }
 
   const setDeletedAppointmentId = (id) => {
-    setState({ deletedAppointmentId: id });
+    let _state = state
+    _state.deletedAppointmentId = id
+    setState(_state);
   }
 
+  React.useEffect(() => { console.log("use effect check", state) }, [state])
   const toggleEditingFormVisibility = () => {
     const { editingFormVisible } = state;
     setState({
+      ...state,
       editingFormVisible: !editingFormVisible,
     });
   }
 
   const toggleConfirmationVisible = () => {
-    const { confirmationVisible } = state;
-    setState({ confirmationVisible: !confirmationVisible });
+    let _state = {
+      ...state,
+      confirmationVisible: !state.confirmationVisible
+    }
+    console.log(_state)
+    setState(_state);
   }
 
   const commitDeletedAppointment = () => {
-    setState((state) => {
-      const { data, deletedAppointmentId } = state;
-      const nextData = data.filter(
-        (appointment) => appointment.id !== deletedAppointmentId
-      );
-
-      return { data: nextData, deletedAppointmentId: null };
-    });
+    console.log("delete1")
+    const nextData = state.data.filter(
+      (appointment) => appointment.id !== state.deletedAppointmentId
+    );
+    setState(prev => ({
+      ...prev,
+      data: nextData,
+      deletedAppointmentId: null,
+    }))
     toggleConfirmationVisible();
+    console.log("delete2")
   }
   const commitChanges = ({ added, changed, deleted }) => {
-    console.log({ added, changed, deleted });
-    setState((state) => {
-      let { data } = state;
-      if (added) {
-        const startingAddedId =
-          data.length > 0 ? data[data.length - 1].id + 1 : 0;
-        data = [...data, { id: startingAddedId, ...added }];
-      }
-      if (changed) {
-        data = data.map((appointment) =>
-          changed[appointment.id]
-            ? { ...appointment, ...changed[appointment.id] }
-            : appointment
-        );
-      }
-      if (deleted !== undefined) {
-        setDeletedAppointmentId(deleted);
-        toggleConfirmationVisible();
-      }
-      return { data, addedAppointment: {} };
-    });
+    console.log({ deleted })
+    let { data } = state;
+    if (added) {
+      const startingAddedId =
+        data.length > 0 ? data[data.length - 1].id + 1 : 0;
+      data = [...data, { id: startingAddedId, ...added }];
+    }
+    if (changed) {
+      data = data.map((appointment) =>
+        changed[appointment.id]
+          ? { ...appointment, ...changed[appointment.id] }
+          : appointment
+      );
+    }
+    if (deleted !== undefined) {
+      setDeletedAppointmentId(deleted);
+      toggleConfirmationVisible();
+    }
   }
   const appointmentForm = connectProps(AppointmentFormContainerBasic, () => {
     //data | hook get data
@@ -383,7 +391,6 @@ export default function Schedule() {
       isNewAppointment,
       previousAppointment,
     } = state;
-
     const currentAppointment =
       data.filter(
         (appointment) =>
@@ -408,6 +415,9 @@ export default function Schedule() {
       cancelAppointment,
     };
   })
+  // React.useEffect(() => {
+  //   appointmentForm.update()
+  // }, [appointmentForm])
   return (
     <Paper>
       <Scheduler data={state.data} height={660}>
@@ -462,7 +472,7 @@ export default function Schedule() {
         color="secondary"
         className={classes.addButton}
         onClick={() => {
-          setState({ editingFormVisible: true });
+          setState({ ...state, editingFormVisible: true });
           onEditingAppointmentChange(undefined);
           onAddedAppointmentChange({
             startDate: new Date(state.currentDate).setHours(state.startDayHour),

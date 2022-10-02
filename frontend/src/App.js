@@ -1,18 +1,22 @@
-import HomePages from './pages/HomePages';
 import {
   BrowserRouter,
   Routes,
   Route,
 } from "react-router-dom";
-import LayoutPages from './pages/Layout';
+//component
+import SidebarComponent from "./components/layout/SidebarComponent"
+//page
+import SchedulePage from './pages/SchedulePages';
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePages />} />
-          <Route path="/layout" element={<LayoutPages />} />
-        </Routes>
+        <SidebarComponent>
+          <Routes>
+            <Route path="/schedule" element={<SchedulePage />} />
+          </Routes>
+
+        </SidebarComponent>
       </BrowserRouter>,
     </div>
   );
