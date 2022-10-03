@@ -1,0 +1,1 @@
+export const CurrentDate = "2018-06-27"

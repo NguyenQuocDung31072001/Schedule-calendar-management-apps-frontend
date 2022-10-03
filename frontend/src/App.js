@@ -15,7 +15,6 @@ function App() {
           <Routes>
             <Route path="/schedule" element={<SchedulePage />} />
           </Routes>
-
         </SidebarComponent>
       </BrowserRouter>,
     </div>
