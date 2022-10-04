@@ -25,75 +25,62 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 // common component
 import { StyledDiv, classes } from "../common"
+import { EnumTypeAppointment } from "../../../interface/enum"
 
 export default function TaskFormAppointment({ visible, appointmentData, commitChanges, visibleChange, onEditingAppointmentChange, cancelAppointment, target, onHide }) {
   //state | data | hook get data
-  const [state, setState] = React.useState({
-    appointmentChanges: {},
-  })
-
-  let appointmentChanges = state.appointmentChanges
+  const [appointmentChanges, setAppointmentChanges] = React.useState(appointmentData)
   const isNewAppointment = appointmentData.id === undefined;
 
-  const displayAppointmentData = {
-    ...appointmentData,
-    ...appointmentChanges,
-  };
   const applyChanges = isNewAppointment
-    ? () => commitAppointment("added")
-    : () => commitAppointment("changed");
+    ? () => commitAppointment(EnumTypeAppointment.Add)
+    : () => commitAppointment(EnumTypeAppointment.Change);
 
   //funtion
-  const changeAppointment = ({ field, changes }) => {
-    const nextChanges = {
-      appointmentChanges,
-      [field]: changes,
-    };
-    setState({
-      appointmentChanges: nextChanges,
-    });
-  }
+
 
   const commitAppointment = (type) => {
-    const appointment = {
-      appointmentData,
-      appointmentChanges,
-    };
-    if (type === "deleted") {
-      commitChanges({ [type]: appointment.id });
-    } else if (type === "changed") {
-      commitChanges({ [type]: { [appointment.id]: appointment } });
-    } else {
-      commitChanges({ [type]: appointment });
+    console.log(appointmentChanges)
+    switch (type) {
+      case EnumTypeAppointment.Add: commitChanges({ [type]: appointmentChanges })
+        break;
+      case EnumTypeAppointment.Change: commitChanges({ [type]: { [appointmentChanges.id]: appointmentChanges } })
+        break
+      case EnumTypeAppointment.Delete: commitChanges({ [type]: appointmentChanges.id })
+        break;
+      default:
     }
-    let _state = state
-    _state.appointmentChanges = {}
-    setState(_state);
   }
 
   const textEditorProps = (field) => ({
     variant: "outlined",
-    onChange: ({ target: change }) =>
-      changeAppointment({
-        field: [field],
-        changes: change.value,
-      }),
-    value: displayAppointmentData[field] || "",
+    onChange: (event) => {
+      setAppointmentChanges({
+        ...appointmentChanges,
+        [field]: event.target.value
+      })
+    },
+    value: appointmentChanges[field] || "",
     label: field[0].toUpperCase() + field.slice(1),
     className: classes.textField,
   });
 
   const pickerEditorProps = (field) => ({
-    // keyboard: true,
-    value: displayAppointmentData[field],
-    onChange: (date) =>
-      changeAppointment({
-        field: [field],
-        changes: date
-          ? date.toDate()
-          : new Date(displayAppointmentData[field]),
-      }),
-    ampm: false,
+    keyboard: true,
+    onChange: (event) => {
+      // console.log(event._d)
+      // console.log(event._d.getDate())
+      // console.log(event._d.getMonth())
+      // console.log(event._d.getFullYear())
+      // console.log(event._d.getHours())
+      // console.log(event._d.getMinutes())
+      setAppointmentChanges({
+        ...appointmentChanges,
+        [field]: event._d
+      })
+    },
+    value: appointmentChanges[field],
+    // ampm: false,
     inputFormat: "DD/MM/YYYY HH:mm",
     onError: () => null,
   });
@@ -101,9 +88,7 @@ export default function TaskFormAppointment({ visible, appointmentData, commitCh
   const endDatePickerProps = pickerEditorProps("endDate");
 
   const cancelChanges = () => {
-    setState({
-      appointmentChanges: {},
-    });
+    setAppointmentChanges({})
     visibleChange();
     cancelAppointment();
   };

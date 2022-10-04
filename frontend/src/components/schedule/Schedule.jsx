@@ -14,6 +14,9 @@ import {
   DragDropProvider,
   EditRecurrenceMenu,
   AllDayPanel,
+  DayView,
+  DateNavigator,
+  TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { connectProps } from "@devexpress/dx-react-core";
 
@@ -34,204 +37,164 @@ import { TaskFormAppointment, ScheduleFormAppointment } from "./form/index"
 //data fake
 import { CurrentDate, TaskData } from "../../fake_data/index"
 
-const ITypeSchedule = {
-  Task: "task",
-  Schedule: "schedule"
-}
+import { EnumTypeCalendar } from "../../interface/enum"
+
+const currentDate = CurrentDate
+const startDayHour = 9
+const endDayHour = 19
 
 export default function Schedule() {
   //data || hook get data
-  const [state, setState] = React.useState({
-    data: TaskData,
-    currentDate: CurrentDate,
-    confirmationVisible: false,
-    editingFormVisible: false,
-    deletedAppointmentId: undefined,
-    editingAppointment: undefined,
-    previousAppointment: undefined,
-    addedAppointment: {},
-    startDayHour: 9,
-    endDayHour: 19,
-    isNewAppointment: false,
-  })
-
+  const [dataRender, setDateRender] = React.useState(TaskData)
+  const [confirmVisible, setConfirmVisible] = React.useState(false)
+  const [editFormVisible, setEditFormVisible] = React.useState(false)
+  const [deletedAppointmentId, setDeletedAppointmentId] = React.useState()
+  const [editingAppointment, setEditingAppointment] = React.useState()
+  const [previousAppointment, setPreviousAppointment] = React.useState()
+  const [addedAppointment, setAddedAppointment] = React.useState({})
+  const [isNewAppointment, setIsNewAppointment] = React.useState(false)
   const [openModalTypeSchedule, setOpenModalTypeSchedule] = React.useState(false)
-  const [typeSchedule, setTypeSchedule] = React.useState(ITypeSchedule.Task)
+  const [typeSchedule, setTypeSchedule] = React.useState(EnumTypeCalendar.Task)
+
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
-    setState({ ...state, editingAppointment });
+    setEditingAppointment(editingAppointment)
   }
 
   const onAddedAppointmentChange = (addedAppointment) => {
-    setState({ ...state, addedAppointment });
-    const { editingAppointment } = state;
+    setAddedAppointment(addedAppointment)
     if (editingAppointment !== undefined) {
-      setState({
-        ...state,
-        previousAppointment: editingAppointment,
-      });
+      setPreviousAppointment(editingAppointment)
     }
-    setState({ ...state, editingAppointment: undefined, isNewAppointment: true });
+    setEditingAppointment(undefined)
+    setIsNewAppointment(true)
+
   }
 
-  const setDeletedAppointmentId = (id) => {
-    let _state = state
-    _state.deletedAppointmentId = id
-    setState(_state);
+  const handleDeletedAppointmentId = (id) => {
+    setDeletedAppointmentId(id)
   }
 
-  const toggleEditingFormVisibility = () => {
-    setOpenModalTypeSchedule(true)
-    // const { editingFormVisible } = state;
-    // setState({
-    //   ...state,
-    //   editingFormVisible: !editingFormVisible,
-    // });
+  const changeFormVisible = () => {
+    setEditFormVisible(!editFormVisible)
   }
+
   const confirmChooseType = () => {
     setOpenModalTypeSchedule(false)
-    let _state = state
-    _state.editingFormVisible = !_state.editingFormVisible
-    // const { editingFormVisible } = state;
-    setState(_state);
+    setEditFormVisible(!editFormVisible)
   }
   React.useEffect(() => {
-    console.log({ openModalTypeSchedule })
   }, [openModalTypeSchedule])
+
   const toggleConfirmationVisible = () => {
-    let _state = {
-      ...state,
-      confirmationVisible: !state.confirmationVisible
-    }
-    setState(_state);
+    setConfirmVisible(!confirmVisible)
   }
 
   const commitDeletedAppointment = () => {
-    const nextData = state.data.filter(
-      (appointment) => appointment.id !== state.deletedAppointmentId
-    );
-    setState(prev => ({
-      ...prev,
-      data: nextData,
-      deletedAppointmentId: null,
-    }))
+    const nextData = dataRender.filter(
+      (appointment) => appointment.id !== deletedAppointmentId
+    )
+    setDateRender(nextData)
+    setDeletedAppointmentId(null)
     toggleConfirmationVisible();
   }
+
   const commitChanges = ({ added, changed, deleted }) => {
-    let { data } = state;
+    console.log("aloi")
+    let _dataRender
     if (added) {
       const startingAddedId =
-        data.length > 0 ? data[data.length - 1].id + 1 : 0;
-      data = [...data, { id: startingAddedId, ...added }];
+        dataRender.length > 0 ? dataRender[dataRender.length - 1].id + 1 : 0;
+      _dataRender = [...dataRender, { id: startingAddedId, ...added }];
     }
     if (changed) {
-      data = data.map((appointment) =>
+      _dataRender = dataRender.map((appointment) =>
         changed[appointment.id]
           ? { ...appointment, ...changed[appointment.id] }
           : appointment
       );
     }
     if (deleted !== undefined) {
-      setDeletedAppointmentId(deleted);
+      handleDeletedAppointmentId(deleted);
       toggleConfirmationVisible();
     }
-    let _state = state
-    state.data = data
-    setState(_state)
-
+    setDateRender(_dataRender)
   }
-  const appointmentFormTask = connectProps(ScheduleFormAppointment, () => {
-    //data | hook get data
-    const {
-      editingFormVisible,
-      editingAppointment,
-      data,
-      addedAppointment,
-      isNewAppointment,
-      previousAppointment,
-    } = state;
+
+  const appointmentFormTask = connectProps(TaskFormAppointment, () => {
     const currentAppointment =
-      data.filter(
+      dataRender.filter(
         (appointment) =>
           editingAppointment && appointment.id === editingAppointment.id
       )[0] || addedAppointment;
     const cancelAppointment = () => {
       if (isNewAppointment) {
-        setState({
-          ...state,
-          editingAppointment: previousAppointment,
-          isNewAppointment: false,
-        });
+        setEditingAppointment(previousAppointment)
+        setIsNewAppointment(false)
       }
     };
 
     return {
-      visible: editingFormVisible,
+      visible: editFormVisible,
       appointmentData: currentAppointment,
       commitChanges: commitChanges,
-      visibleChange: toggleEditingFormVisibility,
+      visibleChange: changeFormVisible,
       onEditingAppointmentChange: onEditingAppointmentChange,
       cancelAppointment,
     };
   })
   const appointmentFormSchedule = connectProps(ScheduleFormAppointment, () => {
-    //data | hook get data
-    const {
-      editingFormVisible,
-      editingAppointment,
-      data,
-      addedAppointment,
-      isNewAppointment,
-      previousAppointment,
-    } = state;
     const currentAppointment =
-      data.filter(
+      dataRender.filter(
         (appointment) =>
           editingAppointment && appointment.id === editingAppointment.id
       )[0] || addedAppointment;
     const cancelAppointment = () => {
       if (isNewAppointment) {
-        setState({
-          ...state,
-          editingAppointment: previousAppointment,
-          isNewAppointment: false,
-        });
+        setEditingAppointment(previousAppointment)
+        setIsNewAppointment(false)
       }
     };
 
     return {
-      visible: editingFormVisible,
+      visible: editFormVisible,
       appointmentData: currentAppointment,
       commitChanges: commitChanges,
-      visibleChange: toggleEditingFormVisibility,
+      visibleChange: changeFormVisible,
       onEditingAppointmentChange: onEditingAppointmentChange,
       cancelAppointment,
     };
   })
-  // React.useEffect(() => {
-  //   appointmentForm.update()
-  // }, [appointmentForm])
   return (
     <Paper>
-      <Scheduler data={state.data} height={660}>
-        <ViewState currentDate={state.currentDate} />
+      <Scheduler data={dataRender} height={660}>
+        <ViewState currentDate={currentDate} />
         <EditingState
           onCommitChanges={commitChanges}
           onEditingAppointmentChange={onEditingAppointmentChange}
           onAddedAppointmentChange={onAddedAppointmentChange}
         />
-        <WeekView startDayHour={state.startDayHour} endDayHour={state.endDayHour} />
+        <DayView
+          displayName={'Day'}
+          startDayHour={9}
+          endDayHour={17}
+          intervalCount={7}
+        />
+        <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
         <MonthView />
         <AllDayPanel />
-        <EditRecurrenceMenu />
+        {/* <EditRecurrenceMenu /> */}
         <Appointments />
         <AppointmentTooltip showOpenButton showCloseButton showDeleteButton />
         <Toolbar />
+        <DateNavigator />
         <ViewSwitcher />
+        <TodayButton />
         <AppointmentForm
-          overlayComponent={typeSchedule === ITypeSchedule.Task ? appointmentFormTask : appointmentFormSchedule}
-          // visible={state.editingFormVisible}
-          onVisibilityChange={toggleEditingFormVisibility}
+          overlayComponent={typeSchedule === EnumTypeCalendar.Task ? appointmentFormTask : appointmentFormSchedule}
+          visible={editFormVisible}
+          onVisibilityChange={() => setOpenModalTypeSchedule(true)
+          }
         />
         <DragDropProvider />
       </Scheduler>
@@ -264,20 +227,20 @@ export default function Schedule() {
             <FormControl>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue={ITypeSchedule.Task}
+                defaultValue={EnumTypeCalendar.Task}
                 name="radio-buttons-group"
                 value={typeSchedule}
                 onChange={(event) => setTypeSchedule(event.target.value)}
               >
-                <FormControlLabel value={ITypeSchedule.Task} control={<Radio />} label="Task" />
-                <FormControlLabel value={ITypeSchedule.Schedule} control={<Radio />} label="Schedule" />
+                <FormControlLabel value={EnumTypeCalendar.Task} control={<Radio />} label="Task" />
+                <FormControlLabel value={EnumTypeCalendar.Schedule} control={<Radio />} label="Schedule" />
               </RadioGroup>
             </FormControl>
-            <Button onClick={confirmChooseType}>ok</Button>
           </Typography>
+          <Button onClick={confirmChooseType}>ok</Button>
         </Box>
       </Modal>
-      <Dialog open={state.confirmationVisible} onClose={state.cancelDelete}>
+      {/* <Dialog open={confirmVisible} onClose={cancelDelete}>
         <DialogTitle>Delete Appointment</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -300,18 +263,19 @@ export default function Schedule() {
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
 
       <StyledFab
         color="secondary"
         className={classes.addButton}
         onClick={() => {
-          setState({ ...state, editingFormVisible: true });
-          onEditingAppointmentChange(undefined);
-          onAddedAppointmentChange({
-            startDate: new Date(state.currentDate).setHours(state.startDayHour),
-            endDate: new Date(state.currentDate).setHours(state.startDayHour + 1),
-          });
+          setOpenModalTypeSchedule(true)
+          // setEditFormVisible(true)
+          // onEditingAppointmentChange(undefined);
+          // onAddedAppointmentChange({
+          //   startDate: new Date(currentDate).setHours(startDayHour),
+          //   endDate: new Date(currentDate).setHours(startDayHour + 1),
+          // });
         }}
       >
         <AddIcon />

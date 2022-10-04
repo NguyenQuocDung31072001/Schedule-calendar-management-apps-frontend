@@ -8,7 +8,6 @@ import {
 
 //material component
 import {
-  Box,
   Button,
   IconButton,
   TextField
@@ -22,7 +21,7 @@ import Create from "@mui/icons-material/Create";
 import AlarmIcon from '@mui/icons-material/Alarm';
 
 // material date picker
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+// import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
@@ -32,12 +31,9 @@ import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 
 export default function ScheduleFormAppointment({ visible, appointmentData, commitChanges, visibleChange, onEditingAppointmentChange, cancelAppointment, target, onHide }) {
   //state | data | hook get data
-  const [state, setState] = React.useState({
-    appointmentChanges: {},
-  })
+  const [appointmentChanges, setAppointmentChanges] = React.useState({})
   const [value, setValue] = React.useState(dayjs('2018-01-01T00:00:00.000Z'));
 
-  let appointmentChanges = state.appointmentChanges
   const isNewAppointment = appointmentData.id === undefined;
 
   const displayAppointmentData = {
@@ -54,9 +50,7 @@ export default function ScheduleFormAppointment({ visible, appointmentData, comm
       appointmentChanges,
       [field]: changes,
     };
-    setState({
-      appointmentChanges: nextChanges,
-    });
+    setAppointmentChanges(nextChanges)
   }
 
   const commitAppointment = (type) => {
@@ -71,9 +65,7 @@ export default function ScheduleFormAppointment({ visible, appointmentData, comm
     } else {
       commitChanges({ [type]: appointment });
     }
-    let _state = state
-    _state.appointmentChanges = {}
-    setState(_state);
+    setAppointmentChanges({})
   }
 
   const textEditorProps = (field) => ({
@@ -106,9 +98,7 @@ export default function ScheduleFormAppointment({ visible, appointmentData, comm
   const endDatePickerProps = pickerEditorProps("endDate");
 
   const cancelChanges = () => {
-    setState({
-      appointmentChanges: {},
-    });
+    setAppointmentChanges({})
     visibleChange();
     cancelAppointment();
   };
