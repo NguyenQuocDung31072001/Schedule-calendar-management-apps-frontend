@@ -1,6 +1,6 @@
 # Schedule-calendar-management-apps-frontend
 
-# How to run :
+# How to run : yarn install and yarn dev
 
 # To do:
 
