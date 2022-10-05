@@ -22,86 +22,99 @@ import { connectProps } from "@devexpress/dx-react-core";
 
 //material component
 import {
-  Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Modal, Backdrop, Box, Typography, FormControl, RadioGroup, FormControlLabel, Radio,
+  Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Modal,
+  Backdrop,
+  Box,
+  Typography,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 
 //material icon
 import AddIcon from "@mui/icons-material/Add";
 
 // common component
-import { StyledFab, classes } from "./common"
+import { StyledFab, classes } from "./common";
 
 //component
-import { TaskFormAppointment, ScheduleFormAppointment } from "./form/index"
+import { TaskFormAppointment, ScheduleFormAppointment } from "./form/index";
 
 //data fake
-import { CurrentDate, TaskData } from "../../fake_data/index"
+import { CurrentDate, TaskData } from "../../fake_data/index";
 
-import { EnumTypeCalendar } from "../../interface/enum"
+import { EnumTypeCalendar } from "../../interface/enum";
 
-const currentDate = CurrentDate
-const startDayHour = 9
-const endDayHour = 19
+const currentDate = CurrentDate;
+const startDayHour = 9;
+const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
-  const [dataRender, setDateRender] = React.useState(TaskData)
-  const [confirmVisible, setConfirmVisible] = React.useState(false)
-  const [editFormVisible, setEditFormVisible] = React.useState(false)
-  const [deletedAppointmentId, setDeletedAppointmentId] = React.useState()
-  const [editingAppointment, setEditingAppointment] = React.useState()
-  const [previousAppointment, setPreviousAppointment] = React.useState()
-  const [addedAppointment, setAddedAppointment] = React.useState({})
-  const [isNewAppointment, setIsNewAppointment] = React.useState(false)
-  const [openModalTypeSchedule, setOpenModalTypeSchedule] = React.useState(false)
-  const [typeSchedule, setTypeSchedule] = React.useState(EnumTypeCalendar.Task)
+  const [dataRender, setDateRender] = React.useState(TaskData);
+  const [confirmVisible, setConfirmVisible] = React.useState(false);
+  const [editFormVisible, setEditFormVisible] = React.useState(false);
+  const [deletedAppointmentId, setDeletedAppointmentId] = React.useState();
+  const [editingAppointment, setEditingAppointment] = React.useState();
+  const [previousAppointment, setPreviousAppointment] = React.useState();
+  const [addedAppointment, setAddedAppointment] = React.useState({});
+  const [isNewAppointment, setIsNewAppointment] = React.useState(false);
+  const [openModalTypeSchedule, setOpenModalTypeSchedule] =
+    React.useState(false);
+  const [typeSchedule, setTypeSchedule] = React.useState(EnumTypeCalendar.Task);
 
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
-    setEditingAppointment(editingAppointment)
-  }
+    setEditingAppointment(editingAppointment);
+  };
 
   const onAddedAppointmentChange = (addedAppointment) => {
-    setAddedAppointment(addedAppointment)
+    setAddedAppointment(addedAppointment);
     if (editingAppointment !== undefined) {
-      setPreviousAppointment(editingAppointment)
+      setPreviousAppointment(editingAppointment);
     }
-    setEditingAppointment(undefined)
-    setIsNewAppointment(true)
-
-  }
+    setEditingAppointment(undefined);
+    setIsNewAppointment(true);
+  };
 
   const handleDeletedAppointmentId = (id) => {
-    setDeletedAppointmentId(id)
-  }
+    setDeletedAppointmentId(id);
+  };
 
   const changeFormVisible = () => {
-    setEditFormVisible(!editFormVisible)
-  }
+    setEditFormVisible(!editFormVisible);
+  };
 
   const confirmChooseType = () => {
-    setOpenModalTypeSchedule(false)
-    setEditFormVisible(!editFormVisible)
-  }
-  React.useEffect(() => {
-  }, [openModalTypeSchedule])
+    setOpenModalTypeSchedule(false);
+    setEditFormVisible(!editFormVisible);
+  };
+  React.useEffect(() => {}, [openModalTypeSchedule]);
 
   const toggleConfirmationVisible = () => {
-    setConfirmVisible(!confirmVisible)
-  }
+    setConfirmVisible(!confirmVisible);
+  };
 
   const commitDeletedAppointment = () => {
     const nextData = dataRender.filter(
       (appointment) => appointment.id !== deletedAppointmentId
-    )
-    setDateRender(nextData)
-    setDeletedAppointmentId(null)
+    );
+    setDateRender(nextData);
+    setDeletedAppointmentId(null);
     toggleConfirmationVisible();
-  }
+  };
 
   const commitChanges = ({ added, changed, deleted }) => {
-    console.log("aloi")
-    let _dataRender
+    console.log({ added, changed, deleted });
+    let _dataRender;
     if (added) {
       const startingAddedId =
         dataRender.length > 0 ? dataRender[dataRender.length - 1].id + 1 : 0;
@@ -113,13 +126,14 @@ export default function Schedule() {
           ? { ...appointment, ...changed[appointment.id] }
           : appointment
       );
+      console.log({ _dataRender });
     }
     if (deleted !== undefined) {
       handleDeletedAppointmentId(deleted);
       toggleConfirmationVisible();
     }
-    setDateRender(_dataRender)
-  }
+    setDateRender(_dataRender);
+  };
 
   const appointmentFormTask = connectProps(TaskFormAppointment, () => {
     const currentAppointment =
@@ -129,8 +143,8 @@ export default function Schedule() {
       )[0] || addedAppointment;
     const cancelAppointment = () => {
       if (isNewAppointment) {
-        setEditingAppointment(previousAppointment)
-        setIsNewAppointment(false)
+        setEditingAppointment(previousAppointment);
+        setIsNewAppointment(false);
       }
     };
 
@@ -142,7 +156,7 @@ export default function Schedule() {
       onEditingAppointmentChange: onEditingAppointmentChange,
       cancelAppointment,
     };
-  })
+  });
   const appointmentFormSchedule = connectProps(ScheduleFormAppointment, () => {
     const currentAppointment =
       dataRender.filter(
@@ -151,8 +165,8 @@ export default function Schedule() {
       )[0] || addedAppointment;
     const cancelAppointment = () => {
       if (isNewAppointment) {
-        setEditingAppointment(previousAppointment)
-        setIsNewAppointment(false)
+        setEditingAppointment(previousAppointment);
+        setIsNewAppointment(false);
       }
     };
 
@@ -164,7 +178,8 @@ export default function Schedule() {
       onEditingAppointmentChange: onEditingAppointmentChange,
       cancelAppointment,
     };
-  })
+  });
+  console.log({ openModalTypeSchedule });
   return (
     <Paper>
       <Scheduler data={dataRender} height={660}>
@@ -175,15 +190,15 @@ export default function Schedule() {
           onAddedAppointmentChange={onAddedAppointmentChange}
         />
         <DayView
-          displayName={'Day'}
+          displayName={"Day"}
           startDayHour={9}
           endDayHour={17}
-          intervalCount={7}
+          intervalCount={1}
         />
         <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
         <MonthView />
         <AllDayPanel />
-        {/* <EditRecurrenceMenu /> */}
+        <EditRecurrenceMenu />
         <Appointments />
         <AppointmentTooltip showOpenButton showCloseButton showDeleteButton />
         <Toolbar />
@@ -191,10 +206,20 @@ export default function Schedule() {
         <ViewSwitcher />
         <TodayButton />
         <AppointmentForm
-          overlayComponent={typeSchedule === EnumTypeCalendar.Task ? appointmentFormTask : appointmentFormSchedule}
-          visible={editFormVisible}
-          onVisibilityChange={() => setOpenModalTypeSchedule(true)
+          overlayComponent={
+            typeSchedule === EnumTypeCalendar.Task
+              ? appointmentFormTask
+              : appointmentFormSchedule
           }
+          visible={editFormVisible}
+          onVisibilityChange={() => {
+            setOpenModalTypeSchedule(true);
+            // if (openModalTypeSchedule) {
+            //   console.log("ok");
+            //   setOpenModalTypeSchedule(false);
+            // } else {
+            // }
+          }}
         />
         <DragDropProvider />
       </Scheduler>
@@ -209,17 +234,19 @@ export default function Schedule() {
           timeout: 500,
         }}
       >
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          boxShadow: 24,
-          p: 4,
-        }}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
           <Typography id="spring-modal-title" variant="h6" component="h2">
             Choose type schedule
           </Typography>
@@ -232,8 +259,16 @@ export default function Schedule() {
                 value={typeSchedule}
                 onChange={(event) => setTypeSchedule(event.target.value)}
               >
-                <FormControlLabel value={EnumTypeCalendar.Task} control={<Radio />} label="Task" />
-                <FormControlLabel value={EnumTypeCalendar.Schedule} control={<Radio />} label="Schedule" />
+                <FormControlLabel
+                  value={EnumTypeCalendar.Task}
+                  control={<Radio />}
+                  label="Task"
+                />
+                <FormControlLabel
+                  value={EnumTypeCalendar.Schedule}
+                  control={<Radio />}
+                  label="Schedule"
+                />
               </RadioGroup>
             </FormControl>
           </Typography>
@@ -269,7 +304,7 @@ export default function Schedule() {
         color="secondary"
         className={classes.addButton}
         onClick={() => {
-          setOpenModalTypeSchedule(true)
+          setOpenModalTypeSchedule(true);
           // setEditFormVisible(true)
           // onEditingAppointmentChange(undefined);
           // onAddedAppointmentChange({

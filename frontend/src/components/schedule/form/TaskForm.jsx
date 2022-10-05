@@ -1,16 +1,10 @@
-import React from 'react'
+import React from "react";
 
 //dx-react-scheduler-material-ui
-import {
-  AppointmentForm,
-} from "@devexpress/dx-react-scheduler-material-ui";
+import { AppointmentForm } from "@devexpress/dx-react-scheduler-material-ui";
 
 //material component
-import {
-  Button,
-  IconButton,
-  TextField
-} from "@mui/material";
+import { Button, IconButton, TextField } from "@mui/material";
 
 //material icon
 import Notes from "@mui/icons-material/Notes";
@@ -24,12 +18,22 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 // common component
-import { StyledDiv, classes } from "../common"
-import { EnumTypeAppointment } from "../../../interface/enum"
+import { StyledDiv, classes } from "../common";
+import { EnumTypeAppointment } from "../../../interface/enum";
 
-export default function TaskFormAppointment({ visible, appointmentData, commitChanges, visibleChange, onEditingAppointmentChange, cancelAppointment, target, onHide }) {
+export default function TaskFormAppointment({
+  visible,
+  appointmentData,
+  commitChanges,
+  visibleChange,
+  onEditingAppointmentChange,
+  cancelAppointment,
+  target,
+  onHide,
+}) {
   //state | data | hook get data
-  const [appointmentChanges, setAppointmentChanges] = React.useState(appointmentData)
+  const [appointmentChanges, setAppointmentChanges] =
+    React.useState(appointmentData);
   const isNewAppointment = appointmentData.id === undefined;
 
   const applyChanges = isNewAppointment
@@ -38,27 +42,31 @@ export default function TaskFormAppointment({ visible, appointmentData, commitCh
 
   //funtion
 
-
   const commitAppointment = (type) => {
-    console.log(appointmentChanges)
+    console.log(appointmentChanges);
     switch (type) {
-      case EnumTypeAppointment.Add: commitChanges({ [type]: appointmentChanges })
+      case EnumTypeAppointment.Add:
+        commitChanges({ [type]: appointmentChanges });
         break;
-      case EnumTypeAppointment.Change: commitChanges({ [type]: { [appointmentChanges.id]: appointmentChanges } })
-        break
-      case EnumTypeAppointment.Delete: commitChanges({ [type]: appointmentChanges.id })
+      case EnumTypeAppointment.Change:
+        commitChanges({
+          [type]: { [appointmentChanges.id]: appointmentChanges },
+        });
+        break;
+      case EnumTypeAppointment.Delete:
+        commitChanges({ [type]: appointmentChanges.id });
         break;
       default:
     }
-  }
+  };
 
   const textEditorProps = (field) => ({
     variant: "outlined",
     onChange: (event) => {
       setAppointmentChanges({
         ...appointmentChanges,
-        [field]: event.target.value
-      })
+        [field]: event.target.value,
+      });
     },
     value: appointmentChanges[field] || "",
     label: field[0].toUpperCase() + field.slice(1),
@@ -68,7 +76,7 @@ export default function TaskFormAppointment({ visible, appointmentData, commitCh
   const pickerEditorProps = (field) => ({
     keyboard: true,
     onChange: (event) => {
-      // console.log(event._d)
+      // console.log(event._d)  xx
       // console.log(event._d.getDate())
       // console.log(event._d.getMonth())
       // console.log(event._d.getFullYear())
@@ -76,8 +84,8 @@ export default function TaskFormAppointment({ visible, appointmentData, commitCh
       // console.log(event._d.getMinutes())
       setAppointmentChanges({
         ...appointmentChanges,
-        [field]: event._d
-      })
+        [field]: event._d,
+      });
     },
     value: appointmentChanges[field],
     // ampm: false,
@@ -88,7 +96,7 @@ export default function TaskFormAppointment({ visible, appointmentData, commitCh
   const endDatePickerProps = pickerEditorProps("endDate");
 
   const cancelChanges = () => {
-    setAppointmentChanges({})
+    setAppointmentChanges({});
     visibleChange();
     cancelAppointment();
   };
