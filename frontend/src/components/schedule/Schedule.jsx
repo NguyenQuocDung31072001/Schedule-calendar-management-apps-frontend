@@ -17,6 +17,7 @@ import {
   DayView,
   DateNavigator,
   TodayButton,
+  Resources,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { connectProps } from "@devexpress/dx-react-core";
 
@@ -52,6 +53,8 @@ import { TaskFormAppointment, ScheduleFormAppointment } from "./form/index";
 import { CurrentDate, TaskData } from "../../fake_data/index";
 
 import { EnumTypeCalendar } from "../../interface/enum";
+import { Resource } from "../../fake_data/Resource";
+import { ScheduleData } from "../../fake_data/Schedule";
 
 const currentDate = CurrentDate;
 const startDayHour = 9;
@@ -59,7 +62,7 @@ const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
-  const [dataRender, setDateRender] = React.useState(TaskData);
+  const [dataRender, setDateRender] = React.useState(ScheduleData);
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [deletedAppointmentId, setDeletedAppointmentId] = React.useState();
@@ -179,22 +182,36 @@ export default function Schedule() {
       cancelAppointment,
     };
   });
-  console.log({ openModalTypeSchedule });
   return (
     <Paper>
       <Scheduler data={dataRender} height={660}>
         <ViewState currentDate={currentDate} />
         <EditingState
-          onCommitChanges={commitChanges}
-          onEditingAppointmentChange={onEditingAppointmentChange}
-          onAddedAppointmentChange={onAddedAppointmentChange}
+          onCommitChanges={() => {
+            console.log("commit change");
+            commitChanges();
+          }}
+          onEditingAppointmentChange={(editingAppointment) => {
+            console.log(editingAppointment);
+            if (editingAppointment.type === EnumTypeCalendar.Task) {
+              setTypeSchedule(EnumTypeCalendar.Task);
+            } else if (editingAppointment.type === EnumTypeCalendar.Schedule) {
+              setTypeSchedule(EnumTypeCalendar.Schedule);
+            }
+            setEditFormVisible(true);
+            onEditingAppointmentChange(editingAppointment);
+          }}
+          onAddedAppointmentChange={() => {
+            console.log("add");
+            // onAddedAppointmentChange();
+          }}
         />
-        <DayView
+        {/* <DayView
           displayName={"Day"}
           startDayHour={9}
           endDayHour={17}
           intervalCount={1}
-        />
+        /> */}
         <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
         <MonthView />
         <AllDayPanel />
@@ -211,17 +228,14 @@ export default function Schedule() {
               ? appointmentFormTask
               : appointmentFormSchedule
           }
-          visible={editFormVisible}
-          onVisibilityChange={() => {
-            setOpenModalTypeSchedule(true);
-            // if (openModalTypeSchedule) {
-            //   console.log("ok");
-            //   setOpenModalTypeSchedule(false);
-            // } else {
-            // }
-          }}
+          // visible={editFormVisible}
+          // readOnly={true}
+          // onVisibilityChange={() => {
+          //   console.log("visible change");
+          // }}
         />
-        <DragDropProvider />
+        <DragDropProvider allowDrag={() => true} />
+        <Resources data={Resource} mainResourceName="subject" />
       </Scheduler>
       <Modal
         aria-labelledby="spring-modal-title"
