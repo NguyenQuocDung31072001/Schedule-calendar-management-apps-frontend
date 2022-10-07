@@ -1,0 +1,11 @@
+code: local -> pull request -> review ok -> merge in dev -> merge to qc
+JIRA: in process ->  create PR done -> in review (assign: revier code) & merge into dev -> ready for test (assign: Dung Nhi)
+
+
+
+
+dev 
+
+qc
+
+product

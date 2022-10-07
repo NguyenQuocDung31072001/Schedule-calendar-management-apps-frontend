@@ -22,9 +22,7 @@ import {
 import { connectProps } from "@devexpress/dx-react-core";
 
 //material component
-import {
-  Paper,
-} from "@mui/material";
+import { Paper } from "@mui/material";
 
 //material icon
 import AddIcon from "@mui/icons-material/Add";
@@ -57,75 +55,54 @@ export default function Schedule() {
   const [addedAppointment, setAddedAppointment] = React.useState({});
   const [isNewAppointment, setIsNewAppointment] = React.useState(false);
 
-  const [typeSchedule, setTypeSchedule] = React.useState(EnumTypeCalendar.Task);
-
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
     setEditingAppointment(editingAppointment);
   };
 
-  // const onAddedAppointmentChange = (addedAppointment) => {
-  //   setAddedAppointment(addedAppointment);
-  //   if (editingAppointment !== undefined) {
-  //     setPreviousAppointment(editingAppointment);
-  //   }
-  //   setEditingAppointment(undefined);
-  //   setIsNewAppointment(true);
-  // };
-
-  const handleDeletedAppointmentId = (id) => {
-    setDeletedAppointmentId(id);
-  };
-
   const changeFormVisible = () => {
     setEditFormVisible(!editFormVisible);
   };
-
   const commitChanges = (value) => {
-    console.log(new Date(value.startTime).getHours())
     if (value.type === EnumTypeAppointment.Add) {
-      // setDateRender(prev => [...prev, {
-      //   id: dataRender.length > 0 ? dataRender[dataRender.length - 1].id + 1 : 1,
-      //   title: value.subject,
-      //   startDate: new Date(value.startDate.getFullYear(), value.startDate.getMonth() + 1, value.startDate.getDate(), value.startTime.getHours(), value.startTime.getMinutes()),
-      //   endDate: new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, value.endDate.getDate(), value.endTime.getHours(), value.endTime.getMinutes()),
-      //   notes: value.notes,
-      //   room: value.room
-      // }])
+      setDateRender((prev) => [
+        ...prev,
+        {
+          id:
+            dataRender.length > 0
+              ? dataRender[dataRender.length - 1].id + 1
+              : 1,
+          title: value.subject,
+          startDate: value.startDate,
+          endDate: value.endDate,
+          notes: value.notes,
+          room: value.room,
+          isRepeat: value.isRepeat,
+        },
+      ]);
+    } else if (value.type === EnumTypeAppointment.Change) {
+      dataRender.forEach((data) => {
+        if (data.id === value.id) {
+          data.title = value.subject;
+          data.startDate = value.startDate;
+          data.endDate = value.endDate;
+          data.notes = value.notes;
+          data.room = value.room;
+          data.isRepeat = value.isRepeat;
+        }
+      });
+      setDateRender(dataRender);
+    } else {
+      setDateRender(dataRender.filter((data) => data.id !== value.deleted));
     }
-  }
-
-  // const commitChanges = ({ added, changed, deleted }) => {
-  //   console.log({ added, changed, deleted });
-  //   let _dataRender;
-  //   if (added) {
-  //     const startingAddedId =
-  //       dataRender.length > 0 ? dataRender[dataRender.length - 1].id + 1 : 0;
-  //     _dataRender = [...dataRender, { id: startingAddedId, ...added }];
-  //   }
-  //   if (changed) {
-  //     _dataRender = dataRender.map((appointment) =>
-  //       changed[appointment.id]
-  //         ? { ...appointment, ...changed[appointment.id] }
-  //         : appointment
-  //     );
-  //     console.log({ _dataRender });
-  //   }
-  //   if (deleted !== undefined) {
-  //     handleDeletedAppointmentId(deleted);
-  //     setConfirmVisible(!confirmVisible);
-  //   }
-  //   setDateRender(_dataRender);
-  // };
+  };
 
   const appointmentFormSchedule = connectProps(ScheduleFormAppointment, () => {
-    console.log({ dataRender })
-    let currentAppointment = addedAppointment
-    // const currentAppointment =
-    //   dataRender.filter(
-    //     (appointment) =>
-    //       editingAppointment && appointment.id === editingAppointment.id
-    //   )[0] || addedAppointment;
+    let currentAppointment =
+      dataRender.filter(
+        (appointment) =>
+          editingAppointment && appointment.id === editingAppointment.id
+      )[0] || addedAppointment;
     const cancelAppointment = () => {
       if (isNewAppointment) {
         setEditingAppointment(previousAppointment);
@@ -152,18 +129,21 @@ export default function Schedule() {
             commitChanges(e);
           }}
           onEditingAppointmentChange={(editingAppointment) => {
-            console.log("editting ", editingAppointment)
-            setEditFormVisible(true)
+            console.log("editting ", editingAppointment);
+            setEditingAppointment(editingAppointment);
+            // setEditFormVisible(true);
           }}
-          onAddedAppointmentChange={(e) => {
-            console.log("add ", e);
-            setEditFormVisible(true)
+          onAddedAppointmentChange={(newAppoiment) => {
+            changeFormVisible();
+            console.log("add ", newAppoiment);
+            setAddedAppointment(newAppoiment);
+            setEditingAppointment();
+            // setIsNewAppointment(false);
           }}
           onAppointmentChangesChange={(e) => {
-            console.log("change change ", e)
+            console.log("change change ", e);
           }}
         />
-
         <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
         <MonthView />
         <AllDayPanel />
@@ -175,12 +155,8 @@ export default function Schedule() {
         <ViewSwitcher />
         <TodayButton />
         <AppointmentForm
-          overlayComponent={appointmentFormSchedule
-          }
+          overlayComponent={appointmentFormSchedule}
           visible={editFormVisible}
-          onVisibilityChange={() => {
-            setEditFormVisible(true)
-          }}
         />
         <DragDropProvider allowDrag={() => true} />
         <Resources data={Resource} mainResourceName="subject" />
@@ -215,7 +191,7 @@ export default function Schedule() {
         color="secondary"
         className={classes.addButton}
         onClick={() => {
-          setEditFormVisible(true)
+          setEditFormVisible(true);
           // onEditingAppointmentChange(undefined);
           // onAddedAppointmentChange({
           //   startDate: new Date(currentDate).setHours(startDayHour),
