@@ -64,6 +64,7 @@ export default function Schedule() {
     setEditFormVisible(!editFormVisible);
   };
   const commitChanges = (value) => {
+    console.log(value);
     if (value.type === EnumTypeAppointment.Add) {
       setDateRender((prev) => [
         ...prev,
@@ -140,9 +141,9 @@ export default function Schedule() {
             setEditingAppointment();
             // setIsNewAppointment(false);
           }}
-          onAppointmentChangesChange={(e) => {
-            console.log("change change ", e);
-          }}
+          // onAppointmentChangesChange={(e) => {
+          //   console.log("change change ", e);
+          // }}
         />
         <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
         <MonthView />
