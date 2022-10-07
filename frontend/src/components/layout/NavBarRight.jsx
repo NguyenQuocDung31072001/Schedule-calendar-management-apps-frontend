@@ -6,17 +6,22 @@ import React from 'react'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import { ImageStyle } from './common';
+import { useNavigate } from 'react-router-dom';
 
-const MenuOptionAccount = (handleCloseMenuAccount) => [{
+const MenuOptionAccount = (handleCloseMenuAccount, navigate) => [{
   path: "setting",
   name: "Profile",
   onClick: handleCloseMenuAccount
 }, {
   path: "logout",
   name: "Logout",
-  onClick: handleCloseMenuAccount
+  onClick: () => {
+    handleCloseMenuAccount()
+    navigate("login")
+  }
 }]
 export default function NavBarRight() {
+  const navigate = useNavigate()
   const [anchorMenuAccount, setAnchorMenuAccount] = React.useState(null);
   const openMenuAccount = Boolean(anchorMenuAccount)
   const handleOpenMenuAccount = (event) => {
@@ -50,7 +55,7 @@ export default function NavBarRight() {
               'aria-labelledby': 'basic-button',
             }}
           >
-            {MenuOptionAccount(handleCloseMenuAccount).map((item) => (
+            {MenuOptionAccount(handleCloseMenuAccount, navigate).map((item) => (
               <MenuItem key={item.name} onClick={item.onClick}>{item.name}</MenuItem>
             ))}
           </Menu>

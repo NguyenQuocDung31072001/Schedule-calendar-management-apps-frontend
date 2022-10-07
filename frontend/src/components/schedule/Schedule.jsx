@@ -46,7 +46,15 @@ const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
-  const [dataRender, setDateRender] = React.useState([]);
+  const [dataRender, setDateRender] = React.useState([{
+    title: "Môn toán 1",
+    startDate: new Date(2022, 9, 7, 12, 35),
+    endDate: new Date(2022, 9, 7, 15, 0),
+    // type: EnumTypeCalendar.Schedule,
+    id: 0,
+    // room: [3],
+    // subject: [1],
+  }]);
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [deletedAppointmentId, setDeletedAppointmentId] = React.useState();
@@ -97,7 +105,7 @@ export default function Schedule() {
       setDateRender(dataRender.filter((data) => data.id !== value.deleted));
     }
   };
-
+  console.log({ dataRender })
   const appointmentFormSchedule = connectProps(ScheduleFormAppointment, () => {
     let currentAppointment =
       dataRender.filter(
@@ -120,10 +128,13 @@ export default function Schedule() {
       cancelAppointment,
     };
   });
+  console.log({ editFormVisible })
   return (
     <Paper>
       <Scheduler data={dataRender} height={660}>
-        <ViewState currentDate={new Date()} />
+        <ViewState currentDate={new Date()}
+          onCurrentDateChange={(e) => console.log(e)}
+        />
         <EditingState
           onCommitChanges={(e) => {
             console.log("commit change ", e);
@@ -141,9 +152,9 @@ export default function Schedule() {
             setEditingAppointment();
             // setIsNewAppointment(false);
           }}
-          // onAppointmentChangesChange={(e) => {
-          //   console.log("change change ", e);
-          // }}
+        // onAppointmentChangesChange={(e) => {
+        //   console.log("change change ", e);
+        // }}
         />
         <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
         <MonthView />

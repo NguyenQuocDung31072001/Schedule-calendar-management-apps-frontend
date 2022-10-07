@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 //material style
 import { useTheme } from "@mui/material/styles";
@@ -40,10 +40,9 @@ const linkStyle = {
   color: '#7f8c8d'
 };
 
-export default function SideBarComponent({ children }) {
+export default function SideBarComponent() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -93,7 +92,7 @@ export default function SideBarComponent({ children }) {
         <Divider />
         <List>
           {ListMenuItem.map((item) => (
-            <Link key={item.name} to={item.path} style={linkStyle}>
+            <Link key={item.name} to={`../${item.path}`} style={linkStyle}>
               <ListItem disablePadding sx={{ display: "block" }}>
                 <ListItemButton
                   sx={{
@@ -120,7 +119,7 @@ export default function SideBarComponent({ children }) {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        {children}
+        <Outlet />
       </Box>
     </Box>
   );

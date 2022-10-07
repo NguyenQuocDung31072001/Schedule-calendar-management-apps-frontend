@@ -1,3 +1,4 @@
+import { WrapText } from "@mui/icons-material";
 import {
   BrowserRouter,
   Routes,
@@ -5,19 +6,28 @@ import {
 } from "react-router-dom";
 //component
 import SidebarComponent from "./components/layout/SidebarComponent"
+import LoginPages from "./pages/LoginPages";
+import RegisterPages from "./pages/RegisterPages";
 //page
 import SchedulePage from './pages/SchedulePages';
+import SettingPages from "./pages/SettingPages";
+
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <SidebarComponent>
-          <Routes>
+        <Routes>
+          <Route path="/" element={<SidebarComponent />}>
+            <Route path="/setting" element={<SettingPages />} />
             <Route path="/schedule" element={<SchedulePage />} />
-          </Routes>
-        </SidebarComponent>
+          </Route>
+          <Route>
+            <Route path="/login" element={<LoginPages />} />
+            <Route path="/register" element={<RegisterPages />} />
+          </Route>
+        </Routes>
       </BrowserRouter>,
-    </div>
+    </div >
   );
 }
 
