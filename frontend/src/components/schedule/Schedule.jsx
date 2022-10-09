@@ -39,6 +39,7 @@ import { CurrentDate, TaskData } from "../../fake_data/index";
 import { EnumTypeAppointment, EnumTypeCalendar } from "../../interface/enum";
 import { Resource } from "../../fake_data/Resource";
 import { ScheduleData } from "../../fake_data/Schedule";
+import TabPanelForm from "./TabPanelForm";
 
 const currentDate = CurrentDate;
 const startDayHour = 9;
@@ -105,8 +106,8 @@ export default function Schedule() {
       setDateRender(dataRender.filter((data) => data.id !== value.deleted));
     }
   };
-  console.log({ dataRender })
-  const appointmentFormSchedule = connectProps(ScheduleFormAppointment, () => {
+  // console.log({ dataRender })
+  const appointmentFormSchedule = connectProps(TabPanelForm, () => {
     let currentAppointment =
       dataRender.filter(
         (appointment) =>

@@ -9,3 +9,14 @@ dev
 qc
 
 product
+
+
+
+////
+
+
+form schedule
+- delete repeat 
+- field thong bao
+- field color
+- 

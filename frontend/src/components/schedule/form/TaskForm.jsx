@@ -1,14 +1,12 @@
 import React from "react";
 
 //dx-react-scheduler-material-ui
-import { AppointmentForm } from "@devexpress/dx-react-scheduler-material-ui";
 
 //material component
-import { Button, IconButton, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 
 //material icon
 import Notes from "@mui/icons-material/Notes";
-import Close from "@mui/icons-material/Close";
 import CalendarToday from "@mui/icons-material/CalendarToday";
 import Create from "@mui/icons-material/Create";
 
@@ -76,12 +74,6 @@ export default function TaskFormAppointment({
   const pickerEditorProps = (field) => ({
     keyboard: true,
     onChange: (event) => {
-      // console.log(event._d)  xx
-      // console.log(event._d.getDate())
-      // console.log(event._d.getMonth())
-      // console.log(event._d.getFullYear())
-      // console.log(event._d.getHours())
-      // console.log(event._d.getMinutes())
       setAppointmentChanges({
         ...appointmentChanges,
         [field]: event._d,
@@ -95,86 +87,65 @@ export default function TaskFormAppointment({
   const startDatePickerProps = pickerEditorProps("startDate");
   const endDatePickerProps = pickerEditorProps("endDate");
 
-  const cancelChanges = () => {
-    setAppointmentChanges({});
-    visibleChange();
-    cancelAppointment();
-  };
 
   return (
-    <AppointmentForm.Overlay
-      visible={visible}
-      target={target}
-      fullSize={false}
-      onHide={onHide}
-    >
-      <StyledDiv>
-        <div className={classes.header}>
-          <IconButton
-            className={classes.closeButton}
-            onClick={cancelChanges}
-            size="large"
-          >
-            <Close color="action" />
-          </IconButton>
+    <StyledDiv>
+      <div className={classes.content}>
+        <div className={classes.wrapper}>
+          <Create className={classes.icon} color="action" />
+          <TextField {...textEditorProps("title")} />
         </div>
-        <div className={classes.content}>
-          <div className={classes.wrapper}>
-            <Create className={classes.icon} color="action" />
-            <TextField {...textEditorProps("title")} />
-          </div>
-          <div className={classes.wrapper}>
-            <CalendarToday className={classes.icon} color="action" />
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DateTimePicker
-                label="Start Date"
-                renderInput={(props) => (
-                  <TextField className={classes.picker} {...props} />
-                )}
-                {...startDatePickerProps}
-              />
-              <DateTimePicker
-                label="End Date"
-                renderInput={(props) => (
-                  <TextField className={classes.picker} {...props} />
-                )}
-                {...endDatePickerProps}
-              />
-            </LocalizationProvider>
-          </div>
-          <div className={classes.wrapper}>
-            <Notes className={classes.icon} color="action" />
-            <TextField {...textEditorProps("notes")} multiline rows="6" />
-          </div>
+        <div className={classes.wrapper}>
+          <CalendarToday className={classes.icon} color="action" />
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <DateTimePicker
+              label="Start Date"
+              renderInput={(props) => (
+                <TextField className={classes.picker} {...props} />
+              )}
+              {...startDatePickerProps}
+            />
+            <DateTimePicker
+              label="End Date"
+              renderInput={(props) => (
+                <TextField className={classes.picker} {...props} />
+              )}
+              {...endDatePickerProps}
+            />
+          </LocalizationProvider>
         </div>
-        <div className={classes.buttonGroup}>
-          {!isNewAppointment && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              className={classes.button}
-              onClick={() => {
-                visibleChange();
-                commitAppointment("deleted");
-              }}
-            >
-              Delete
-            </Button>
-          )}
+        <div className={classes.wrapper}>
+          <Notes className={classes.icon} color="action" />
+          <TextField {...textEditorProps("notes")} multiline rows="6" />
+        </div>
+      </div>
+      <div className={classes.buttonGroup}>
+        {!isNewAppointment && (
           <Button
             variant="outlined"
-            color="primary"
+            color="secondary"
             className={classes.button}
             onClick={() => {
               visibleChange();
-              applyChanges();
+              commitAppointment("deleted");
             }}
           >
-            {isNewAppointment ? "Create" : "Save"}
+            Delete
           </Button>
-        </div>
-      </StyledDiv>
-    </AppointmentForm.Overlay>
+        )}
+        <Button
+          variant="outlined"
+          color="primary"
+          className={classes.button}
+          onClick={() => {
+            visibleChange();
+            applyChanges();
+          }}
+        >
+          {isNewAppointment ? "Create" : "Save"}
+        </Button>
+      </div>
+    </StyledDiv>
   );
 }
 
