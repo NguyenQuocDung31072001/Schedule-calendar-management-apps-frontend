@@ -15,9 +15,17 @@ export const classes = {
   icon: `${PREFIX}-icon`,
   textField: `${PREFIX}-textField`,
   addButton: `${PREFIX}-addButton`,
+  titleFormModal: `${PREFIX}-titleFormModal`
 };
 
 // #FOLD_BLOCK
+export const StyleTitleModal = styled("span")(({ theme }) => ({
+  [`& .${classes.titleFormModal}`]: {
+    fontWeight: "bold",
+    fontSize: "50px"
+  }
+}))
+
 export const StyledDiv = styled("div")(({ theme }) => ({
   [`& .${classes.icon}`]: {
     margin: theme.spacing(2, 0),

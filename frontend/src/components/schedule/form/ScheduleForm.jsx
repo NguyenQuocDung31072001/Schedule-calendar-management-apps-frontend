@@ -4,9 +4,12 @@ import React from "react";
 
 //material component
 import {
+  Box,
   Button,
   Checkbox,
+  Grid,
   TextField,
+  Typography,
 } from "@mui/material";
 
 //material icon
@@ -26,6 +29,7 @@ import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { getDetailTime } from "../../../util/getDetailTime";
 import { EnumTypeAppointment } from "../../../interface/enum";
 import { CirclePicker, SketchPicker } from "react-color";
+import ScheduleRepeatModal from "../modal/ScheduleRepeatModal";
 
 export default function ScheduleFormAppointment({
   visible,
@@ -95,7 +99,6 @@ export default function ScheduleFormAppointment({
   };
 
   return (
-
     <StyledDiv>
       <div className={classes.content}>
         <div className={classes.wrapper}>
@@ -149,16 +152,28 @@ export default function ScheduleFormAppointment({
             />
           </LocalizationProvider>
         </div>
-        <div className={classes.wrapper}>
+        <Box sx={{ display: "flex", alignItem: "center" }} >
           <AlarmIcon className={classes.icon} color="action" />
-          <span>Repeat</span>
+          <ScheduleRepeatModal />
+        </Box>
+        <Box style={{
+          display: "flex",
+          alignItems: "center"
+        }}>
+          <AlarmIcon className={classes.icon} color="action" />
+          <div className={classes.wrapper} style={{
+            display: "flex",
+            alignItems: "center"
+          }}
+          >
+            <Typography sx={{ marginRight: "20px", height: "30px" }}>Choose color</Typography>
+            <Box>
+              <CirclePicker circleSize={20} colors={["#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]} color={color} onChange={(color) => setColor(color)} />
 
-        </div>
-        <div className={classes.wrapper}>
-          <AlarmIcon className={classes.icon} color="action" />
-          <span>Choose color</span>
-          <CirclePicker color={color} onChange={(color) => setColor(color)} />
-        </div>
+            </Box>
+          </div>
+
+        </Box>
         <div className={classes.wrapper}>
           <Notes className={classes.icon} color="action" />
           <TextField
@@ -198,7 +213,7 @@ export default function ScheduleFormAppointment({
           {isNewAppointment ? "Create" : "Save"}
         </Button>
       </div>
-    </StyledDiv>
+    </StyledDiv >
   );
 }
 /* eslint-disable-next-line react/no-multi-comp */
