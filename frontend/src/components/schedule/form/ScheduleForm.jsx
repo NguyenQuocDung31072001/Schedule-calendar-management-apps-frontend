@@ -45,30 +45,31 @@ export default function ScheduleFormAppointment({
   //state | data | hook get data
   const [color, setColor] = React.useState("");
   const [dataForm, setDataForm] = React.useState();
-
   const isNewAppointment = appointmentData.id === undefined;
   const applyChanges = isNewAppointment
     ? () => commitAppointment(EnumTypeAppointment.Add)
     : () => commitAppointment(EnumTypeAppointment.Change);
 
+  console.log({ appointmentData })
   const { register, control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
+        console.log("ok")
         return {
-          subject: appointmentData.title | "ok",
+          subject: appointmentData.title,
           startDate: appointmentData.startDate,
           endDate: appointmentData.endDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
-          notes: appointmentData.notes | "ok",
+          notes: appointmentData.notes,
         };
       } else {
         return {
           subject: "",
           startDate: appointmentData.startDate,
           endDate: appointmentData.endDate,
-          startTime: new Date(),
-          endTime: new Date(),
+          startTime: appointmentData.startDate,
+          endTime: appointmentData.endDate,
           notes: "",
         };
       }
@@ -81,7 +82,7 @@ export default function ScheduleFormAppointment({
 
   //funtion
   const onSubmitForm = (data) => {
-    console.log(data);
+    // console.log(data);
     setDataForm(data);
     visibleChange();
   };
