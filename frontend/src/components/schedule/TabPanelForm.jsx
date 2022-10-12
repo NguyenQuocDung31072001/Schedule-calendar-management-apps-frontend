@@ -3,6 +3,7 @@ import { Close } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, IconButton, Tab } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { classes } from "./common";
 import { ScheduleFormAppointment, TaskFormAppointment } from "./form/index";
 
@@ -16,6 +17,7 @@ export default function TabPanelForm({
   target,
   onHide,
 }) {
+  const [t] = useTranslation('common');
   const [tabValue, setTabValue] = React.useState("schedule");
 
   //function
@@ -43,8 +45,8 @@ export default function TabPanelForm({
             onChange={(_, value) => setTabValue(value)}
             aria-label="lab API tabs example"
           >
-            <Tab label="Schedule" value="schedule" />
-            <Tab label="Task" value="task" />
+            <Tab label={t(`tabPanel.schedule`)} value="schedule" />
+            <Tab label={t(`tabPanel.task`)} value="task" />
           </TabList>
           <IconButton
             className={classes.closeButton}

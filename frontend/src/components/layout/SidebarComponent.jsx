@@ -18,22 +18,28 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 // style component
 import { AppBar, Drawer, DrawerHeader } from "./common"
 import NavBarRight from "./NavBarRight";
+import { useTranslation } from "react-i18next";
 
-const ListMenuItem = [{
-  path: "schedule",
-  icon: <InboxIcon />,
-  name: "Schedule"
-},
-{
-  path: "setting",
-  icon: <SettingsOutlinedIcon />,
-  name: "Setting"
-}, {
-  path: "logout",
-  icon: <MailIcon />,
-  name: "Logout"
+const ListMenuItem = (t) => {
+  const Schedule = t(`sidebar.schedule`)
+  const Setting = t(`sidebar.setting`)
+  const Logout = t(`sidebar.logout`)
+
+  return [{
+    path: "schedule",
+    icon: <InboxIcon />,
+    name: Schedule
+  },
+  {
+    path: "setting",
+    icon: <SettingsOutlinedIcon />,
+    name: Setting
+  }, {
+    path: "logout",
+    icon: <MailIcon />,
+    name: Logout
+  }]
 }
-]
 const linkStyle = {
   margin: "1rem",
   textDecoration: "none",
@@ -41,12 +47,13 @@ const linkStyle = {
 };
 
 export default function SideBarComponent() {
+  const [t, i18n] = useTranslation('common');
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
+  console.log(ListMenuItem(t))
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -70,7 +77,7 @@ export default function SideBarComponent() {
           </IconButton>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h6" noWrap component="div">
-              Dashboard
+              {t(`navbar.title`)}
             </Typography>
 
           </Box>
@@ -91,7 +98,7 @@ export default function SideBarComponent() {
         </DrawerHeader>
         <Divider />
         <List>
-          {ListMenuItem.map((item) => (
+          {ListMenuItem(t).map((item) => (
             <Link key={item.name} to={`../${item.path}`} style={linkStyle}>
               <ListItem disablePadding sx={{ display: "block" }}>
                 <ListItemButton

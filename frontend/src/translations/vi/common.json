@@ -1,0 +1,58 @@
+{
+    "navbar": {
+        "title": "Trang chủ",
+        "menu":{
+            "profile":"Hồ sơ",
+            "logout":"Đăng xuất"
+        }
+    },
+    "sidebar":{
+        "schedule":"Thời khóa biểu",
+        "setting":"Cài đặt",
+        "logout":"Đăng xuất"
+    },
+    "tabPanel":{
+        "schedule":"Thời khóa biểu",
+        "task":"Công việc"
+    },
+    "form":{
+        "schedule":{
+            "title":"Môn học",
+            "startDate":"Ngày bắt đầu",
+            "endDate":"Ngày kết thúc",
+            "timeStart":"Giờ bắt đầu",
+            "timeEnd":"Giờ kết thúc",
+            "chooseColor":"Chọn màu nền",
+            "notes":"Ghi chú",
+            "repeat":{
+                "name":"Lặp lại",
+                "title":"Lặp lại tùy chỉnh",
+                "repeatEvery":"Lặp lại mỗi",
+                "repeatOn":"Lặp lại vào",
+                "end":"Kết thúc",
+                "never":"Không bao giờ",
+                "onTheDay":"Vào ngày",
+                "cancel":"Hủy",
+                "submit":"Xong"
+            },
+            "create":"Tạo",
+            "delete":"Xóa",
+            "save":"Lưu"
+        },
+        "task":{
+            "title":"Tên công việc",
+            "startDate":"Ngày bắt đầu",
+            "endDate":"Ngày kết thúc",
+            "notes":"Ghi chú",
+            "create":"Tạo",
+            "delete":"Xóa",
+            "save":"Lưu"
+        },
+        "dialog":{
+            "title":"Xóa lịch",
+            "message":"Bạn có muốn xóa lịch không?",
+            "cancel":"Hủy",
+            "delete":"Xóa"
+        }
+    }
+}

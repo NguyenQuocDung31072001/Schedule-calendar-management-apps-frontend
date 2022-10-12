@@ -18,6 +18,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 // common component
 import { StyledDiv, classes } from "../common";
 import { EnumTypeAppointment } from "../../../interface/enum";
+import { useTranslation } from "react-i18next";
 
 export default function TaskFormAppointment({
   visible,
@@ -30,6 +31,7 @@ export default function TaskFormAppointment({
   onHide,
 }) {
   //state | data | hook get data
+  const [t] = useTranslation('common');
   const [appointmentChanges, setAppointmentChanges] =
     React.useState(appointmentData);
   const isNewAppointment = appointmentData.id === undefined;
@@ -41,7 +43,6 @@ export default function TaskFormAppointment({
   //funtion
 
   const commitAppointment = (type) => {
-    console.log(appointmentChanges);
     switch (type) {
       case EnumTypeAppointment.Add:
         commitChanges({ [type]: appointmentChanges });
@@ -93,20 +94,20 @@ export default function TaskFormAppointment({
       <div className={classes.content}>
         <div className={classes.wrapper}>
           <Create className={classes.icon} color="action" />
-          <TextField {...textEditorProps("title")} />
+          <TextField {...textEditorProps(t(`form.task.title`))} />
         </div>
         <div className={classes.wrapper}>
           <CalendarToday className={classes.icon} color="action" />
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <DateTimePicker
-              label="Start Date"
+              label={t(`form.task.startDate`)}
               renderInput={(props) => (
                 <TextField className={classes.picker} {...props} />
               )}
               {...startDatePickerProps}
             />
             <DateTimePicker
-              label="End Date"
+              label={t(`form.task.endDate`)}
               renderInput={(props) => (
                 <TextField className={classes.picker} {...props} />
               )}
@@ -116,7 +117,7 @@ export default function TaskFormAppointment({
         </div>
         <div className={classes.wrapper}>
           <Notes className={classes.icon} color="action" />
-          <TextField {...textEditorProps("notes")} multiline rows="6" />
+          <TextField {...textEditorProps(t(`form.task.notes`))} multiline rows="6" />
         </div>
       </div>
       <div className={classes.buttonGroup}>
@@ -130,7 +131,7 @@ export default function TaskFormAppointment({
               commitAppointment("deleted");
             }}
           >
-            Delete
+            {t(`form.task.delete`)}
           </Button>
         )}
         <Button
@@ -142,7 +143,7 @@ export default function TaskFormAppointment({
             applyChanges();
           }}
         >
-          {isNewAppointment ? "Create" : "Save"}
+          {isNewAppointment ? t(`form.task.create`) : t(`form.task.save`)}
         </Button>
       </div>
     </StyledDiv>

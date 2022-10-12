@@ -1,0 +1,58 @@
+{
+    "navbar": {
+        "title": "Dashboard",
+        "menu":{
+            "profile":"Profile",
+            "logout":"Logout"
+        }
+    },
+    "sidebar":{
+        "schedule":"Schedule",
+        "setting":"Setting",
+        "logout":"Logout"
+    },
+    "tabPanel":{
+        "schedule":"Schedule",
+        "task":"Task"
+    },
+    "form":{
+        "schedule":{
+            "title":"Subject",
+            "startDate":"Start Date",
+            "endDate":"End Date",
+            "timeStart":"Time Start",
+            "timeEnd":"Time End",
+            "chooseColor":"Choose Color",
+            "notes":"Notes",
+            "repeat":{
+                "name":"Repeat",
+                "title":"Customize Repeat",
+                "repeatEvery":"Repeat Every",
+                "repeatOn":"Repeat On",
+                "end":"End",
+                "never":"Never",
+                "onTheDay":"On The Day",
+                "cancel":"Cancel",
+                "submit":"Submit"
+            },
+            "delete":"Delete",
+            "save":"Save",
+            "create":"Create"
+        },
+        "task":{
+            "title":"Title",
+            "startDate":"Start Date",
+            "endDate":"End Date",
+            "notes":"Notes",
+            "delete":"Delete",
+            "save":"Save",
+            "create":"Create"
+        },
+        "dialog":{
+            "title":"Delete Appointment",
+            "message":"Are you sure you want to delete this appointment?",
+            "cancel":"Cancel",
+            "delete":"Delete"
+        }
+    }
+}

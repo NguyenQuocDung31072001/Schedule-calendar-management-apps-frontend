@@ -33,10 +33,11 @@ import { StyledDiv, classes } from "../common";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { getDetailTime } from "../../../util/getDetailTime";
 import { EnumColor, EnumTypeAppointment } from "../../../interface/enum";
-import { CirclePicker, SketchPicker } from "react-color";
+import { CirclePicker } from "react-color";
 import ScheduleRepeatModal from "../modal/ScheduleRepeatModal";
 import { Controller, useForm } from "react-hook-form";
 import { Resource } from "../../../fake_data/Resource";
+import { useTranslation } from "react-i18next";
 
 export default function ScheduleFormAppointment({
   visible,
@@ -51,6 +52,7 @@ export default function ScheduleFormAppointment({
   //state | data | hook get data
   const [dataForm, setDataForm] = React.useState();
   const [confirmVisible, setConfirmVisible] = React.useState(false);
+  const [t] = useTranslation('common');
 
   const isNewAppointment = appointmentData.id === undefined;
   const applyChanges = isNewAppointment
@@ -136,7 +138,7 @@ export default function ScheduleFormAppointment({
             render={({ field }) => (
               <TextField
                 variant="outlined"
-                label="Subject"
+                label={t(`form.schedule.title`)}
                 className={classes.textField}
                 {...field}
               />
@@ -151,7 +153,7 @@ export default function ScheduleFormAppointment({
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DatePicker
-                  label="Start Date"
+                  label={t(`form.schedule.startDate`)}
                   views={["year", "month", "day"]}
                   renderInput={(params) => <TextField {...params} />}
                   {...field}
@@ -165,7 +167,7 @@ export default function ScheduleFormAppointment({
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DatePicker
-                  label="End Date"
+                  label={t(`form.schedule.endDate`)}
                   views={["year", "month", "day"]}
                   renderInput={(params) => <TextField {...params} />}
                   {...field}
@@ -182,7 +184,7 @@ export default function ScheduleFormAppointment({
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <TimePicker
-                  label="Time start"
+                  label={t(`form.schedule.timeStart`)}
                   renderInput={(params) => <TextField {...params} />}
                   {...field}
                 />
@@ -195,7 +197,7 @@ export default function ScheduleFormAppointment({
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <TimePicker
-                  label="Time End"
+                  label={t(`form.schedule.timeEnd`)}
                   renderInput={(params) => <TextField {...params} />}
                   {...field}
                 />
@@ -222,7 +224,7 @@ export default function ScheduleFormAppointment({
             }}
           >
             <Typography sx={{ marginRight: "20px", height: "30px" }}>
-              Choose color
+              {t(`form.schedule.chooseColor`)}
             </Typography>
             <Box>
               <Controller
@@ -238,8 +240,6 @@ export default function ScheduleFormAppointment({
                       EnumColor.violet,
                       EnumColor.gray,
                     ]}
-                    // color={color}
-                    // onChange={(color) => setColor(color)}
                   />
                 )}
               />
@@ -250,7 +250,7 @@ export default function ScheduleFormAppointment({
           <Notes className={classes.icon} color="action" />
           <TextField
             variant="outlined"
-            label="Notes"
+            label={t(`form.schedule.notes`)}
             className={classes.textField}
             {...register("notes")}
             multiline
@@ -267,7 +267,7 @@ export default function ScheduleFormAppointment({
                 setConfirmVisible(true);
               }}
             >
-              Delete
+              {t(`form.schedule.delete`)}
             </Button>
           )}
           <Button
@@ -276,15 +276,15 @@ export default function ScheduleFormAppointment({
             className={classes.button}
             onClick={handleSubmit(onSubmitForm)}
           >
-            {isNewAppointment ? "Create" : "Save"}
+            {isNewAppointment ? t(`form.schedule.create`) : t(`form.schedule.save`)}
           </Button>
         </div>
 
         <Dialog open={confirmVisible} onClose={() => setConfirmVisible(false)}>
-          <DialogTitle>Delete Appointment</DialogTitle>
+          <DialogTitle>{t(`form.dialog.title`)}</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete this appointment?
+              {t(`form.dialog.message`)}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -293,7 +293,7 @@ export default function ScheduleFormAppointment({
               color="primary"
               variant="outlined"
             >
-              Cancel
+              {t(`form.dialog.cancel`)}
             </Button>
             <Button
               onClick={() => {
@@ -303,7 +303,7 @@ export default function ScheduleFormAppointment({
               color="secondary"
               variant="outlined"
             >
-              Delete
+              {t(`form.dialog.delete`)}
             </Button>
           </DialogActions>
         </Dialog>

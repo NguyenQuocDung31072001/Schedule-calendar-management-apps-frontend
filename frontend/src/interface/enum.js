@@ -73,9 +73,14 @@ export const TypeWeekdaysOption = [
   },
 ]
 
-export const EnumColor={
-  red:"#e74c3c",
-  orange:"#f39c12",
-  violet:"#8e44ad",
-  gray:"#34495e"
+export const EnumColor = {
+  red: "#e74c3c",
+  orange: "#f39c12",
+  violet: "#8e44ad",
+  gray: "#34495e"
+}
+
+export const language = {
+  en: "English",
+  vi: "Viet Nam"
 }

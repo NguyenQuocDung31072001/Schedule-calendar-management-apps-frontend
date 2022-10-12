@@ -2,6 +2,7 @@ import { Box, Button, Chip, FormControlLabel, Grid, MenuItem, Modal, Radio, Radi
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import React from 'react'
+import { useTranslation } from 'react-i18next';
 import { EnumTypeTime, TypeTimeOptions, TypeWeekdaysOption } from '../../../interface/enum';
 
 const style = {
@@ -15,6 +16,7 @@ const style = {
 };
 
 export default function ScheduleRepeatModal() {
+  const [t] = useTranslation('common');
   const [open, setOpen] = React.useState(false);
   const [typeTime, setTypeTime] = React.useState(EnumTypeTime.day)
   const [weekdays, setWeekdays] = React.useState([])
@@ -22,7 +24,7 @@ export default function ScheduleRepeatModal() {
   const handleClose = () => setOpen(false);
   return (
     <div>
-      <Button onClick={handleOpen} sx={{ margin: "12px" }}>Repeat</Button>
+      <Button onClick={handleOpen} sx={{ margin: "12px" }}>{t(`form.schedule.repeat.name`)}</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -31,7 +33,7 @@ export default function ScheduleRepeatModal() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight: "bold" }}>
-            Lặp lại tùy chỉnh
+            {t(`form.schedule.repeat.title`)}
           </Typography>
 
           <Box id="modal-modal-description" sx={{ mt: 2 }}>
@@ -39,7 +41,7 @@ export default function ScheduleRepeatModal() {
               sx={{ display: "flex", justifyContent: "start", alignItems: "center", marginBottom: "10px" }}>
               <Grid container>
                 <Grid item xs={4}>
-                  <Typography sx={{ fontWeight: "bold" }}>Lăp lại mỗi</Typography>
+                  <Typography sx={{ fontWeight: "bold" }}>{t(`form.schedule.repeat.repeatEvery`)}</Typography>
                 </Grid>
                 <Grid item xs={8}>
                   <TextField size="small" sx={{ width: "60px", marginX: "10px" }} />
@@ -61,7 +63,7 @@ export default function ScheduleRepeatModal() {
             <Box sx={{ display: "flex", alignItem: "center", marginBottom: "10px" }}>
               <Grid container>
                 <Grid item xs={4}>
-                  <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>Lăp lại vào</Typography>
+                  <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>{t(`form.schedule.repeat.repeatOn`)}</Typography>
                 </Grid>
                 <Grid item xs={8}>
                   <Select
@@ -90,17 +92,17 @@ export default function ScheduleRepeatModal() {
               </Grid>
             </Box>
             <Box >
-              <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>Kết thúc</Typography>
+              <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>{t(`form.schedule.repeat.end`)}</Typography>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="female"
                 name="radio-buttons-group"
               >
-                <FormControlLabel value="nerver" control={<Radio />} label="Không bao giờ" />
+                <FormControlLabel value="nerver" control={<Radio />} label={t(`form.schedule.repeat.never`)} />
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <FormControlLabel value="male" control={<Radio />} label="Vào ngày" />
+                      <FormControlLabel value="male" control={<Radio />} label={t(`form.schedule.repeat.onTheDay`)} />
                     </Grid>
                     <Grid item xs={6}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -110,7 +112,6 @@ export default function ScheduleRepeatModal() {
                           value={new Date()}
                           onChange={(e) => {
                             console.log(e);
-                            //  setStartDate(e);
                           }}
                         />
 
@@ -122,10 +123,10 @@ export default function ScheduleRepeatModal() {
             </Box>
             <Box sx={{ display: "flex", justifyContent: "end", alignItem: "center", marginTop: "10px" }}>
               <Button variant=''>
-                Hủy
+                {t(`form.schedule.repeat.cancel`)}
               </Button>
               <Button >
-                Xong
+                {t(`form.schedule.repeat.submit`)}
               </Button>
             </Box>
           </Box>
