@@ -7,6 +7,11 @@ import {
   Box,
   Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   TextField,
   Typography,
@@ -27,10 +32,11 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { StyledDiv, classes } from "../common";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { getDetailTime } from "../../../util/getDetailTime";
-import { EnumTypeAppointment } from "../../../interface/enum";
+import { EnumColor, EnumTypeAppointment } from "../../../interface/enum";
 import { CirclePicker, SketchPicker } from "react-color";
 import ScheduleRepeatModal from "../modal/ScheduleRepeatModal";
 import { Controller, useForm } from "react-hook-form";
+import { Resource } from "../../../fake_data/Resource";
 
 export default function ScheduleFormAppointment({
   visible,
@@ -43,18 +49,17 @@ export default function ScheduleFormAppointment({
   onHide,
 }) {
   //state | data | hook get data
-  const [color, setColor] = React.useState("");
   const [dataForm, setDataForm] = React.useState();
+  const [confirmVisible, setConfirmVisible] = React.useState(false);
+
   const isNewAppointment = appointmentData.id === undefined;
   const applyChanges = isNewAppointment
     ? () => commitAppointment(EnumTypeAppointment.Add)
     : () => commitAppointment(EnumTypeAppointment.Change);
 
-  console.log({ appointmentData })
   const { register, control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
-        console.log("ok")
         return {
           subject: appointmentData.title,
           startDate: appointmentData.startDate,
@@ -62,6 +67,7 @@ export default function ScheduleFormAppointment({
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
           notes: appointmentData.notes,
+          color: appointmentData.color,
         };
       } else {
         return {
@@ -71,6 +77,7 @@ export default function ScheduleFormAppointment({
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
           notes: "",
+          color: [],
         };
       }
     }, [appointmentData]),
@@ -82,7 +89,6 @@ export default function ScheduleFormAppointment({
 
   //funtion
   const onSubmitForm = (data) => {
-    // console.log(data);
     setDataForm(data);
     visibleChange();
   };
@@ -92,6 +98,9 @@ export default function ScheduleFormAppointment({
       const parseEndDate = getDetailTime(dataForm.endDate);
       const parseStartTime = getDetailTime(dataForm.startTime);
       const parseEndTime = getDetailTime(dataForm.endTime);
+      const indexColor = Resource[0].instances.findIndex(
+        (item) => item.color === dataForm?.color?.hex
+      );
       commitChanges({
         id: appointmentData?.id,
         type: type,
@@ -111,6 +120,7 @@ export default function ScheduleFormAppointment({
           parseEndTime.minutes
         ),
         notes: dataForm.notes,
+        color: indexColor >= 0 ? [indexColor + 1] : appointmentData.color,
       });
     }
   };
@@ -215,30 +225,23 @@ export default function ScheduleFormAppointment({
               Choose color
             </Typography>
             <Box>
-              <CirclePicker
-                circleSize={20}
-                colors={[
-                  "#f44336",
-                  "#e91e63",
-                  "#9c27b0",
-                  "#673ab7",
-                  "#3f51b5",
-                  "#2196f3",
-                  "#03a9f4",
-                  "#00bcd4",
-                  "#009688",
-                  "#4caf50",
-                  "#8bc34a",
-                  "#cddc39",
-                  "#ffeb3b",
-                  "#ffc107",
-                  "#ff9800",
-                  "#ff5722",
-                  "#795548",
-                  "#607d8b",
-                ]}
-                color={color}
-                onChange={(color) => setColor(color)}
+              <Controller
+                name="color"
+                control={control}
+                render={({ field }) => (
+                  <CirclePicker
+                    {...field}
+                    circleSize={20}
+                    colors={[
+                      EnumColor.red,
+                      EnumColor.orange,
+                      EnumColor.violet,
+                      EnumColor.gray,
+                    ]}
+                    // color={color}
+                    // onChange={(color) => setColor(color)}
+                  />
+                )}
               />
             </Box>
           </div>
@@ -261,8 +264,7 @@ export default function ScheduleFormAppointment({
               color="secondary"
               className={classes.button}
               onClick={() => {
-                visibleChange();
-                commitAppointment("deleted");
+                setConfirmVisible(true);
               }}
             >
               Delete
@@ -277,6 +279,34 @@ export default function ScheduleFormAppointment({
             {isNewAppointment ? "Create" : "Save"}
           </Button>
         </div>
+
+        <Dialog open={confirmVisible} onClose={() => setConfirmVisible(false)}>
+          <DialogTitle>Delete Appointment</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this appointment?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setConfirmVisible(false)}
+              color="primary"
+              variant="outlined"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setConfirmVisible(false);
+                visibleChange();
+              }}
+              color="secondary"
+              variant="outlined"
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </StyledDiv>
   );

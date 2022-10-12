@@ -72,3 +72,10 @@ export const TypeWeekdaysOption = [
     label: EnumWeekdays.Sunday
   },
 ]
+
+export const EnumColor={
+  red:"#e74c3c",
+  orange:"#f39c12",
+  violet:"#8e44ad",
+  gray:"#34495e"
+}

@@ -50,15 +50,12 @@ export default function Schedule() {
   const [dataRender, setDateRender] = React.useState([
     {
       title: "Môn toán 1",
-      startDate: new Date(2022, 9, 7, 12, 35),
-      endDate: new Date(2022, 9, 7, 15, 0),
-      // type: EnumTypeCalendar.Schedule,
+      startDate: new Date(2022, 9, 12, 12, 35),
+      endDate: new Date(2022, 9, 12, 15, 0),
       id: 0,
-      // room: [3],
-      // subject: [1],
+      color: [1],
     },
   ]);
-  const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [deletedAppointmentId, setDeletedAppointmentId] = React.useState();
   const [editingAppointment, setEditingAppointment] = React.useState();
@@ -75,7 +72,6 @@ export default function Schedule() {
     setEditFormVisible(!editFormVisible);
   };
   const commitChanges = (value) => {
-    console.log("commit change");
     if (value.type === EnumTypeAppointment.Add) {
       setDateRender((prev) => [
         ...prev,
@@ -88,37 +84,34 @@ export default function Schedule() {
           startDate: value.startDate,
           endDate: value.endDate,
           notes: value.notes,
-          room: value.room,
-          isRepeat: value.isRepeat,
+          color: value.color,
         },
       ]);
     } else if (value.type === EnumTypeAppointment.Change) {
-      dataRender.forEach((data) => {
+      let _dataRender = dataRender.map((data) => {
         if (data.id === value.id) {
           data.title = value.subject;
           data.startDate = value.startDate;
           data.endDate = value.endDate;
           data.notes = value.notes;
-          data.room = value.room;
-          data.isRepeat = value.isRepeat;
+          data.color = value.color;
         }
+        return data;
       });
-      setDateRender(dataRender);
+      setDateRender(_dataRender);
     } else if (value.changed) {
       let _dataRender = dataRender.map((data) => {
         if (data.id === editingAppointment.id) {
-          data.startDate = value.changed[data.id].startDate
-          data.endDate = value.changed[data.id].endDate
+          data.startDate = value.changed[data.id].startDate;
+          data.endDate = value.changed[data.id].endDate;
         }
-        return data
-      })
-      setDateRender(_dataRender)
-    }
-    else {
+        return data;
+      });
+      setDateRender(_dataRender);
+    } else {
       setDateRender(dataRender.filter((data) => data.id !== value.deleted));
     }
   };
-  console.log({ dataRender })
   const appointmentFormSchedule = connectProps(TabPanelForm, () => {
     let currentAppointment =
       dataRender.filter(
@@ -143,23 +136,20 @@ export default function Schedule() {
   });
   return (
     <Paper>
-      <Scheduler data={dataRender} height={660}>
+      <Scheduler data={dataRender} height={1000}>
         <ViewState
           currentDate={new Date()}
           onCurrentDateChange={(e) => console.log(e)}
         />
         <EditingState
           onCommitChanges={(e) => {
-            console.log("commit change ", e);
             commitChanges(e);
           }}
           onEditingAppointmentChange={(editingAppointment) => {
-            console.log("editting ", editingAppointment);
             setEditingAppointment(editingAppointment);
           }}
           onAddedAppointmentChange={(newAppoiment) => {
             changeFormVisible();
-            console.log("add ", newAppoiment);
             setAddedAppointment(newAppoiment);
             setEditingAppointment();
           }}
@@ -180,33 +170,8 @@ export default function Schedule() {
           onVisibilityChange={() => setEditFormVisible(!editFormVisible)}
         />
         <DragDropProvider allowDrag={() => true} />
-        <Resources data={Resource} mainResourceName="subject" />
+        <Resources data={Resource} mainResourceName="color" />
       </Scheduler>
-
-      {/* <Dialog open={confirmVisible} onClose={cancelDelete}>
-        <DialogTitle>Delete Appointment</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this appointment?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={toggleConfirmationVisible}
-            color="primary"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={commitDeletedAppointment}
-            color="secondary"
-            variant="outlined"
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog> */}
 
       <StyledFab
         color="secondary"
