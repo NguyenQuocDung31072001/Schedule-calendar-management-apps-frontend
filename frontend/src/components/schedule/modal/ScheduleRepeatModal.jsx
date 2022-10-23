@@ -20,6 +20,7 @@ export default function ScheduleRepeatModal() {
   const [open, setOpen] = React.useState(false);
   const [typeTime, setTypeTime] = React.useState(EnumTypeTime.day)
   const [weekdays, setWeekdays] = React.useState([])
+  const [isNever, setIsNever] = React.useState(true)
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   return (
@@ -41,13 +42,24 @@ export default function ScheduleRepeatModal() {
               sx={{ display: "flex", justifyContent: "start", alignItems: "center", marginBottom: "10px" }}>
               <Grid container>
                 <Grid item xs={4}>
-                  <Typography sx={{ fontWeight: "bold" }}>{t(`form.schedule.repeat.repeatEvery`)}</Typography>
+                  <Typography sx={{ fontWeight: "bold" }}>
+                    {t(`form.schedule.repeat.repeatEvery`)}
+                  </Typography>
                 </Grid>
                 <Grid item xs={8}>
-                  <TextField size="small" sx={{ width: "60px", marginX: "10px" }} />
+                  <TextField
+                    size="small"
+                    sx={{ width: "60px", marginX: "10px" }}
+                    type="number"
+                    // onChange={(e) => console.log(e.target.value)}
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, max: 10 }}
+                  />
                   <Select
                     value={typeTime}
-                    onChange={(e) => setTypeTime(e.target.value)}
+                    onChange={(e) => {
+                      // console.log(e.target.value)
+                      setTypeTime(e.target.value)
+                    }}
                     displayEmpty
                     inputProps={{ 'aria-label': 'Without label' }}
                     size="small"
@@ -60,53 +72,66 @@ export default function ScheduleRepeatModal() {
                 </Grid>
               </Grid>
             </Box>
-            <Box sx={{ display: "flex", alignItem: "center", marginBottom: "10px" }}>
-              <Grid container>
-                <Grid item xs={4}>
-                  <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>{t(`form.schedule.repeat.repeatOn`)}</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Select
-                    value={weekdays}
-                    onChange={(e) => setWeekdays(e.target.value)}
-                    displayEmpty
-                    multiple
-                    inputProps={{ 'aria-label': 'Without label' }}
-                    size="small"
-                    sx={{ minWidth: "100px" }}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip key={value} label={value} />
-                        ))}
-                      </Box>
-                    )}
-                  >
-                    {TypeWeekdaysOption.map((day) => {
+            {typeTime !== EnumTypeTime.day &&
+              <Box sx={{ display: "flex", alignItem: "center", marginBottom: "10px" }}>
+                <Grid container>
+                  <Grid item xs={4}>
+                    <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>{t(`form.schedule.repeat.repeatOn`)}</Typography>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Select
+                      value={weekdays}
+                      onChange={(e) => setWeekdays(e.target.value)}
+                      displayEmpty
+                      multiple
+                      inputProps={{ 'aria-label': 'Without label' }}
+                      size="small"
+                      sx={{ minWidth: "100px" }}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      {TypeWeekdaysOption.map((day) => {
 
-                      return <MenuItem key={day.value} value={day.value}>{day.label}</MenuItem>
-                    })}
-                  </Select>
+                        return <MenuItem key={day.value} value={day.value}>{day.label}</MenuItem>
+                      })}
+                    </Select>
 
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Box>
+              </Box>
+            }
             <Box >
               <Typography sx={{ fontWeight: "bold", marginRight: "10px" }}>{t(`form.schedule.repeat.end`)}</Typography>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
+                defaultValue="never"
                 name="radio-buttons-group"
+                onChange={(e) => {
+                  setIsNever(e.target.value === "never" ? true : false)
+                }}
               >
-                <FormControlLabel value="nerver" control={<Radio />} label={t(`form.schedule.repeat.never`)} />
+                <FormControlLabel
+                  value="never"
+                  control={<Radio />}
+                  label={t(`form.schedule.repeat.never`)}
+                />
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <FormControlLabel value="male" control={<Radio />} label={t(`form.schedule.repeat.onTheDay`)} />
+                      <FormControlLabel
+                        value="onDate"
+                        control={<Radio />}
+                        label={t(`form.schedule.repeat.onTheDay`)} />
                     </Grid>
                     <Grid item xs={6}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DatePicker
+                          disabled={isNever}
                           views={["year", "month", "day"]}
                           renderInput={(params) => <TextField {...params} />}
                           value={new Date()}

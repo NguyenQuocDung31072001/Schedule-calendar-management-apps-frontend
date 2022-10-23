@@ -7,7 +7,7 @@ export default function LoginPages() {
   const [password, setPassword] = React.useState("")
   const navigate = useNavigate()
   return (
-    <Box sx={{ width: "100vw", height: "98vh", backgroundColor: "#1e90ff" }}>
+    <Box sx={{ position: 'fixed', width: '100%', height: '100%', backgroundColor: "#1e90ff" }}>
       <Box sx={{
         position: "fixed", left: "50%", top: "50%", transform: 'translate(-50%,-50%)',
         backgroundColor: "white", padding: "20px 40px", borderRadius: "10px"

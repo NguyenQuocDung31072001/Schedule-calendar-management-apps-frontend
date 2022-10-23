@@ -52,6 +52,7 @@ export default function ScheduleFormAppointment({
   //state | data | hook get data
   const [dataForm, setDataForm] = React.useState();
   const [confirmVisible, setConfirmVisible] = React.useState(false);
+  const [color, setColor] = React.useState()
   const [t] = useTranslation('common');
 
   const isNewAppointment = appointmentData.id === undefined;
@@ -234,6 +235,8 @@ export default function ScheduleFormAppointment({
                   <CirclePicker
                     {...field}
                     circleSize={20}
+                    // color={color}
+                    // onChange={e => setColor(e.hex)}
                     colors={[
                       EnumColor.red,
                       EnumColor.orange,
