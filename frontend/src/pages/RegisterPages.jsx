@@ -1,10 +1,12 @@
-import { Box, Button, TextField, Typography } from '@mui/material'
+import { Box, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
-import { registerApi } from "../service/auth_api"
+import { Link, useNavigate } from 'react-router-dom'
+import { registerQuery } from "../service/auth_api"
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import { useMutation } from '@tanstack/react-query'
+import { LoadingButton } from '@mui/lab'
 
 let schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -12,6 +14,7 @@ let schema = yup.object().shape({
 });
 
 export default function RegisterPages() {
+  const navigate = useNavigate();
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       email: "",
@@ -19,15 +22,24 @@ export default function RegisterPages() {
     },
     resolver: yupResolver(schema)
   })
-  // const methods = useForm();
 
-  const navigate = useNavigate();
+  const { data, isLoading, mutate: registerMutation } = useMutation(registerQuery, {
+    onSuccess: () => {
+      console.log("login success")
+    },
+    onError: () => {
+      console.log("login error")
+    }
+  })
+  if (data) {
+    navigate("/login")
+  }
   //function
+
   const registerSubmit = (formData) => {
-    registerApi({
+    registerMutation({
       email: formData.email,
       password: formData.password,
-      navigate
     })
   }
 
@@ -76,21 +88,23 @@ export default function RegisterPages() {
 
         </Box>
         <Box sx={{ width: "100%", padding: "10px 0px" }}>
-          <Button
-            sx={{ width: "100%" }} variant="contained"
-            onClick={handleSubmit(registerSubmit)}>
+          <LoadingButton
+            sx={{ width: "100%" }}
+            loadingPosition="start"
+            variant="contained"
+            onClick={handleSubmit(registerSubmit)}
+            loading={isLoading}
+          >
             Register
-          </Button>
+          </LoadingButton>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "end" }}
         >
-          <Typography
-            onClick={() => {
-              navigate('/login')
-            }}
-          >
+          <Link
+            to="/login"
+            style={{ textDecoration: "none", fontFamily: "Arial, Helvetica, sans-serif", color: "blue" }}>
             Redirect to Login
-          </Typography>
+          </Link>
         </Box>
         {/* </FormProvider> */}
       </Box>

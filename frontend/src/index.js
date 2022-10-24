@@ -11,6 +11,7 @@ import i18next from 'i18next';
 
 import common_en from "./translations/en/common.json"
 import common_vi from "./translations/vi/common.json"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 i18next.init({
   interpolation: { escapeValue: false },
@@ -24,14 +25,15 @@ i18next.init({
     },
   },
 });
-
+const queryClient = new QueryClient()
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <I18nextProvider i18n={i18next}>
-        <App />
-
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
       </I18nextProvider>
     </PersistGate>
   </Provider>

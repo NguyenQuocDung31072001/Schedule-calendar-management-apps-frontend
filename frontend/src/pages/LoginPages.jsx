@@ -1,11 +1,12 @@
-import { Box, Button, Checkbox, TextField, Typography } from '@mui/material'
+import { Box, Checkbox, TextField, Typography } from '@mui/material'
+import { LoadingButton } from "@mui/lab"
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import { loginApi } from '../service/auth_api';
-
+import { loginQuery } from '../service/auth_api';
+import { useMutation } from '@tanstack/react-query';
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -20,12 +21,23 @@ export default function LoginPages() {
     resolver: yupResolver(schema)
   })
   const navigate = useNavigate()
+
+  const { data, isLoading, mutate: loginMutation } = useMutation(loginQuery, {
+    onSuccess: () => {
+      console.log("login success")
+    },
+    onError: () => {
+      console.log("login error")
+    }
+  })
+  if (data) {
+    navigate("/schedule")
+  }
   //function
   const loginSubmit = (formData) => {
-    loginApi({
+    loginMutation({
       email: formData.email,
-      password: formData.password,
-      navigate
+      password: formData.password
     })
   }
 
@@ -78,16 +90,19 @@ export default function LoginPages() {
           <Typography>Remember me</Typography>
         </Box>
         <Box sx={{ width: "100%", padding: "10px 0px" }}>
-          <Button
+          <LoadingButton
             sx={{ width: "100%" }} variant="contained"
             onClick={handleSubmit(loginSubmit)}
+            loading={isLoading}
           >Submit
-          </Button>
+          </LoadingButton>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography onClick={() => {
-            navigate('/register')
-          }}>Register</Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-between", textDecoration: "none" }}>
+          <Link
+            to="/register"
+            style={{ textDecoration: "none", fontFamily: "Arial, Helvetica, sans-serif", color: "blue" }}>
+            Register
+          </Link>
           <Typography>Forgot password</Typography>
         </Box>
       </Box>
