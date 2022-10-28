@@ -5,55 +5,82 @@ import { Link, Outlet } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 
 //material component
-import { Box, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
+import {
+  Box,
+  Toolbar,
+  List,
+  CssBaseline,
+  Typography,
+  Divider,
+  IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 
 //material icon
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
 // style component
-import { AppBar, Drawer, DrawerHeader } from "./common"
+import { AppBar, Drawer, DrawerHeader } from "./common";
 import NavBarRight from "./NavBarRight";
 import { useTranslation } from "react-i18next";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 const ListMenuItem = (t) => {
-  const Schedule = t(`sidebar.schedule`)
-  const Setting = t(`sidebar.setting`)
-  const Logout = t(`sidebar.logout`)
+  const Schedule = t(`sidebar.schedule`);
+  const Setting = t(`sidebar.setting`);
+  const Logout = t(`sidebar.logout`);
 
-  return [{
-    path: "schedule",
-    icon: <InboxIcon />,
-    name: Schedule
-  },
-  {
-    path: "setting",
-    icon: <SettingsOutlinedIcon />,
-    name: Setting
-  }, {
-    path: "logout",
-    icon: <MailIcon />,
-    name: Logout
-  }]
-}
+  return [
+    {
+      path: "schedule",
+      icon: <CalendarMonthIcon />,
+      name: Schedule,
+    },
+    {
+      path: "manage_schedule",
+      icon: <AssignmentIcon />,
+      name: "Manage Schedule",
+    },
+    {
+      path: "manage_event",
+      icon: <EventAvailableIcon />,
+      name: "Manage Event",
+    },
+    {
+      path: "setting",
+      icon: <SettingsOutlinedIcon />,
+      name: Setting,
+    },
+    {
+      path: "logout",
+      icon: <MailIcon />,
+      name: Logout,
+    },
+  ];
+};
 const linkStyle = {
   margin: "1rem",
   textDecoration: "none",
-  color: '#7f8c8d'
+  color: "#7f8c8d",
 };
 
 export default function SideBarComponent() {
-  const [t, i18n] = useTranslation('common');
+  const [t, i18n] = useTranslation("common");
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  console.log(ListMenuItem(t))
+  console.log(ListMenuItem(t));
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -79,10 +106,8 @@ export default function SideBarComponent() {
             <Typography variant="h6" noWrap component="div">
               {t(`navbar.title`)}
             </Typography>
-
           </Box>
-          <Box sx={{ flexGrow: 3 }}>
-          </Box>
+          <Box sx={{ flexGrow: 3 }}></Box>
           <NavBarRight />
         </Toolbar>
       </AppBar>
@@ -117,7 +142,10 @@ export default function SideBarComponent() {
                   >
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText primary={item.name} sx={{ opacity: open ? 1 : 0 }} />
+                  <ListItemText
+                    primary={item.name}
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
                 </ListItemButton>
               </ListItem>
             </Link>

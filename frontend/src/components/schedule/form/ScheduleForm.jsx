@@ -6,13 +6,18 @@ import React from "react";
 import {
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -35,7 +40,7 @@ import { getDetailTime } from "../../../util/getDetailTime";
 import { EnumColor, EnumTypeAppointment } from "../../../interface/enum";
 import { CirclePicker } from "react-color";
 import ScheduleRepeatModal from "../modal/ScheduleRepeatModal";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { Resource } from "../../../fake_data/Resource";
 import { useTranslation } from "react-i18next";
 
@@ -52,23 +57,26 @@ export default function ScheduleFormAppointment({
   //state | data | hook get data
   const [dataForm, setDataForm] = React.useState();
   const [confirmVisible, setConfirmVisible] = React.useState(false);
-  const [color, setColor] = React.useState()
-  const [t] = useTranslation('common');
+  const [selectTypeEndSchedule, setSelectTypeEndSchedule] =
+    React.useState("endDate");
+  const [t] = useTranslation("common");
 
   const isNewAppointment = appointmentData.id === undefined;
   const applyChanges = isNewAppointment
     ? () => commitAppointment(EnumTypeAppointment.Add)
     : () => commitAppointment(EnumTypeAppointment.Change);
 
-  const { register, control, handleSubmit } = useForm({
+  const { control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
         return {
           subject: appointmentData.title,
           startDate: appointmentData.startDate,
-          endDate: appointmentData.endDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
+          endDate: appointmentData.endDate,
+          numOfLessonsPerDay: "",
+          notification: "",
           notes: appointmentData.notes,
           color: appointmentData.color,
         };
@@ -76,25 +84,38 @@ export default function ScheduleFormAppointment({
         return {
           subject: "",
           startDate: appointmentData.startDate,
-          endDate: appointmentData.endDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
+          endDate: appointmentData.endDate,
+          notification: "",
+          numOfLessonsPerDay: "",
           notes: "",
           color: [],
         };
       }
     }, [appointmentData]),
   });
+  const colorWatch = useWatch({
+    control: control,
+    name: "color",
+  });
   //useEffect | useCallback
   React.useEffect(() => {
     applyChanges();
+    /* eslint-disable-next-line react/no-multi-comp */
   }, [dataForm]);
 
   //funtion
   const onSubmitForm = (data) => {
+    if (selectTypeEndSchedule === "endDate") {
+      data.numOfLessonsPerDay = "";
+    } else {
+      data.endDate = "";
+    }
     setDataForm(data);
     visibleChange();
   };
+  console.log({ dataForm });
   const commitAppointment = (type) => {
     if (dataForm) {
       const parseStartDate = getDetailTime(dataForm.startDate);
@@ -146,37 +167,25 @@ export default function ScheduleFormAppointment({
             )}
           />
         </div>
-        <div className={classes.wrapper}>
+        <Box sx={{ display: "flex", alignItem: "center" }}>
           <CalendarToday className={classes.icon} color="action" />
-          <Controller
-            name="startDate"
-            control={control}
-            render={({ field }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  label={t(`form.schedule.startDate`)}
-                  views={["year", "month", "day"]}
-                  renderInput={(params) => <TextField {...params} />}
-                  {...field}
-                />
-              </LocalizationProvider>
-            )}
-          />
-          <Controller
-            name="endDate"
-            control={control}
-            render={({ field }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  label={t(`form.schedule.endDate`)}
-                  views={["year", "month", "day"]}
-                  renderInput={(params) => <TextField {...params} />}
-                  {...field}
-                />
-              </LocalizationProvider>
-            )}
-          />
-        </div>
+          <div className={classes.wrapper}>
+            <Controller
+              name="startDate"
+              control={control}
+              render={({ field }) => (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DatePicker
+                    label={t(`form.schedule.startDate`)}
+                    views={["year", "month", "day"]}
+                    renderInput={(params) => <TextField {...params} />}
+                    {...field}
+                  />
+                </LocalizationProvider>
+              )}
+            />
+          </div>
+        </Box>
         <div className={classes.wrapper}>
           <AlarmIcon className={classes.icon} color="action" />
           <Controller
@@ -206,9 +215,108 @@ export default function ScheduleFormAppointment({
             )}
           />
         </div>
-        <Box sx={{ display: "flex", alignItem: "center" }}>
+        {/* <Box sx={{ display: "flex", alignItem: "center" }}>
           <AlarmIcon className={classes.icon} color="action" />
           <ScheduleRepeatModal />
+        </Box> */}
+        <Box sx={{ display: "flex", alignItem: "center" }}>
+          <AlarmIcon className={classes.icon} color="action" />
+          <div className={classes.wrapper}>
+            <FormControl>
+              {/* <FormLabel id="choose-end-schedule">
+                Choose end schedule
+              </FormLabel> */}
+              <RadioGroup
+                row
+                aria-labelledby="choose-end-schedule"
+                name="row-radio-buttons-group"
+                onChange={(e) => setSelectTypeEndSchedule(e.target.value)}
+                defaultValue="endDate"
+              >
+                <FormControlLabel
+                  value="endDate"
+                  control={<Radio />}
+                  label={
+                    <>
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        render={({ field }) => (
+                          <LocalizationProvider dateAdapter={AdapterMoment}>
+                            <DatePicker
+                              disabled={selectTypeEndSchedule !== "endDate"}
+                              label={t(`form.schedule.endDate`)}
+                              views={["year", "month", "day"]}
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                              {...field}
+                            />
+                          </LocalizationProvider>
+                        )}
+                      />
+                    </>
+                  }
+                />
+                <FormControlLabel
+                  value="numOfLessonsPerDay"
+                  control={<Radio />}
+                  label={
+                    <>
+                      <Controller
+                        name="numOfLessonsPerDay"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            disabled={
+                              selectTypeEndSchedule !== "numOfLessonsPerDay"
+                            }
+                            label="numLessons"
+                            size="small"
+                            type="number"
+                            inputProps={{
+                              inputMode: "numeric",
+                              pattern: "[0-9]*",
+                              min: 0,
+                              max: 10,
+                            }}
+                          />
+                        )}
+                      />
+                    </>
+                  }
+                />
+              </RadioGroup>
+            </FormControl>
+          </div>
+        </Box>
+        <Box sx={{ display: "flex", alignItem: "center" }}>
+          <AlarmIcon className={classes.icon} color="action" />
+          <div className={classes.wrapper}>
+            <Controller
+              name="notification"
+              control={control}
+              render={({ field }) => (
+                <FormControl sx={{ m: 1, minWidth: 80 }}>
+                  <InputLabel id="notification-select">Notification</InputLabel>
+                  <Select
+                    {...field}
+                    labelId="notification-select"
+                    // value={5}
+                    autoWidth
+                    label="Notification"
+                  >
+                    <MenuItem value={5}>5 minutes</MenuItem>
+                    <MenuItem value={10}>10 minutes</MenuItem>
+                    <MenuItem value={15}>15 minutes</MenuItem>
+                    <MenuItem value={20}>20 minutes</MenuItem>
+                    <MenuItem value={30}>30 minutes</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </div>
         </Box>
         <Box
           style={{
@@ -235,8 +343,7 @@ export default function ScheduleFormAppointment({
                   <CirclePicker
                     {...field}
                     circleSize={20}
-                    // color={color}
-                    // onChange={e => setColor(e.hex)}
+                    color={colorWatch.hex}
                     colors={[
                       EnumColor.red,
                       EnumColor.orange,
@@ -251,13 +358,19 @@ export default function ScheduleFormAppointment({
         </Box>
         <div className={classes.wrapper}>
           <Notes className={classes.icon} color="action" />
-          <TextField
-            variant="outlined"
-            label={t(`form.schedule.notes`)}
-            className={classes.textField}
-            {...register("notes")}
-            multiline
-            rows="6"
+          <Controller
+            name="notes"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                variant="outlined"
+                label={t(`form.schedule.notes`)}
+                className={classes.textField}
+                multiline
+                rows="6"
+              />
+            )}
           />
         </div>
         <div className={classes.buttonGroup}>
@@ -279,16 +392,16 @@ export default function ScheduleFormAppointment({
             className={classes.button}
             onClick={handleSubmit(onSubmitForm)}
           >
-            {isNewAppointment ? t(`form.schedule.create`) : t(`form.schedule.save`)}
+            {isNewAppointment
+              ? t(`form.schedule.create`)
+              : t(`form.schedule.save`)}
           </Button>
         </div>
 
         <Dialog open={confirmVisible} onClose={() => setConfirmVisible(false)}>
           <DialogTitle>{t(`form.dialog.title`)}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              {t(`form.dialog.message`)}
-            </DialogContentText>
+            <DialogContentText>{t(`form.dialog.message`)}</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button

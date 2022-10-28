@@ -19,6 +19,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { StyledDiv, classes } from "../common";
 import { EnumTypeAppointment } from "../../../interface/enum";
 import { useTranslation } from "react-i18next";
+import { Controller, useForm } from "react-hook-form";
 
 export default function TaskFormAppointment({
   visible,
@@ -31,11 +32,14 @@ export default function TaskFormAppointment({
   onHide,
 }) {
   //state | data | hook get data
-  const [t] = useTranslation('common');
+  const [t] = useTranslation("common");
   const [appointmentChanges, setAppointmentChanges] =
     React.useState(appointmentData);
   const isNewAppointment = appointmentData.id === undefined;
 
+  const { control, handleSubmit } = useForm({
+    defaultValues: {},
+  });
   const applyChanges = isNewAppointment
     ? () => commitAppointment(EnumTypeAppointment.Add)
     : () => commitAppointment(EnumTypeAppointment.Change);
@@ -88,7 +92,6 @@ export default function TaskFormAppointment({
   const startDatePickerProps = pickerEditorProps("startDate");
   const endDatePickerProps = pickerEditorProps("endDate");
 
-
   return (
     <StyledDiv>
       <div className={classes.content}>
@@ -98,26 +101,36 @@ export default function TaskFormAppointment({
         </div>
         <div className={classes.wrapper}>
           <CalendarToday className={classes.icon} color="action" />
-          <LocalizationProvider dateAdapter={AdapterMoment}>
-            <DateTimePicker
-              label={t(`form.task.startDate`)}
-              renderInput={(props) => (
-                <TextField className={classes.picker} {...props} />
-              )}
-              {...startDatePickerProps}
-            />
-            <DateTimePicker
-              label={t(`form.task.endDate`)}
-              renderInput={(props) => (
-                <TextField className={classes.picker} {...props} />
-              )}
-              {...endDatePickerProps}
-            />
-          </LocalizationProvider>
+          <Controller
+            name="title"
+            control={control}
+            render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DateTimePicker
+                  label={t(`form.task.startDate`)}
+                  renderInput={(props) => (
+                    <TextField className={classes.picker} {...props} />
+                  )}
+                  {...field}
+                />
+                {/* <DateTimePicker
+                  label={t(`form.task.endDate`)}
+                  renderInput={(props) => (
+                    <TextField className={classes.picker} {...props} />
+                  )}
+                  {...endDatePickerProps}
+                /> */}
+              </LocalizationProvider>
+            )}
+          />
         </div>
         <div className={classes.wrapper}>
           <Notes className={classes.icon} color="action" />
-          <TextField {...textEditorProps(t(`form.task.notes`))} multiline rows="6" />
+          <TextField
+            {...textEditorProps(t(`form.task.notes`))}
+            multiline
+            rows="6"
+          />
         </div>
       </div>
       <div className={classes.buttonGroup}>
