@@ -10,8 +10,8 @@ import ManageEvent from "./pages/manage_event/ManageEvent";
 import ManageSchedule from "./pages/manage_schedule/ManageSchedule";
 import RegisterPages from "./pages/RegisterPages";
 //page
-import SchedulePage from './pages/SchedulePages';
-import SettingPages from "./pages/SettingPages";
+import SchedulePage from './pages/schedule/SchedulePages';
+import SettingPages from "./pages/setting_page/SettingPages";
 
 function App() {
   return (

@@ -4,7 +4,7 @@ import React from "react";
 import { Box } from "@mui/material";
 
 //component
-import Schedule from "../components/schedule/Schedule";
+import Schedule from "./component/Schedule";
 
 export default function SchedulePage() {
   return (

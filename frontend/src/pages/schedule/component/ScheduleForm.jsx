@@ -34,12 +34,12 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 // common component
-import { StyledDiv, classes } from "../common";
+import { StyledDiv, classes } from "../../../components/schedule/common";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { getDetailTime } from "../../../util/getDetailTime";
 import { EnumColor, EnumTypeAppointment } from "../../../interface/enum";
 import { CirclePicker } from "react-color";
-import ScheduleRepeatModal from "../modal/ScheduleRepeatModal";
+import ScheduleRepeatModal from "./ScheduleRepeatModal";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Resource } from "../../../fake_data/Resource";
 import { useTranslation } from "react-i18next";

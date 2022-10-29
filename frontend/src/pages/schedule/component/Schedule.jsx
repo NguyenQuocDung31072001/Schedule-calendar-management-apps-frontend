@@ -28,13 +28,12 @@ import { Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 // common component
-import { StyledFab, classes } from "./common";
+import { StyledFab, classes } from "../../../components/schedule/common";
 
 //data fake
-
-import { EnumTypeAppointment } from "../../interface/enum";
-import { Resource } from "../../fake_data/Resource";
-import TabPanelForm from "./TabPanelForm";
+import { EnumTypeAppointment } from "../../../interface/enum";
+import { Resource } from "../../../fake_data/Resource";
+import TabPanelForm from "../../../components/schedule/TabPanelForm";
 
 const startDayHour = 9;
 const endDayHour = 19;
@@ -42,7 +41,6 @@ const endDayHour = 19;
 export default function Schedule() {
   //data || hook get data
   const token = useSelector(state => state.account.token)
-  console.log({ token })
   const [dataRender, setDateRender] = React.useState([
     {
       title: "Môn toán 1",

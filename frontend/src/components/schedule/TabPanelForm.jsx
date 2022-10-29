@@ -1,9 +1,18 @@
-import { AppointmentForm } from "@devexpress/dx-react-scheduler-material-ui";
-import { Close } from "@mui/icons-material";
+import React from "react";
+//package
+import { useTranslation } from "react-i18next";
+
+//material
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, IconButton, Tab } from "@mui/material";
-import React from "react";
-import { useTranslation } from "react-i18next";
+
+//material icon
+import { Close } from "@mui/icons-material";
+
+//dx-react-scheduler
+import { AppointmentForm } from "@devexpress/dx-react-scheduler-material-ui";
+
+//component
 import { classes } from "./common";
 import { ScheduleFormAppointment, TaskFormAppointment } from "./form/index";
 
