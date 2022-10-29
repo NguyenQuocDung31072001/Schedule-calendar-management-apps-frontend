@@ -1,17 +1,29 @@
-
-import { Box, Menu, MenuItem, Select, Typography } from '@mui/material'
 import React from 'react'
+
+//package
+import { useNavigate } from 'react-router-dom';
+import i18next from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+
+//interface
+import { language } from '../../interface/enum';
+
+//function
+import { logout } from "../../redux/account_slice"
+
+//component
+import { ImageStyle } from './common';
+
+//material
+import { Box, Menu, MenuItem, Select, Typography } from '@mui/material'
 
 //material icon
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
-import { ImageStyle } from './common';
-import { useNavigate } from 'react-router-dom';
-import { language } from '../../interface/enum';
-import i18next from 'i18next';
-import { useTranslation } from 'react-i18next';
 
-const MenuOptionAccount = (handleCloseMenuAccount, navigate, t) => [{
+
+const MenuOptionAccount = (handleCloseMenuAccount, navigate, dispatch, t) => [{
   path: "setting",
   name: t(`navbar.menu.profile`),
   onClick: handleCloseMenuAccount
@@ -20,11 +32,13 @@ const MenuOptionAccount = (handleCloseMenuAccount, navigate, t) => [{
   name: t(`navbar.menu.logout`),
   onClick: () => {
     handleCloseMenuAccount()
+    dispatch(logout())
     navigate("login")
   }
 }]
 export default function NavBarRight() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [t] = useTranslation('common');
   const [anchorMenuAccount, setAnchorMenuAccount] = React.useState(null);
   const [chooseLanguage, setChooseLanguage] = React.useState(language.en)
@@ -78,7 +92,7 @@ export default function NavBarRight() {
               'aria-labelledby': 'basic-button',
             }}
           >
-            {MenuOptionAccount(handleCloseMenuAccount, navigate, t).map((item) => (
+            {MenuOptionAccount(handleCloseMenuAccount, navigate, dispatch, t).map((item) => (
               <MenuItem key={item.name} onClick={item.onClick}>{item.name}</MenuItem>
             ))}
           </Menu>

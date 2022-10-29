@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 //material style
 import { useTheme } from "@mui/material/styles";
@@ -33,6 +33,7 @@ import { useTranslation } from "react-i18next";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import { useSelector } from "react-redux";
 
 const ListMenuItem = (t) => {
   const Schedule = t(`sidebar.schedule`);
@@ -75,16 +76,21 @@ const linkStyle = {
 
 export default function SideBarComponent() {
   const [t, i18n] = useTranslation("common");
+  const token = useSelector(state => state.account.token)
+  const navigate = useNavigate()
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  console.log(ListMenuItem(t));
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
+  React.useEffect(() => {
+    if (!token) {
+      navigate("/login")
+    }
+  }, [token, navigate])
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -154,7 +160,7 @@ export default function SideBarComponent() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Outlet />
+        {token && <Outlet />}
       </Box>
     </Box>
   );

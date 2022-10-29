@@ -1,0 +1,32 @@
+// {
+//   "parser": "babel-eslint",
+//   "plugins": [
+//       "react"
+//   ],
+//   "extends": [
+//       "eslint:recommended",
+//       "plugin:react/recommended"
+//   ],
+//   "rules": {
+//      "no-set-state": "off"
+//   },
+
+//   "parserOptions": {
+//     "ecmaVersion": 6,
+//     "sourceType": "module",
+//     "ecmaFeatures": {
+//         "jsx": true,
+//         "modules": true
+//     }
+// },
+// "globals": {
+//   "localStorage": true,
+//   "fetch": true
+// },
+// "settings": {
+//   "react": {
+//       "pragma": "React",
+//       "version": "16.4.1"
+//   }
+//   }
+// }

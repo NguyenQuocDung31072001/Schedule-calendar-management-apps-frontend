@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const axiosInstance = axios.create({
-    baseURL: "https://sheca-api.azurewebsites.net"
+  baseURL: "https://sheca-api.azurewebsites.net"
 })
 
 // axiosInstance.defaults.headers.common['Authorization'] = 'AUTH TOKEN FROM INSTANCE';

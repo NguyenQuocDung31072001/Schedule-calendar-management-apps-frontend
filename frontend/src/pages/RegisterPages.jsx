@@ -90,7 +90,7 @@ export default function RegisterPages() {
         <Box sx={{ width: "100%", padding: "10px 0px" }}>
           <LoadingButton
             sx={{ width: "100%" }}
-            loadingPosition="start"
+            // loadingPosition="start"
             variant="contained"
             onClick={handleSubmit(registerSubmit)}
             loading={isLoading}

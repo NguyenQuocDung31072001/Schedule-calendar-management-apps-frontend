@@ -7,12 +7,16 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { loginQuery } from '../service/auth_api';
 import { useMutation } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux'
+import { login } from "../redux/account_slice"
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required().test(val => val.length >= 6)
 })
 export default function LoginPages() {
+  const dispatch = useDispatch()
+  const currentUser = useSelector(state => state.account)
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       email: "",
@@ -31,7 +35,8 @@ export default function LoginPages() {
     }
   })
   if (data) {
-    navigate("/schedule")
+    dispatch(login(data.data))
+    // navigate("/schedule")
   }
   //function
   const loginSubmit = (formData) => {
@@ -40,7 +45,11 @@ export default function LoginPages() {
       password: formData.password
     })
   }
-
+  React.useEffect(() => {
+    if (currentUser.token) {
+      navigate("/schedule")
+    }
+  }, [currentUser.token, navigate])
   return (
     <Box sx={{ position: 'fixed', width: '100%', height: '100%', backgroundColor: "#1e90ff" }}>
       <Box sx={{

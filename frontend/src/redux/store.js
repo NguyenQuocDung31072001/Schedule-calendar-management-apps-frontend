@@ -13,7 +13,7 @@ import storage from 'redux-persist/lib/storage'
 import accountReducer from './account_slice'
 
 const persistConfig = {
-    key: 'schedule',
+    key: 'schedule1',
     version: 1,
     storage
 }

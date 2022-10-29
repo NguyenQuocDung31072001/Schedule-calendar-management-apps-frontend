@@ -43,9 +43,6 @@ import ScheduleRepeatModal from "../modal/ScheduleRepeatModal";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Resource } from "../../../fake_data/Resource";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "@tanstack/react-query";
-import { addNewScheduleMutation } from "../../../service/schedule_api";
-import { useSelector } from "react-redux";
 
 export default function ScheduleFormAppointment({
   visible,
@@ -58,26 +55,27 @@ export default function ScheduleFormAppointment({
   onHide,
 }) {
   //state | data | hook get data
-  const [t] = useTranslation("common");
-  const currentUser = useSelector(state => state.account)
+  const [dataForm, setDataForm] = React.useState();
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [selectTypeEndSchedule, setSelectTypeEndSchedule] =
     React.useState("endDate");
+  const [t] = useTranslation("common");
+
   const isNewAppointment = appointmentData.id === undefined;
-  //true=add false=change
+  const applyChanges = isNewAppointment
+    ? () => commitAppointment(EnumTypeAppointment.Add)
+    : () => commitAppointment(EnumTypeAppointment.Change);
 
   const { control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
         return {
           subject: appointmentData.title,
-          code: "",
           startDate: appointmentData.startDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
           endDate: appointmentData.endDate,
           numOfLessonsPerDay: "",
-          numOfLessons: "",
           notification: "",
           notes: appointmentData.notes,
           color: appointmentData.color,
@@ -85,14 +83,12 @@ export default function ScheduleFormAppointment({
       } else {
         return {
           subject: "",
-          code: "",
           startDate: appointmentData.startDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
           endDate: appointmentData.endDate,
           notification: "",
           numOfLessonsPerDay: "",
-          numOfLessons: "",
           notes: "",
           color: [],
         };
@@ -103,34 +99,54 @@ export default function ScheduleFormAppointment({
     control: control,
     name: "color",
   });
+  //useEffect | useCallback
+  React.useEffect(() => {
+    applyChanges();
+    /* eslint-disable-next-line react/no-multi-comp */
+  }, [dataForm]);
 
-  const { data, mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
-    onSuccess: () => {
-      console.log("add schedule success")
-    },
-    onError: () => {
-      console.log("add schedule error")
-    }
-  })
   //funtion
   const onSubmitForm = (data) => {
-    addNewSchedule({
-      title: data.subject,
-      code: "string",
-      description: data.notes,
-      startTime: getDetailTime(data.startTime).hours * 3600 + getDetailTime(data.startTime).minutes * 60,
-      endTime: getDetailTime(data.endTime).hours * 3600 + getDetailTime(data.endTime).minutes * 60,
-      numOfLessonsPerDay: 0,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      numOfLessons: 0,
-      notiBeforeTime: data.notification,
-      colorCode: "string",
-      token: currentUser.token
-    })
+    if (selectTypeEndSchedule === "endDate") {
+      data.numOfLessonsPerDay = "";
+    } else {
+      data.endDate = "";
+    }
+    setDataForm(data);
     visibleChange();
   };
-
+  const commitAppointment = (type) => {
+    if (dataForm) {
+      const parseStartDate = getDetailTime(dataForm.startDate);
+      const parseEndDate = getDetailTime(dataForm.endDate);
+      const parseStartTime = getDetailTime(dataForm.startTime);
+      const parseEndTime = getDetailTime(dataForm.endTime);
+      const indexColor = Resource[0].instances.findIndex(
+        (item) => item.color === dataForm?.color?.hex
+      );
+      commitChanges({
+        id: appointmentData?.id,
+        type: type,
+        subject: dataForm.subject,
+        startDate: new Date(
+          parseStartDate.year,
+          parseStartDate.month,
+          parseStartDate.day,
+          parseStartTime.hours,
+          parseStartTime.minutes
+        ),
+        endDate: new Date(
+          parseEndDate.year,
+          parseEndDate.month,
+          parseEndDate.day,
+          parseEndTime.hours,
+          parseEndTime.minutes
+        ),
+        notes: dataForm.notes,
+        color: indexColor >= 0 ? [indexColor + 1] : appointmentData.color,
+      });
+    }
+  };
 
   return (
     <StyledDiv>

@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import { useSelector } from "react-redux";
 //dx-react-scheduler-material-ui
 import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import {
@@ -41,6 +41,8 @@ const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
+  const token = useSelector(state => state.account.token)
+  console.log({ token })
   const [dataRender, setDateRender] = React.useState([
     {
       title: "Môn toán 1",
