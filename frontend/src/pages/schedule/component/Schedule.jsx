@@ -34,13 +34,18 @@ import { StyledFab, classes } from "../../../components/schedule/common";
 import { EnumTypeAppointment } from "../../../interface/enum";
 import { Resource } from "../../../fake_data/Resource";
 import TabPanelForm from "../../../components/schedule/TabPanelForm";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAllEventQuery } from "../../../service/schedule_api";
+import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
 
 const startDayHour = 9;
 const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
+  const queryClient = useQueryClient()
   const token = useSelector(state => state.account.token)
+
   const [dataRender, setDateRender] = React.useState([
     {
       title: "Môn toán 1",
@@ -56,6 +61,19 @@ export default function Schedule() {
   const [previousAppointment, setPreviousAppointment] = React.useState();
   const [addedAppointment, setAddedAppointment] = React.useState({});
   const [isNewAppointment, setIsNewAppointment] = React.useState(false);
+
+  const { data, isLoading } = useQuery(["getAllEvent"], () => getAllEventQuery({
+    token: token,
+    fromDate: getFromDate_ToDate(currentDate).fromDate,
+    toDate: getFromDate_ToDate(currentDate).toDate
+  }), {
+    retry: 1
+  })
+  console.log({ data })
+  React.useEffect(() => {
+    console.log({ currentDate })
+    queryClient.invalidateQueries(["getAllEvent"])
+  }, [currentDate])
 
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
