@@ -4,7 +4,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 
-//material 
+//material
 import { DataGrid } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
@@ -21,35 +21,41 @@ import { parseNumberToTime } from "../../util/parseNumberToTime";
 import { getAllScheduleQuery } from "../../service/schedule_api";
 
 //component
-import CreateSchedule from "./component/CreateSchedule";
+import CreateSchedule from "./component/CreateCourse";
 import DialogConfirmDeleteSchedule from "./component/DialogConfirmDelete";
 
 export default function ManageSchedule() {
-  const currentUser = useSelector(state => state.account)
+  const currentUser = useSelector((state) => state.account);
   const [openModal, setOpenModal] = React.useState(false);
   const [openDialogConfirm, setOpenDialogConfirm] = React.useState(false);
 
-  const { data, isLoading } = useQuery(["test"],
-    () => getAllScheduleQuery({ token: currentUser.token }), {
-    retry: 1
-  })
+  const { data, isLoading } = useQuery(
+    ["test"],
+    () => getAllScheduleQuery({ token: currentUser.token }),
+    {
+      retry: 1,
+    }
+  );
 
   const rows = React.useMemo(() => {
-    const dataSchedule = data?.data?.data
-    if (!dataSchedule) return []
+    const dataSchedule = data?.data?.data;
+    if (!dataSchedule) return [];
     return dataSchedule.map((item) => ({
       id: item.id,
       title: item.title,
       code: item.code,
       description: item.description,
-      time: parseNumberToTime(item.startTime) + " - " + parseNumberToTime(item.endTime),
+      time:
+        parseNumberToTime(item.startTime) +
+        " - " +
+        parseNumberToTime(item.endTime),
       numOfLessonsPerDay: item.numOfLessonsPerDay,
       startDate: item.startDate.split("T")[0],
       endDate: item.endDate.split("T")[0],
       numOfLessons: item.numOfLessons,
       colorCode: item.colorCode,
-    }))
-  }, [data])
+    }));
+  }, [data]);
 
   const columns = React.useMemo(() => {
     return [
@@ -67,9 +73,9 @@ export default function ManageSchedule() {
       { field: "endDate", headerName: "endDate", width: 130 },
       { field: "numOfLessons", headerName: "numOfLessons", width: 130 },
       { field: "colorCode", headerName: "colorCode", width: 130 },
-    ]
+    ];
     /* eslint-disable-next-line react/no-multi-comp */
-  }, [rows])
+  }, [rows]);
 
   return (
     <Box sx={{ padding: 5 }}>

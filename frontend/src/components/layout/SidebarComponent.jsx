@@ -23,7 +23,6 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import MailIcon from "@mui/icons-material/Mail";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
 // style component
@@ -34,37 +33,32 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useSelector } from "react-redux";
+import { pathName } from "../../config/pathName";
 
 const ListMenuItem = (t) => {
   const Schedule = t(`sidebar.schedule`);
   const Setting = t(`sidebar.setting`);
-  const Logout = t(`sidebar.logout`);
 
   return [
     {
-      path: "schedule",
+      path: `${pathName.schedule}`,
       icon: <CalendarMonthIcon />,
       name: Schedule,
     },
     {
-      path: "manage_schedule",
+      path: `${pathName.manage_courses}`,
       icon: <AssignmentIcon />,
       name: "Manage Schedule",
     },
     {
-      path: "manage_event",
+      path: `${pathName.manage_event}`,
       icon: <EventAvailableIcon />,
       name: "Manage Event",
     },
     {
-      path: "setting",
+      path: `${pathName.setting}`,
       icon: <SettingsOutlinedIcon />,
       name: Setting,
-    },
-    {
-      path: "logout",
-      icon: <MailIcon />,
-      name: Logout,
     },
   ];
 };
@@ -75,9 +69,9 @@ const linkStyle = {
 };
 
 export default function SideBarComponent() {
-  const [t, i18n] = useTranslation("common");
-  const token = useSelector(state => state.account.token)
-  const navigate = useNavigate()
+  const [t] = useTranslation("common");
+  const token = useSelector((state) => state.account.token);
+  const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -88,9 +82,9 @@ export default function SideBarComponent() {
   };
   React.useEffect(() => {
     if (!token) {
-      navigate("/login")
+      navigate(`${pathName.auth.login}`);
     }
-  }, [token, navigate])
+  }, [token, navigate]);
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
