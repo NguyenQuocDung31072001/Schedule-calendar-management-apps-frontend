@@ -3,15 +3,15 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import AuthWrapper from "./components/layout/AuthWrapper";
 //component
+import AuthWrapper from "./components/layout/AuthWrapper";
 import SidebarComponent from "./components/layout/SidebarComponent"
 import { pathName } from "./config/pathName";
+//page
 import LoginPages from "./pages/LoginPages";
 import ManageEvent from "./pages/manage_event/ManageEvent";
 import ManageSchedule from "./pages/manage_course/ManageCourses";
 import RegisterPages from "./pages/RegisterPages";
-//page
 import SchedulePage from './pages/schedule/SchedulePages';
 import SettingPages from "./pages/setting_page/SettingPages";
 import VerifyAccountPages from "./pages/VerifyAccountPages";
@@ -28,7 +28,7 @@ function App() {
             <Route path={pathName.manage_event} element={<ManageEvent />} />
             <Route path={pathName.schedule} element={<SchedulePage />} />
           </Route>
-          <Route path="/auth/*" element={<AuthWrapper/>}>
+          <Route path="auth" element={<AuthWrapper/>}>
             <Route path="login" element={<LoginPages />} />
             <Route path="register" element={<RegisterPages />} />
             <Route path="verify_account" element={<VerifyAccountPages />} />

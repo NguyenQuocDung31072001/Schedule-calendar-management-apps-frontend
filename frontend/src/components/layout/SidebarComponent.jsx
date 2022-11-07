@@ -82,7 +82,7 @@ export default function SideBarComponent() {
   };
   React.useEffect(() => {
     if (!token) {
-      navigate(`${pathName.auth.login}`);
+      navigate(`${pathName.auth.full_login}`);
     }
   }, [token, navigate]);
   return (

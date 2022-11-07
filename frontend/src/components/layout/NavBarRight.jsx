@@ -25,17 +25,15 @@ import { pathName } from "../../config/pathName";
 
 const MenuOptionAccount = (handleCloseMenuAccount, navigate, dispatch, t) => [
   {
-    path: "setting",
     name: t(`navbar.menu.profile`),
     onClick: handleCloseMenuAccount,
   },
   {
-    path: "logout",
     name: t(`navbar.menu.logout`),
     onClick: () => {
       handleCloseMenuAccount();
       dispatch(logout());
-      navigate(`${pathName.auth.login}`);
+      navigate(`${pathName.auth.full_login}`);
     },
   },
 ];

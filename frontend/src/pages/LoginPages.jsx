@@ -145,7 +145,17 @@ export default function LoginPages() {
         >
           Register
         </Link>
-        <Typography>Forgot password</Typography>
+        <Link
+          to={pathName.auth.full_reset_password}
+          replace={false}
+          style={{
+            textDecoration: "none",
+            fontFamily: "Arial, Helvetica, sans-serif",
+            color: "blue",
+          }}
+        >
+          Forgot password{" "}
+        </Link>
       </Box>
     </Box>
   );
