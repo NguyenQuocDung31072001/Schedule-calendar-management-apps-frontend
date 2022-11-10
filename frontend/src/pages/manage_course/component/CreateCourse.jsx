@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
+import { Controller, useForm } from "react-hook-form";
+import { TextField } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -17,10 +19,28 @@ const style = {
   p: 4,
 };
 
-export default function CreateSchedule({ openModal, setOpenModal }) {
+/*
+  "title": "string",
+  "code": "string",
+  "description": "string",
+  "startTime": 86400,
+  "endTime": 86400,
+  "dayOfWeeks": [
+    "Sunday"
+  ],
+  "numOfLessonsPerDay": 0,
+  "startDate": "2022-11-10T11:07:36.393Z",
+  "endDate": "2022-11-10T11:07:36.393Z",
+  "numOfLessons": 0,
+  "notiBeforeTime": 0,
+  "colorCode": "string"
+*/
+export default function CreateCourses({ openModal, setOpenModal }) {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {},
+  });
   return (
     <div>
-      {/* <Button onClick={() => setOpenModal(true)}>Open modal</Button> */}
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -37,9 +57,13 @@ export default function CreateSchedule({ openModal, setOpenModal }) {
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Text in a modal
             </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            <Box id="transition-modal-description">
+              <Controller
+                name="title"
+                control={control}
+                render={({ filed }) => <TextField variant="outline" />}
+              />
+            </Box>
           </Box>
         </Fade>
       </Modal>
