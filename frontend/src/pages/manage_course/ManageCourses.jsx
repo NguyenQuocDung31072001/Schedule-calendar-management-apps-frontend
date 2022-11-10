@@ -18,10 +18,10 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { parseNumberToTime } from "../../util/parseNumberToTime";
 
 //service
-import { getAllScheduleQuery } from "../../service/schedule_api";
+import { getAllCoursesQuery } from "../../service/schedule_api";
 
 //component
-import CreateSchedule from "./component/CreateCourse";
+import CreateCourses from "./component/CreateCourse";
 import DialogConfirmDeleteSchedule from "./component/DialogConfirmDelete";
 
 export default function ManageSchedule() {
@@ -29,14 +29,25 @@ export default function ManageSchedule() {
   const [openModal, setOpenModal] = React.useState(false);
   const [openDialogConfirm, setOpenDialogConfirm] = React.useState(false);
 
-  const { data, isLoading } = useQuery(
+  const {
+    data,
+    isLoading: isLoadingGetAllCourses,
+    refetch: getAllCourses,
+  } = useQuery(
     ["test"],
-    () => getAllScheduleQuery({ token: currentUser.token }),
+    () => getAllCoursesQuery({ token: currentUser.token }),
     {
-      retry: 1,
+      retry: 0,
+      enabled: false,
     }
   );
+  console.log({ data });
 
+  //useEffect
+  React.useEffect(() => {
+    getAllCourses();
+  }, []);
+  //useMemo
   const rows = React.useMemo(() => {
     const dataSchedule = data?.data?.data;
     if (!dataSchedule) return [];
@@ -110,14 +121,14 @@ export default function ManageSchedule() {
           </LoadingButton>
         </Box>
       </Box>
-      <CreateSchedule openModal={openModal} setOpenModal={setOpenModal} />
+      <CreateCourses openModal={openModal} setOpenModal={setOpenModal} />
       <DialogConfirmDeleteSchedule
         openDialog={openDialogConfirm}
         setOpenDialog={setOpenDialogConfirm}
       />
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
-          loading={isLoading}
+          loading={isLoadingGetAllCourses}
           rows={rows}
           columns={columns}
           pageSize={5}

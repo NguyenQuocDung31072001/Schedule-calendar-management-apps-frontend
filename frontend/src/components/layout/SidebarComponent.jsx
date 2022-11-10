@@ -48,7 +48,7 @@ const ListMenuItem = (t) => {
     {
       path: `${pathName.manage_courses}`,
       icon: <AssignmentIcon />,
-      name: "Manage Schedule",
+      name: "Manage Courses",
     },
     {
       path: `${pathName.manage_event}`,

@@ -42,7 +42,7 @@ import { CirclePicker } from "react-color";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "@tanstack/react-query";
-import { addNewScheduleMutation } from "../../../service/schedule_api";
+import { addNewCoursesMutation } from "../../../service/schedule_api";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 
@@ -105,7 +105,7 @@ export default function ScheduleFormAppointment({
     name: "color",
   });
 
-  const { mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
+  const { mutateAsync: addNewSchedule } = useMutation(addNewCoursesMutation, {
     onSuccess: () => {
       console.log("add schedule success");
     },

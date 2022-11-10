@@ -33,7 +33,7 @@ import { Resource } from "../../../fake_data/Resource";
 import TabPanelForm from "../../../components/schedule/TabPanelForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  addNewScheduleMutation,
+  addNewCoursesMutation,
   getAllEventQuery,
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
@@ -73,7 +73,7 @@ export default function Schedule() {
   );
 
   const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } =
-    useMutation(addNewScheduleMutation, {
+    useMutation(addNewCoursesMutation, {
       onSuccess: () => {
         console.log("add schedule success");
       },
