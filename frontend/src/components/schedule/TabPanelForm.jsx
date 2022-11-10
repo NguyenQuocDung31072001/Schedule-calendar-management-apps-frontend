@@ -17,6 +17,7 @@ import { classes } from "./common";
 import { ScheduleFormAppointment, TaskFormAppointment } from "./form/index";
 
 export default function TabPanelForm({
+  addNewCourses,
   visible,
   appointmentData,
   commitChanges,
@@ -68,6 +69,7 @@ export default function TabPanelForm({
 
         <TabPanel value="schedule">
           <ScheduleFormAppointment
+            addNewCourses={addNewCourses}
             visible={visible}
             appointmentData={appointmentData}
             commitChanges={commitChanges}
@@ -80,6 +82,7 @@ export default function TabPanelForm({
         </TabPanel>
         <TabPanel value="task">
           <TaskFormAppointment
+            addNewCourses={addNewCourses}
             visible={visible}
             appointmentData={appointmentData}
             commitChanges={commitChanges}
