@@ -4,8 +4,28 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
-import { Controller, useForm } from "react-hook-form";
-import { TextField } from "@mui/material";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import {
+  Button,
+  Chip,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+} from "@mui/material";
+import {
+  DatePicker,
+  LocalizationProvider,
+  TimePicker,
+} from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { CirclePicker } from "react-color";
+import { EnumColor, TypeWeekdaysOption } from "../../../interface/enum";
+import FormCourses from "../../../components/schedule/form/FormCourses";
 
 const style = {
   position: "absolute",
@@ -17,28 +37,11 @@ const style = {
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
+  overflow: "scroll",
+  height: "100%",
 };
 
-/*
-  "title": "string",
-  "code": "string",
-  "description": "string",
-  "startTime": 86400,
-  "endTime": 86400,
-  "dayOfWeeks": [
-    "Sunday"
-  ],
-  "numOfLessonsPerDay": 0,
-  "startDate": "2022-11-10T11:07:36.393Z",
-  "endDate": "2022-11-10T11:07:36.393Z",
-  "numOfLessons": 0,
-  "notiBeforeTime": 0,
-  "colorCode": "string"
-*/
 export default function CreateCourses({ openModal, setOpenModal }) {
-  const { control, handleSubmit } = useForm({
-    defaultValues: {},
-  });
   return (
     <div>
       <Modal
@@ -52,20 +55,12 @@ export default function CreateCourses({ openModal, setOpenModal }) {
           timeout: 500,
         }}
       >
-        <Fade in={openModal}>
-          <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Box id="transition-modal-description">
-              <Controller
-                name="title"
-                control={control}
-                render={({ filed }) => <TextField variant="outline" />}
-              />
-            </Box>
-          </Box>
-        </Fade>
+        <Box sx={style}>
+          <Typography id="transition-modal-title" variant="h6" component="h2">
+            Text in a modal
+          </Typography>
+          <FormCourses />
+        </Box>
       </Modal>
     </div>
   );

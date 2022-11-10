@@ -210,9 +210,6 @@ export default function ScheduleFormAppointment({
           <AlarmIcon className={classes.icon} color="action" />
           <div className={classes.wrapper}>
             <FormControl>
-              {/* <FormLabel id="choose-end-schedule">
-                Choose end schedule
-              </FormLabel> */}
               <RadioGroup
                 row
                 aria-labelledby="choose-end-schedule"
