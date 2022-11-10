@@ -14,7 +14,6 @@ import {
   DragDropProvider,
   EditRecurrenceMenu,
   AllDayPanel,
-  DayView,
   DateNavigator,
   TodayButton,
   Resources,
@@ -43,8 +42,8 @@ const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
-  const queryClient = useQueryClient()
-  const token = useSelector(state => state.account.token)
+  const queryClient = useQueryClient();
+  const token = useSelector((state) => state.account.token);
 
   const [dataRender, setDateRender] = React.useState([
     {
@@ -55,25 +54,30 @@ export default function Schedule() {
       color: [1],
     },
   ]);
-  const [currentDate, setCurrentDate] = React.useState(new Date())
+  const [currentDate, setCurrentDate] = React.useState(new Date());
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [editingAppointment, setEditingAppointment] = React.useState();
-  const [previousAppointment, setPreviousAppointment] = React.useState();
   const [addedAppointment, setAddedAppointment] = React.useState({});
   const [isNewAppointment, setIsNewAppointment] = React.useState(false);
 
-  const { data, isLoading } = useQuery(["getAllEvent"], () => getAllEventQuery({
-    token: token,
-    fromDate: getFromDate_ToDate(currentDate).fromDate,
-    toDate: getFromDate_ToDate(currentDate).toDate
-  }), {
-    retry: 1
-  })
-  console.log({ data })
+  const { data } = useQuery(
+    ["getAllEvent"],
+    () =>
+      getAllEventQuery({
+        token: token,
+        fromDate: getFromDate_ToDate(currentDate).fromDate,
+        toDate: getFromDate_ToDate(currentDate).toDate,
+      }),
+    {
+      retry: 1,
+    }
+  );
+  console.log({ data });
   React.useEffect(() => {
-    console.log({ currentDate })
-    queryClient.invalidateQueries(["getAllEvent"])
-  }, [currentDate])
+    console.log({ currentDate });
+    queryClient.invalidateQueries(["getAllEvent"]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDate]);
 
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
@@ -132,7 +136,7 @@ export default function Schedule() {
       )[0] || addedAppointment;
     const cancelAppointment = () => {
       if (isNewAppointment) {
-        setEditingAppointment(previousAppointment);
+        setEditingAppointment();
         setIsNewAppointment(false);
       }
     };
@@ -152,10 +156,10 @@ export default function Schedule() {
         <ViewState
           currentDate={currentDate}
           onCurrentDateChange={(e) => {
-            setCurrentDate(e)
+            setCurrentDate(e);
           }}
-        // currentViewName="weak"
-        // onCurrentViewNameChange={(e) => console.log("view change ", e)}
+          // currentViewName="weak"
+          // onCurrentViewNameChange={(e) => console.log("view change ", e)}
         />
         <EditingState
           onCommitChanges={(e) => {

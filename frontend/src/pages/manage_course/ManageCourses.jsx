@@ -74,7 +74,7 @@ export default function ManageSchedule() {
       { field: "numOfLessons", headerName: "numOfLessons", width: 130 },
       { field: "colorCode", headerName: "colorCode", width: 130 },
     ];
-    /* eslint-disable-next-line react/no-multi-comp */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows]);
 
   return (

@@ -37,7 +37,7 @@ export default function TaskFormAppointment({
     React.useState(appointmentData);
   const isNewAppointment = appointmentData.id === undefined;
 
-  const { control, handleSubmit } = useForm({
+  const { control } = useForm({
     defaultValues: {},
   });
   const applyChanges = isNewAppointment
@@ -75,22 +75,6 @@ export default function TaskFormAppointment({
     label: field[0].toUpperCase() + field.slice(1),
     className: classes.textField,
   });
-
-  const pickerEditorProps = (field) => ({
-    keyboard: true,
-    onChange: (event) => {
-      setAppointmentChanges({
-        ...appointmentChanges,
-        [field]: event._d,
-      });
-    },
-    value: appointmentChanges[field],
-    // ampm: false,
-    inputFormat: "DD/MM/YYYY HH:mm",
-    onError: () => null,
-  });
-  const startDatePickerProps = pickerEditorProps("startDate");
-  const endDatePickerProps = pickerEditorProps("endDate");
 
   return (
     <StyledDiv>

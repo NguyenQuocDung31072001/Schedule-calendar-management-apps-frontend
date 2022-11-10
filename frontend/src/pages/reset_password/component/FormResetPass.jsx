@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import InputPassword from "../../../components/input/input_password";
@@ -17,18 +17,18 @@ const schema = yup.object().shape({
 });
 
 export default function FormResetPass() {
-  const { control, errors, handleSubmit } = useForm({
+  const { control, errors } = useForm({
     resolver: yupResolver(schema),
   });
 
   return (
-    <Box>
-      <Box>
-        <Typography variant="h4">Create new password</Typography>
-        <Typography variant="p">
-          Your new password must be different from previous used password
-        </Typography>
-      </Box>
+    <Box sx={{ display: "flex", flexDirection: "column", padding: 4 }}>
+      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+        Create new password
+      </Typography>
+      <Typography variant="p">
+        Your new password must be different from previous used password
+      </Typography>
       <Box sx={{ padding: "10px 0px" }}>
         <Controller
           name="password"
@@ -37,7 +37,7 @@ export default function FormResetPass() {
             return <InputPassword id="password_login" filed={field} />;
           }}
         />
-        {errors.password?.message && (
+        {errors?.password?.message && (
           <Typography sx={{ color: "red", marginLeft: "10px" }}>
             Password has at least 6 characters!
           </Typography>
@@ -51,7 +51,7 @@ export default function FormResetPass() {
             return <InputPassword id="passwordPwd_login" filed={field} />;
           }}
         />
-        {errors.confirmPwd?.message && (
+        {errors?.confirmPwd?.message && (
           <Typography sx={{ color: "red", marginLeft: "10px" }}>
             Password has at least 6 characters!
           </Typography>

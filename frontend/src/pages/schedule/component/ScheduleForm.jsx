@@ -37,11 +37,9 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { StyledDiv, classes } from "../../../components/schedule/common";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { getDetailTime } from "../../../util/getDetailTime";
-import { EnumColor, EnumTypeAppointment } from "../../../interface/enum";
+import { EnumColor } from "../../../interface/enum";
 import { CirclePicker } from "react-color";
-import ScheduleRepeatModal from "./ScheduleRepeatModal";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Resource } from "../../../fake_data/Resource";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "@tanstack/react-query";
 import { addNewScheduleMutation } from "../../../service/schedule_api";
@@ -59,7 +57,7 @@ export default function ScheduleFormAppointment({
 }) {
   //state | data | hook get data
   const [t] = useTranslation("common");
-  const currentUser = useSelector(state => state.account)
+  const currentUser = useSelector((state) => state.account);
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [selectTypeEndSchedule, setSelectTypeEndSchedule] =
     React.useState("endDate");
@@ -97,6 +95,7 @@ export default function ScheduleFormAppointment({
           color: [],
         };
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appointmentData]),
   });
   const colorWatch = useWatch({
@@ -104,33 +103,36 @@ export default function ScheduleFormAppointment({
     name: "color",
   });
 
-  const { data, mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
+  const { mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
     onSuccess: () => {
-      console.log("add schedule success")
+      console.log("add schedule success");
     },
     onError: () => {
-      console.log("add schedule error")
-    }
-  })
+      console.log("add schedule error");
+    },
+  });
   //funtion
   const onSubmitForm = (data) => {
     addNewSchedule({
       title: data.subject,
       code: "string",
       description: data.notes,
-      startTime: getDetailTime(data.startTime).hours * 3600 + getDetailTime(data.startTime).minutes * 60,
-      endTime: getDetailTime(data.endTime).hours * 3600 + getDetailTime(data.endTime).minutes * 60,
+      startTime:
+        getDetailTime(data.startTime).hours * 3600 +
+        getDetailTime(data.startTime).minutes * 60,
+      endTime:
+        getDetailTime(data.endTime).hours * 3600 +
+        getDetailTime(data.endTime).minutes * 60,
       numOfLessonsPerDay: 0,
       startDate: data.startDate,
       endDate: data.endDate,
       numOfLessons: 0,
       notiBeforeTime: data.notification,
       colorCode: "string",
-      token: currentUser.token
-    })
+      token: currentUser.token,
+    });
     visibleChange();
   };
-
 
   return (
     <StyledDiv>

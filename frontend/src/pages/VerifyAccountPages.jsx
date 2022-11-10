@@ -11,19 +11,19 @@ export default function VerifyAccountPages() {
   const location = useLocation();
   const [code, setCode] = React.useState();
 
-  const {
-    data,
-    isLoading,
-    mutateAsync: verifyAccount,
-  } = useMutation(verifyAccountMutationApi, {
-    onSuccess: () => {
-      console.log("verify success");
-    },
-  });
+  const { data, mutateAsync: verifyAccount } = useMutation(
+    verifyAccountMutationApi,
+    {
+      onSuccess: () => {
+        console.log("verify success");
+      },
+    }
+  );
   React.useEffect(() => {
     if (data) {
       navigate(`${pathName.auth.login}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   React.useEffect(() => {
