@@ -4,14 +4,18 @@ import {
   Route,
 } from "react-router-dom";
 //component
+import AuthWrapper from "./components/layout/AuthWrapper";
 import SidebarComponent from "./components/layout/SidebarComponent"
+import { pathName } from "./config/pathName";
+//page
 import LoginPages from "./pages/LoginPages";
 import ManageEvent from "./pages/manage_event/ManageEvent";
-import ManageSchedule from "./pages/manage_schedule/ManageSchedule";
+import ManageSchedule from "./pages/manage_course/ManageCourses";
 import RegisterPages from "./pages/RegisterPages";
-//page
 import SchedulePage from './pages/schedule/SchedulePages';
 import SettingPages from "./pages/setting_page/SettingPages";
+import VerifyAccountPages from "./pages/VerifyAccountPages";
+import ResetPassword from "./pages/reset_password/ResetPassword";
 
 function App() {
   return (
@@ -19,14 +23,16 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SidebarComponent />}>
-            <Route path="/setting" element={<SettingPages />} />
-            <Route path="/manage_schedule" element={<ManageSchedule />} />
-            <Route path="/manage_event" element={<ManageEvent />} />
-            <Route path="/schedule" element={<SchedulePage />} />
+            <Route path={pathName.setting} element={<SettingPages />} />
+            <Route path={pathName.manage_courses} element={<ManageSchedule />} />
+            <Route path={pathName.manage_event} element={<ManageEvent />} />
+            <Route path={pathName.schedule} element={<SchedulePage />} />
           </Route>
-          <Route>
-            <Route path="/login" element={<LoginPages />} />
-            <Route path="/register" element={<RegisterPages />} />
+          <Route path="auth" element={<AuthWrapper/>}>
+            <Route path="login" element={<LoginPages />} />
+            <Route path="register" element={<RegisterPages />} />
+            <Route path="verify_account" element={<VerifyAccountPages />} />
+            <Route path="reset_password" element={<ResetPassword />} />
           </Route>
         </Routes>
       </BrowserRouter>,
