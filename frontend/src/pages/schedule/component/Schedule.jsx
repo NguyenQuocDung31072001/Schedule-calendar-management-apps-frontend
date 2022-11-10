@@ -14,7 +14,6 @@ import {
   DragDropProvider,
   EditRecurrenceMenu,
   AllDayPanel,
-  DayView,
   DateNavigator,
   TodayButton,
   Resources,
@@ -22,39 +21,29 @@ import {
 import { connectProps } from "@devexpress/dx-react-core";
 
 //material component
-import { Paper } from "@mui/material";
+import { LinearProgress } from "@mui/material";
 
 //material icon
-import AddIcon from "@mui/icons-material/Add";
 
 // common component
-import { StyledFab, classes } from "../../../components/schedule/common";
 
 //data fake
 import { EnumTypeAppointment } from "../../../interface/enum";
 import { Resource } from "../../../fake_data/Resource";
 import TabPanelForm from "../../../components/schedule/TabPanelForm";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllEventQuery } from "../../../service/schedule_api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addNewScheduleMutation, getAllEventQuery } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
+import { parseNumberToTime } from "../../../util/parseNumberToTime";
+import { Box } from "@mui/system";
 
 const startDayHour = 9;
 const endDayHour = 19;
 
 export default function Schedule() {
   //data || hook get data
-  const queryClient = useQueryClient()
   const token = useSelector(state => state.account.token)
 
-  const [dataRender, setDateRender] = React.useState([
-    {
-      title: "Môn toán 1",
-      startDate: new Date(2022, 9, 12, 12, 35),
-      endDate: new Date(2022, 9, 12, 15, 0),
-      id: 0,
-      color: [1],
-    },
-  ]);
   const [currentDate, setCurrentDate] = React.useState(new Date())
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [editingAppointment, setEditingAppointment] = React.useState();
@@ -62,18 +51,41 @@ export default function Schedule() {
   const [addedAppointment, setAddedAppointment] = React.useState({});
   const [isNewAppointment, setIsNewAppointment] = React.useState(false);
 
-  const { data, isLoading } = useQuery(["getAllEvent"], () => getAllEventQuery({
+  const { data, isLoading: isLoadingGetAllEvent, isFetching: isFetchingGetAllEvent, refetch: refetchGetAllEvent } = useQuery(["getAllEvent"], () => getAllEventQuery({
     token: token,
     fromDate: getFromDate_ToDate(currentDate).fromDate,
     toDate: getFromDate_ToDate(currentDate).toDate
   }), {
-    retry: 1
+    // retry: 1
+    enabled: false
   })
-  console.log({ data })
+
+  const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } = useMutation(addNewScheduleMutation, {
+    onSuccess: () => {
+      console.log("add schedule success")
+    },
+    onError: () => {
+      console.log("add schedule error")
+    }
+  })
+
+
+  const dataResponse = data?.data?.data
+  const dataRender = React.useMemo(() => {
+    if (!dataResponse) return []
+    return dataResponse.map((item) => ({
+      title: item.title,
+      startDate: item.startDate.split("T")[0] + "T" + parseNumberToTime(item.startTime),
+      endDate: item.startDate.split("T")[0] + "T" + parseNumberToTime(item.endTime),
+      id: item.id,
+      color: item.colorCode,
+    }))
+  }, [dataResponse])
+  console.log({ dataRender })
+
   React.useEffect(() => {
-    console.log({ currentDate })
-    queryClient.invalidateQueries(["getAllEvent"])
-  }, [currentDate])
+    refetchGetAllEvent()
+  }, [currentDate, isLoadingAddNewCourses])
 
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
@@ -85,43 +97,12 @@ export default function Schedule() {
   };
   const commitChanges = (value) => {
     if (value.type === EnumTypeAppointment.Add) {
-      setDateRender((prev) => [
-        ...prev,
-        {
-          id:
-            dataRender.length > 0
-              ? dataRender[dataRender.length - 1].id + 1
-              : 1,
-          title: value.subject,
-          startDate: value.startDate,
-          endDate: value.endDate,
-          notes: value.notes,
-          color: value.color,
-        },
-      ]);
+
     } else if (value.type === EnumTypeAppointment.Change) {
-      let _dataRender = dataRender.map((data) => {
-        if (data.id === value.id) {
-          data.title = value.subject;
-          data.startDate = value.startDate;
-          data.endDate = value.endDate;
-          data.notes = value.notes;
-          data.color = value.color;
-        }
-        return data;
-      });
-      setDateRender(_dataRender);
+
     } else if (value.changed) {
-      let _dataRender = dataRender.map((data) => {
-        if (data.id === editingAppointment.id) {
-          data.startDate = value.changed[data.id].startDate;
-          data.endDate = value.changed[data.id].endDate;
-        }
-        return data;
-      });
-      setDateRender(_dataRender);
+
     } else {
-      setDateRender(dataRender.filter((data) => data.id !== value.deleted));
     }
   };
   const appointmentFormSchedule = connectProps(TabPanelForm, () => {
@@ -138,6 +119,7 @@ export default function Schedule() {
     };
 
     return {
+      addNewCourses,
       visible: editFormVisible,
       appointmentData: currentAppointment,
       commitChanges: commitChanges,
@@ -146,63 +128,52 @@ export default function Schedule() {
       cancelAppointment,
     };
   });
+  console.log({ isLoadingGetAllEvent, isFetchingGetAllEvent })
   return (
-    <Paper>
-      <Scheduler data={dataRender} height={1000}>
-        <ViewState
-          currentDate={currentDate}
-          onCurrentDateChange={(e) => {
-            setCurrentDate(e)
-          }}
-        // currentViewName="weak"
-        // onCurrentViewNameChange={(e) => console.log("view change ", e)}
-        />
-        <EditingState
-          onCommitChanges={(e) => {
-            commitChanges(e);
-          }}
-          onEditingAppointmentChange={(editingAppointment) => {
-            setEditingAppointment(editingAppointment);
-          }}
-          onAddedAppointmentChange={(newAppoiment) => {
-            changeFormVisible();
-            setAddedAppointment(newAppoiment);
-            setEditingAppointment();
-          }}
-        />
-        <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
-        <MonthView />
-        <AllDayPanel />
-        <EditRecurrenceMenu />
-        <Appointments />
-        <AppointmentTooltip showOpenButton showCloseButton showDeleteButton />
-        <Toolbar />
-        <DateNavigator />
-        <ViewSwitcher />
-        <TodayButton />
-        <AppointmentForm
-          overlayComponent={appointmentFormSchedule}
-          visible={editFormVisible}
-          onVisibilityChange={() => setEditFormVisible(!editFormVisible)}
-        />
-        <DragDropProvider allowDrag={() => true} />
-        <Resources data={Resource} mainResourceName="color" />
-      </Scheduler>
-
-      <StyledFab
-        color="secondary"
-        className={classes.addButton}
-        onClick={() => {
-          setEditFormVisible(true);
-          // onEditingAppointmentChange(undefined);
-          // onAddedAppointmentChange({
-          //   startDate: new Date(currentDate).setHours(startDayHour),
-          //   endDate: new Date(currentDate).setHours(startDayHour + 1),
-          // });
-        }}
-      >
-        <AddIcon />
-      </StyledFab>
-    </Paper>
+    <Box>
+      <Box sx={{ width: 800, height: 700 }}>
+        {(isLoadingGetAllEvent || isFetchingGetAllEvent) && <LinearProgress />}
+        <Scheduler data={dataRender}>
+          <ViewState
+            currentDate={currentDate}
+            onCurrentDateChange={(e) => {
+              setCurrentDate(e)
+            }}
+          // currentViewName="weak"
+          // onCurrentViewNameChange={(e) => console.log("view change ", e)}
+          />
+          <EditingState
+            onCommitChanges={(e) => {
+              commitChanges(e);
+            }}
+            onEditingAppointmentChange={(editingAppointment) => {
+              setEditingAppointment(editingAppointment);
+            }}
+            onAddedAppointmentChange={(newAppoiment) => {
+              changeFormVisible();
+              setAddedAppointment(newAppoiment);
+              setEditingAppointment();
+            }}
+          />
+          <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
+          <MonthView />
+          <AllDayPanel />
+          <EditRecurrenceMenu />
+          <Appointments />
+          <AppointmentTooltip showOpenButton showCloseButton showDeleteButton />
+          <Toolbar />
+          <DateNavigator />
+          <ViewSwitcher />
+          <TodayButton />
+          <AppointmentForm
+            overlayComponent={appointmentFormSchedule}
+            visible={editFormVisible}
+            onVisibilityChange={() => setEditFormVisible(!editFormVisible)}
+          />
+          <DragDropProvider allowDrag={() => true} />
+          <Resources data={Resource} mainResourceName="color" />
+        </Scheduler>
+      </Box>
+    </Box>
   );
 }

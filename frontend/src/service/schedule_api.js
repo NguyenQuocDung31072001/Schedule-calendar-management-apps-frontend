@@ -29,6 +29,7 @@ export const addNewScheduleMutation = ({ title, code, description, startTime, en
 }
 
 export const getAllEventQuery = ({ token, fromDate, toDate }) => {
+  console.log({ fromDate, toDate })
   return axiosInstance.get(`/api/courses?FromDate=${fromDate}&ToDate=${toDate}`, {
     headers: {
       "Authorization": `Bearer ${token}`

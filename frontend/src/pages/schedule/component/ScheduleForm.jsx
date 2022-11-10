@@ -46,8 +46,10 @@ import { useTranslation } from "react-i18next";
 import { useMutation } from "@tanstack/react-query";
 import { addNewScheduleMutation } from "../../../service/schedule_api";
 import { useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
 
 export default function ScheduleFormAppointment({
+  addNewCourses,
   visible,
   appointmentData,
   commitChanges,
@@ -104,17 +106,17 @@ export default function ScheduleFormAppointment({
     name: "color",
   });
 
-  const { data, mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
-    onSuccess: () => {
-      console.log("add schedule success")
-    },
-    onError: () => {
-      console.log("add schedule error")
-    }
-  })
+  // const { mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
+  //   onSuccess: () => {
+  //     console.log("add schedule success")
+  //   },
+  //   onError: () => {
+  //     console.log("add schedule error")
+  //   }
+  // })
   //funtion
   const onSubmitForm = (data) => {
-    addNewSchedule({
+    addNewCourses({
       title: data.subject,
       code: "string",
       description: data.notes,
@@ -369,7 +371,7 @@ export default function ScheduleFormAppointment({
               {t(`form.schedule.delete`)}
             </Button>
           )}
-          <Button
+          <LoadingButton
             variant="outlined"
             color="primary"
             className={classes.button}
@@ -378,7 +380,7 @@ export default function ScheduleFormAppointment({
             {isNewAppointment
               ? t(`form.schedule.create`)
               : t(`form.schedule.save`)}
-          </Button>
+          </LoadingButton>
         </div>
 
         <Dialog open={confirmVisible} onClose={() => setConfirmVisible(false)}>
