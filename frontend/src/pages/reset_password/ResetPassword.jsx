@@ -16,6 +16,7 @@ const steps = [
 ];
 
 export default function ResetPassword() {
+  const [email, setEmail] = React.useState("");
   const [activeStep, setActiveStep] = React.useState(0);
   console.log({ activeStep });
   return (
@@ -40,8 +41,12 @@ export default function ResetPassword() {
             );
           })}
         </Stepper>
-        {activeStep === 0 && <EnterEmail setActiveStep={setActiveStep} />}
-        {activeStep === 1 && <EnterVerifyCode setActiveStep={setActiveStep} />}
+        {activeStep === 0 && (
+          <EnterEmail setActiveStep={setActiveStep} setEmail={setEmail} />
+        )}
+        {activeStep === 1 && (
+          <EnterVerifyCode setActiveStep={setActiveStep} email={email} />
+        )}
         {activeStep === 2 && <FormResetPass setActiveStep={setActiveStep} />}
         {activeStep === 3 && <p>Back to Link</p>}
       </Box>

@@ -1,11 +1,28 @@
-import { Box, Button, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Box, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
+import { useForm } from "react-hook-form";
 import ReactInputVerificationCode from "react-input-verification-code";
-
-export default function EnterVerifyCode({ setActiveStep }) {
+import { verifyCodeRePasswordMutationApi } from "../../../service/auth_api";
+export default function EnterVerifyCode({ setActiveStep, email }) {
   const [code, setCode] = React.useState();
-  const verifyCode = () => {
-    setActiveStep(2);
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      code: "",
+    },
+  });
+  const { mutateAsync: verifyCodeMutation, isLoading: isLoadingVerify } =
+    useMutation(verifyCodeRePasswordMutationApi);
+
+  const handleVerifyCode = () => {
+    verifyCodeMutation({
+      email: email,
+      code: code,
+    }).then((data) => {
+      data && setActiveStep(2);
+    });
   };
   return (
     <Box sx={{ padding: 4 }}>
@@ -31,9 +48,15 @@ export default function EnterVerifyCode({ setActiveStep }) {
           <ReactInputVerificationCode onChange={(e) => setCode(e)} />
         </Box>
 
-        <Button variant="contained" sx={{ width: 200 }} onClick={verifyCode}>
+        <LoadingButton
+          disabled={!Number.isInteger(Number(code))}
+          loading={isLoadingVerify}
+          variant="contained"
+          sx={{ width: 200 }}
+          onClick={handleVerifyCode}
+        >
           Verify
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );
