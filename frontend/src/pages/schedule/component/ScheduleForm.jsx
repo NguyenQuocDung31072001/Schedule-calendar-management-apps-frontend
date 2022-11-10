@@ -105,14 +105,14 @@ export default function ScheduleFormAppointment({
     name: "color",
   });
 
-  // const { mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
-  //   onSuccess: () => {
-  //     console.log("add schedule success")
-  //   },
-  //   onError: () => {
-  //     console.log("add schedule error")
-  //   }
-  // })
+  const { mutateAsync: addNewSchedule } = useMutation(addNewScheduleMutation, {
+    onSuccess: () => {
+      console.log("add schedule success");
+    },
+    onError: () => {
+      console.log("add schedule error");
+    },
+  });
   //funtion
   const onSubmitForm = (data) => {
     addNewCourses({

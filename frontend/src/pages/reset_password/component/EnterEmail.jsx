@@ -16,31 +16,44 @@ export default function EnterEmail({ setActiveStep }) {
         Enter the email associate with your account and we'll send an code to
         reset your password
       </Typography>
+
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column",
-          marginTop: "10px",
-          alignItems: "center",
+          justifyContent: "center",
+          alignItem: "center",
         }}
       >
-        <Box sx={{ width: "100%", marginBottom: "10px" }}>
-          <Typography variant="p" sx={{}}>
-            Email Address
-          </Typography>
+        <Box
+          sx={{
+            width: "50%",
+            marginBottom: "10px",
+            marginTop: "10px",
+          }}
+        >
           <TextField
+            label="Enter email address"
+            variant="outlined"
             sx={{ width: "100%" }}
             onChange={(e) => setEmail(e.target.value)}
           />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItem: "center",
+              marginTop: "10px",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{ width: 200 }}
+              onClick={handleSendEmail}
+            >
+              Send email
+            </Button>
+          </Box>
         </Box>
-
-        <Button
-          variant="contained"
-          sx={{ width: 200 }}
-          onClick={handleSendEmail}
-        >
-          Send email
-        </Button>
       </Box>
     </Box>
   );

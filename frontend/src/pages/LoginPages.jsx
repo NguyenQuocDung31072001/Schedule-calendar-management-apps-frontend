@@ -104,7 +104,13 @@ export default function LoginPages() {
           name="password"
           control={control}
           render={({ field }) => {
-            return <InputPassword id="password_login" filed={field} />;
+            return (
+              <InputPassword
+                id="password_login"
+                filed={field}
+                label="Enter password"
+              />
+            );
           }}
         />
         {errors.password?.message && (

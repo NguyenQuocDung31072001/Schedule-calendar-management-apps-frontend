@@ -8,6 +8,7 @@ import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { LoadingButton } from "@mui/lab";
 import { pathName } from "../config/pathName";
+import InputPassword from "../components/input/input_password";
 
 let schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -102,12 +103,10 @@ export default function RegisterPages() {
           name="password"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              variant="outlined"
+            <InputPassword
+              id="password_register"
+              filed={field}
               label="Enter password"
-              type="password"
-              sx={{ width: "350px" }}
             />
           )}
         />

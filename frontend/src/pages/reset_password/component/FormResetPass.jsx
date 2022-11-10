@@ -16,11 +16,13 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password")], "Passwords does not match"),
 });
 
-export default function FormResetPass() {
+export default function FormResetPass({ setActiveStep }) {
   const { control, errors } = useForm({
     resolver: yupResolver(schema),
   });
-
+  const handleResetPassword = () => {
+    setActiveStep(3);
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", padding: 4 }}>
       <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -34,7 +36,13 @@ export default function FormResetPass() {
           name="password"
           control={control}
           render={({ field }) => {
-            return <InputPassword id="password_login" filed={field} />;
+            return (
+              <InputPassword
+                id="password_reset"
+                filed={field}
+                label="Password"
+              />
+            );
           }}
         />
         {errors?.password?.message && (
@@ -43,12 +51,18 @@ export default function FormResetPass() {
           </Typography>
         )}
       </Box>
-      <Box sx={{ padding: "10px 0px" }}>
+      <Box sx={{}}>
         <Controller
           name="confirmPwd"
           control={control}
           render={({ field }) => {
-            return <InputPassword id="passwordPwd_login" filed={field} />;
+            return (
+              <InputPassword
+                id="passwordPwd_reset"
+                filed={field}
+                label="Confirm Password"
+              />
+            );
           }}
         />
         {errors?.confirmPwd?.message && (
@@ -57,8 +71,16 @@ export default function FormResetPass() {
           </Typography>
         )}
       </Box>
-      <Box>
-        <Button>Reset Password</Button>
+      <Box
+        sx={{
+          display: "flex",
+          alignItem: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Button variant="contained" onClick={handleResetPassword}>
+          Reset Password
+        </Button>
       </Box>
     </Box>
   );

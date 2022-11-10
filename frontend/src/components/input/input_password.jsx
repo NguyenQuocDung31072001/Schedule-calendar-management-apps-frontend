@@ -8,11 +8,11 @@ import {
   OutlinedInput,
 } from "@mui/material";
 
-export default function InputPassword({ id, filed }) {
+export default function InputPassword({ id, filed, label }) {
   const [isShowPass, setIsShowPass] = React.useState(true);
   return (
     <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
-      <InputLabel htmlFor={id}>Enter password</InputLabel>
+      <InputLabel htmlFor={id}>{label}</InputLabel>
       <OutlinedInput
         {...filed}
         id={id}

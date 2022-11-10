@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@mui/material";
+import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
 import EnterEmail from "./component/EnterEmail";
 import EnterVerifyCode from "./component/EnterVerifyCode";
@@ -49,7 +42,8 @@ export default function ResetPassword() {
         </Stepper>
         {activeStep === 0 && <EnterEmail setActiveStep={setActiveStep} />}
         {activeStep === 1 && <EnterVerifyCode setActiveStep={setActiveStep} />}
-        {activeStep === 2 && <FormResetPass />}
+        {activeStep === 2 && <FormResetPass setActiveStep={setActiveStep} />}
+        {activeStep === 3 && <p>Back to Link</p>}
       </Box>
     </Box>
   );
