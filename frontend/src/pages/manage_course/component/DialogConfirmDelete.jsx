@@ -5,16 +5,31 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useMutation } from "@tanstack/react-query";
+import { deleteCoursesMutation } from "../../../service/schedule_api";
+import { useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
 
-export default function DialogConfirmDeleteSchedule({
+export default function DeleteCourses({
   openDialog,
   setOpenDialog,
+  rowsSelected,
+  getAllCourses,
 }) {
+  const currentUser = useSelector((state) => state.account);
+  const { mutateAsync: deleteCourses, isLoading: isLoadingDelete } =
+    useMutation(deleteCoursesMutation);
+  const handleDeleteCourse = () => {
+    const promise = rowsSelected.map((data) =>
+      deleteCourses({ id: data.id, token: currentUser.token })
+    );
+    Promise.all(promise).then((result) => {
+      setOpenDialog(false);
+      getAllCourses();
+    });
+  };
   return (
     <div>
-      {/* <Button variant="outlined" onClick={() => setOpenDialog(true)}>
-        Open alert dialog
-      </Button> */}
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -22,19 +37,22 @@ export default function DialogConfirmDeleteSchedule({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
+          Do you want to delete course
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
+            If you delete course, course was deleted!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Disagree</Button>
-          <Button onClick={() => setOpenDialog(false)} autoFocus>
-            Agree
-          </Button>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <LoadingButton
+            loading={isLoadingDelete}
+            onClick={handleDeleteCourse}
+            autoFocus
+          >
+            Delete
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </div>

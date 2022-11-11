@@ -1,86 +1,86 @@
 export const EnumTypeAppointment = {
   Add: "added",
   Change: "changed",
-  Delete: "deleted"
-}
+  Delete: "deleted",
+};
 
 export const EnumTypeCalendar = {
   Task: "task",
-  Schedule: "schedule"
-}
+  Schedule: "schedule",
+};
 export const EnumTypeTime = {
   day: "day",
   week: "week",
   month: "month",
-  year: "year"
-}
+  year: "year",
+};
 export const EnumWeekdays = {
-  Monday: "monday",
-  Tuesday: "tuesday",
-  Wednesday: "wednesday",
-  Thursday: "thursday",
-  Friday: "friday",
-  Saturday: "saturday",
-  Sunday: "sunday"
-}
+  Monday: "Monday",
+  Tuesday: "Tuesday",
+  Wednesday: "Wednesday",
+  Thursday: "Thursday",
+  Friday: "Friday",
+  Saturday: "Saturday ",
+  Sunday: "Sunday",
+};
 export const TypeTimeOptions = [
   {
     value: "day",
-    label: "day"
+    label: "day",
   },
   {
     value: "week",
-    label: "week"
+    label: "week",
   },
   {
     value: "month",
-    label: "month"
+    label: "month",
   },
   {
     value: "year",
-    label: "year"
+    label: "year",
   },
-]
+];
 
 export const TypeWeekdaysOption = [
   {
     value: EnumWeekdays.Monday,
-    label: EnumWeekdays.Monday
+    label: EnumWeekdays.Monday,
   },
   {
     value: EnumWeekdays.Tuesday,
-    label: EnumWeekdays.Tuesday
+    label: EnumWeekdays.Tuesday,
   },
   {
     value: EnumWeekdays.Wednesday,
-    label: EnumWeekdays.Wednesday
+    label: EnumWeekdays.Wednesday,
   },
   {
     value: EnumWeekdays.Thursday,
-    label: EnumWeekdays.Thursday
+    label: EnumWeekdays.Thursday,
   },
   {
     value: EnumWeekdays.Friday,
-    label: EnumWeekdays.Friday
+    label: EnumWeekdays.Friday,
   },
   {
     value: EnumWeekdays.Saturday,
-    label: EnumWeekdays.Saturday
+    label: EnumWeekdays.Saturday,
   },
   {
     value: EnumWeekdays.Sunday,
-    label: EnumWeekdays.Sunday
+    label: EnumWeekdays.Sunday,
   },
-]
+];
 
 export const EnumColor = {
   red: "#e74c3c",
   orange: "#f39c12",
   violet: "#8e44ad",
-  gray: "#34495e"
-}
+  gray: "#34495e",
+};
 
 export const language = {
   en: "English",
-  vi: "Viet Nam"
-}
+  vi: "Viet Nam",
+};

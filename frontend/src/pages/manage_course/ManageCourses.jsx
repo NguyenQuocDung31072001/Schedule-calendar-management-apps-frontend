@@ -22,16 +22,18 @@ import { getAllCoursesQuery } from "../../service/schedule_api";
 
 //component
 import CreateCourses from "./component/CreateCourse";
-import DialogConfirmDeleteSchedule from "./component/DialogConfirmDelete";
+import DeleteCourses from "./component/DialogConfirmDelete";
 
 export default function ManageSchedule() {
   const currentUser = useSelector((state) => state.account);
   const [openModal, setOpenModal] = React.useState(false);
+  const [rowsSelected, setRowsSelected] = React.useState([]);
   const [openDialogConfirm, setOpenDialogConfirm] = React.useState(false);
-
+  const [typeModal, setTypeModal] = React.useState("create");
   const {
     data,
     isLoading: isLoadingGetAllCourses,
+    isFetching: isFetchingGetAllCourses,
     refetch: getAllCourses,
   } = useQuery(
     ["test"],
@@ -41,11 +43,11 @@ export default function ManageSchedule() {
       enabled: false,
     }
   );
-  console.log({ data });
 
   //useEffect
   React.useEffect(() => {
     getAllCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //useMemo
   const rows = React.useMemo(() => {
@@ -61,6 +63,7 @@ export default function ManageSchedule() {
         " - " +
         parseNumberToTime(item.endTime),
       numOfLessonsPerDay: item.numOfLessonsPerDay,
+      dayOfWeeks: item.dayOfWeeks,
       startDate: item.startDate.split("T")[0],
       endDate: item.endDate.split("T")[0],
       numOfLessons: item.numOfLessons,
@@ -80,6 +83,14 @@ export default function ManageSchedule() {
         headerName: "NumOfLessonsPerDay",
         width: 130,
       },
+      {
+        field: "dayOfWeeks",
+        headerName: "DayOfWeeks",
+        width: 130,
+        renderCell: (record) => {
+          // console.log({ record });
+        },
+      },
       { field: "startDate", headerName: "StartDate", width: 130 },
       { field: "endDate", headerName: "endDate", width: 130 },
       { field: "numOfLessons", headerName: "numOfLessons", width: 130 },
@@ -87,7 +98,7 @@ export default function ManageSchedule() {
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows]);
-
+  console.log(rowsSelected);
   return (
     <Box sx={{ padding: 5 }}>
       <Box
@@ -104,11 +115,28 @@ export default function ManageSchedule() {
             loadingPosition="start"
             startIcon={<AddCircleIcon />}
             variant="outlined"
-            onClick={() => setOpenModal(true)}
+            onClick={() => {
+              setOpenModal(true);
+              setTypeModal("create");
+            }}
           >
             Add
           </LoadingButton>
           <LoadingButton
+            disabled={rowsSelected.length === 0 || rowsSelected.length > 1}
+            loading={false}
+            loadingPosition="start"
+            startIcon={<AddCircleIcon />}
+            variant="outlined"
+            onClick={() => {
+              setOpenModal(true);
+              setTypeModal("update");
+            }}
+          >
+            Update
+          </LoadingButton>
+          <LoadingButton
+            disabled={rowsSelected.length === 0}
             loading={false}
             loadingPosition="start"
             startIcon={<DeleteIcon />}
@@ -121,19 +149,31 @@ export default function ManageSchedule() {
           </LoadingButton>
         </Box>
       </Box>
-      <CreateCourses openModal={openModal} setOpenModal={setOpenModal} />
-      <DialogConfirmDeleteSchedule
+      <CreateCourses
+        type={typeModal}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        getAllCourses={getAllCourses}
+        rowsSelected={rowsSelected}
+      />
+      <DeleteCourses
         openDialog={openDialogConfirm}
         setOpenDialog={setOpenDialogConfirm}
+        rowsSelected={rowsSelected}
+        getAllCourses={getAllCourses}
       />
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
-          loading={isLoadingGetAllCourses}
+          loading={isLoadingGetAllCourses || isFetchingGetAllCourses}
           rows={rows}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
           checkboxSelection
+          onSelectionModelChange={(ids) => {
+            const selectedRowData = rows.filter((row) => ids.includes(row.id));
+            setRowsSelected(selectedRowData);
+          }}
         />
       </div>
     </Box>

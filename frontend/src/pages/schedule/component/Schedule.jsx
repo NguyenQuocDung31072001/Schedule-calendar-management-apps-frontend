@@ -95,7 +95,6 @@ export default function Schedule() {
       color: item.colorCode,
     }));
   }, [dataResponse]);
-  console.log({ dataRender });
 
   React.useEffect(() => {
     refetchGetAllEvent();
@@ -139,7 +138,6 @@ export default function Schedule() {
       cancelAppointment,
     };
   });
-  console.log({ isLoadingGetAllEvent, isFetchingGetAllEvent });
   return (
     <Box>
       <Box sx={{ width: 800, height: 700 }}>
