@@ -31,8 +31,12 @@ import dayjs from "dayjs";
 import { LoadingButton } from "@mui/lab";
 import { useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
-import { addNewCoursesMutation } from "../../../service/schedule_api";
+import {
+  addNewCoursesMutation,
+  updateCoursesMutation,
+} from "../../../service/schedule_api";
 import { parseTimeToNumber } from "../../../util/time/parseTimeToNumber";
+import { getDetailTimeFormNumber } from "../../../util/time/parseNumberToTime";
 
 export default function FormCourses({
   type,
@@ -44,10 +48,10 @@ export default function FormCourses({
 
   const [selectTypeEndSchedule, setSelectTypeEndSchedule] =
     React.useState("endDate");
-  const { isLoading, mutateAsync: addNewCourses } = useMutation(
-    addNewCoursesMutation
-  );
-
+  const { isLoading: isLoadingAddNewCourse, mutateAsync: addNewCourses } =
+    useMutation(addNewCoursesMutation);
+  const { isLoading: isLoadingUpdateCourse, mutateAsync: updateCourse } =
+    useMutation(updateCoursesMutation);
   const { control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (type === "create") {
@@ -61,24 +65,37 @@ export default function FormCourses({
           endDate: dayjs(new Date()),
           numOfLessonsPerDay: 0,
           numOfLessons: 0,
-          notiBeforeTime: 0,
+          notiBeforeTime: 5,
           description: "",
           color: "",
         };
       }
       return {
-        subject: rowsSelected?.title || "",
-        code: rowsSelected?.code || "",
-        startDate: dayjs(rowsSelected.startDate) || "",
-        startTime: dayjs(new Date()) || " ",
-        endTime: dayjs(new Date()),
-        dayOfWeeks: rowsSelected?.dayOfWeeks || [],
-        endDate: dayjs(rowsSelected.endDate),
-        numOfLessonsPerDay: rowsSelected.numOfLessonsPerDay,
-        numOfLessons: rowsSelected.numOfLessons,
-        notiBeforeTime: rowsSelected.notiBeforeTime,
-        description: rowsSelected.description,
-        color: rowsSelected.colorCode || "",
+        subject: rowsSelected[0]?.title || "",
+        code: rowsSelected[0]?.code || "",
+        startDate: dayjs(rowsSelected[0].startDate) || "",
+        startTime:
+          dayjs(
+            new Date(
+              `${rowsSelected[0].startDate}T${
+                getDetailTimeFormNumber(rowsSelected[0].startTime).H
+              }:${getDetailTimeFormNumber(rowsSelected[0].startTime).M}:00`
+            )
+          ) || " ",
+        endTime: dayjs(
+          new Date(
+            `${rowsSelected[0].startDate}T${
+              getDetailTimeFormNumber(rowsSelected[0].endTime).H
+            }:${getDetailTimeFormNumber(rowsSelected[0].endTime).M}:00`
+          ) || " "
+        ),
+        dayOfWeeks: rowsSelected[0]?.dayOfWeeks || [],
+        endDate: dayjs(rowsSelected[0].endDate),
+        numOfLessonsPerDay: rowsSelected[0].numOfLessonsPerDay,
+        numOfLessons: rowsSelected[0].numOfLessons,
+        notiBeforeTime: rowsSelected[0].notiBeforeTime || 5,
+        description: rowsSelected[0].description,
+        color: rowsSelected[0].colorCode || "",
       };
     }, [type, rowsSelected]),
   });
@@ -102,7 +119,20 @@ export default function FormCourses({
       getAllCourses();
     });
   };
-
+  const handleUpdateCourse = (formData) => {
+    console.log({ update: formData });
+    updateCourse({
+      id: rowsSelected[0].id,
+      ...formData,
+      startTime: parseTimeToNumber(formData.startTime),
+      endTime: parseTimeToNumber(formData.endTime),
+      colorCode: formData.color.hex,
+      token: currentUser.token,
+    }).then((result) => {
+      setOpenModal(false);
+      getAllCourses();
+    });
+  };
   return (
     <StyledDiv>
       <div className={classes.content}>
@@ -345,10 +375,14 @@ export default function FormCourses({
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <LoadingButton
           variant="contained"
-          onClick={handleSubmit(handleAddCourse)}
-          loading={isLoading}
+          onClick={
+            type === "create"
+              ? handleSubmit(handleAddCourse)
+              : handleSubmit(handleUpdateCourse)
+          }
+          loading={isLoadingAddNewCourse || isLoadingUpdateCourse}
         >
-          Add New Course
+          {type === "create" ? "Add New Course" : "Update Course"}
         </LoadingButton>
       </Box>
     </StyledDiv>

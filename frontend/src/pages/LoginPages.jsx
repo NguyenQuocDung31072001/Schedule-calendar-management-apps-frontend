@@ -147,6 +147,7 @@ export default function LoginPages() {
             textDecoration: "none",
             fontFamily: "Arial, Helvetica, sans-serif",
             color: "blue",
+            pointerEvents:"none"
           }}
         >
           Register

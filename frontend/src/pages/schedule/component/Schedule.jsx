@@ -37,7 +37,7 @@ import {
   getAllEventQuery,
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
-import { parseNumberToTime } from "../../../util/parseNumberToTime";
+import { parseNumberToTime } from "../../../util/time/parseNumberToTime";
 import { Box } from "@mui/system";
 
 const startDayHour = 9;

@@ -15,7 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 //util
-import { parseNumberToTime } from "../../util/parseNumberToTime";
+import { parseNumberToTime } from "../../util/time/parseNumberToTime";
 
 //service
 import { getAllCoursesQuery } from "../../service/schedule_api";
@@ -53,22 +53,27 @@ export default function ManageSchedule() {
   const rows = React.useMemo(() => {
     const dataSchedule = data?.data?.data;
     if (!dataSchedule) return [];
-    return dataSchedule.map((item) => ({
-      id: item.id,
-      title: item.title,
-      code: item.code,
-      description: item.description,
-      time:
-        parseNumberToTime(item.startTime) +
-        " - " +
-        parseNumberToTime(item.endTime),
-      numOfLessonsPerDay: item.numOfLessonsPerDay,
-      dayOfWeeks: item.dayOfWeeks,
-      startDate: item.startDate.split("T")[0],
-      endDate: item.endDate.split("T")[0],
-      numOfLessons: item.numOfLessons,
-      colorCode: item.colorCode,
-    }));
+    return dataSchedule.map((item) => {
+      console.log({ test: item.startTime });
+      return {
+        id: item.id,
+        title: item.title,
+        code: item.code,
+        description: item.description,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        time:
+          parseNumberToTime(item.startTime) +
+          " - " +
+          parseNumberToTime(item.endTime),
+        numOfLessonsPerDay: item.numOfLessonsPerDay,
+        dayOfWeeks: item.dayOfWeeks,
+        startDate: item.startDate.split("T")[0],
+        endDate: item.endDate.split("T")[0],
+        numOfLessons: item.numOfLessons,
+        colorCode: item.colorCode,
+      };
+    });
   }, [data]);
 
   const columns = React.useMemo(() => {
@@ -77,7 +82,12 @@ export default function ManageSchedule() {
       { field: "title", headerName: "Title", width: 150 },
       { field: "code", headerName: "Code", width: 130 },
       { field: "description", headerName: "Description", width: 250 },
-      { field: "time", headerName: "time", width: 130 },
+      {
+        field: "time",
+        headerName: "time",
+        width: 130,
+        renderCell: (record) => {},
+      },
       {
         field: "numOfLessonsPerDay",
         headerName: "NumOfLessonsPerDay",
@@ -98,7 +108,6 @@ export default function ManageSchedule() {
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows]);
-  console.log(rowsSelected);
   return (
     <Box sx={{ padding: 5 }}>
       <Box
