@@ -11,7 +11,7 @@ import {
 export default function InputPassword({ id, filed, label }) {
   const [isShowPass, setIsShowPass] = React.useState(true);
   return (
-    <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+    <FormControl sx={{ m: 1, width: "100%" }} variant="outlined">
       <InputLabel htmlFor={id}>{label}</InputLabel>
       <OutlinedInput
         {...filed}
@@ -29,7 +29,7 @@ export default function InputPassword({ id, filed, label }) {
             </IconButton>
           </InputAdornment>
         }
-        label="Enter password"
+        label={label}
       />
     </FormControl>
   );

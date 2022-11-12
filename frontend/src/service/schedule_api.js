@@ -20,6 +20,7 @@ export const addNewCoursesMutation = ({
   endDate,
   numOfLessons,
   notiBeforeTime,
+  notiUnit,
   colorCode,
   token,
 }) => {
@@ -37,6 +38,7 @@ export const addNewCoursesMutation = ({
       endDate: endDate,
       numOfLessons: numOfLessons,
       notiBeforeTime: notiBeforeTime,
+      notiUnit: notiUnit,
       colorCode: colorCode,
     },
     {
@@ -60,6 +62,7 @@ export const updateCoursesMutation = async ({
   endDate,
   numOfLessons,
   notiBeforeTime,
+  notiUnit,
   colorCode,
   token,
 }) => {
@@ -77,6 +80,7 @@ export const updateCoursesMutation = async ({
       endDate: endDate,
       numOfLessons: numOfLessons,
       notiBeforeTime: notiBeforeTime,
+      notiUnit: notiUnit,
       colorCode: colorCode,
     },
     {

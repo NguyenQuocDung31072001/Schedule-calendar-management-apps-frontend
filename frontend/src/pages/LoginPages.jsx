@@ -119,10 +119,6 @@ export default function LoginPages() {
           </Typography>
         )}
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Checkbox />
-        <Typography>Remember me</Typography>
-      </Box>
       <Box sx={{ width: "100%", padding: "10px 0px" }}>
         <LoadingButton
           sx={{ width: "100%" }}
@@ -147,7 +143,7 @@ export default function LoginPages() {
             textDecoration: "none",
             fontFamily: "Arial, Helvetica, sans-serif",
             color: "blue",
-            pointerEvents:"none"
+            pointerEvents: "none",
           }}
         >
           Register

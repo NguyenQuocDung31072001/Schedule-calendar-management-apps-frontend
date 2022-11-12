@@ -24,7 +24,11 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // common component
 import { StyledDiv, classes } from "../../../components/schedule/common";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import { EnumColor, TypeWeekdaysOption } from "../../../interface/enum";
+import {
+  EnumColor,
+  EnumNotiUnit,
+  TypeWeekdaysOption,
+} from "../../../interface/enum";
 import { CirclePicker } from "react-color";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import dayjs from "dayjs";
@@ -66,6 +70,7 @@ export default function FormCourses({
           numOfLessonsPerDay: 0,
           numOfLessons: 0,
           notiBeforeTime: 5,
+          notiUnit: EnumNotiUnit.MINUTE,
           description: "",
           color: "",
         };
@@ -94,6 +99,7 @@ export default function FormCourses({
         numOfLessonsPerDay: rowsSelected[0].numOfLessonsPerDay,
         numOfLessons: rowsSelected[0].numOfLessons,
         notiBeforeTime: rowsSelected[0].notiBeforeTime || 5,
+        notiUnit: EnumNotiUnit.MINUTE,
         description: rowsSelected[0].description,
         color: rowsSelected[0].colorCode || "",
       };
@@ -242,7 +248,7 @@ export default function FormCourses({
           </Grid>
           <Grid item xs={6}>
             {renderItem(
-              <FormControl>
+              <FormControl fullWidth>
                 <RadioGroup
                   aria-labelledby="choose-end-schedule"
                   name="row-radio-buttons-group"
@@ -250,6 +256,10 @@ export default function FormCourses({
                   defaultValue="endDate"
                 >
                   <FormControlLabel
+                    sx={{
+                      minWidth: "200px",
+                      width: "100%",
+                    }}
                     value="endDate"
                     control={<Radio />}
                     label={
@@ -260,11 +270,15 @@ export default function FormCourses({
                           render={({ field }) => (
                             <LocalizationProvider dateAdapter={AdapterMoment}>
                               <DatePicker
+                                sx={{ width: "100%" }}
                                 disabled={selectTypeEndSchedule !== "endDate"}
                                 label="end date"
                                 views={["year", "month", "day"]}
                                 renderInput={(params) => (
-                                  <TextField {...params} />
+                                  <TextField
+                                    {...params}
+                                    sx={{ width: "100%" }}
+                                  />
                                 )}
                                 {...field}
                               />
@@ -275,17 +289,26 @@ export default function FormCourses({
                     }
                   />
                   <FormControlLabel
+                    sx={{
+                      minWidth: "200px",
+                      width: "100%",
+                    }}
                     value="numOfLessons"
                     control={<Radio />}
                     label={
                       <>
                         <Controller
+                          sx={{}}
                           name="numOfLessons"
                           control={control}
                           render={({ field }) => (
                             <TextField
-                              sx={{ marginTop: "10px", width: "200px" }}
                               {...field}
+                              sx={{
+                                marginTop: 2,
+                                minWidth: "200px",
+                                width: "100%",
+                              }}
                               disabled={
                                 selectTypeEndSchedule !== "numOfLessons"
                               }

@@ -4,6 +4,9 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import InputPassword from "../../../components/input/input_password";
 import * as yup from "yup";
+import { useMutation } from "@tanstack/react-query";
+import { resetPasswordMutationApi } from "../../../service/auth_api";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   password: yup
@@ -16,12 +19,24 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password")], "Passwords does not match"),
 });
 
-export default function FormResetPass({ setActiveStep }) {
-  const { control, errors } = useForm({
+export default function FormResetPass({ setActiveStep, token }) {
+  const { control, errors, handleSubmit } = useForm({
+    defaultValues: {
+      password: "",
+      confirmPwd: "",
+    },
     resolver: yupResolver(schema),
   });
-  const handleResetPassword = () => {
-    setActiveStep(3);
+  const { mutateAsync: resetPass, isLoading: isLoadingResetPass } = useMutation(
+    resetPasswordMutationApi
+  );
+  const handleResetPassword = (formData) => {
+    console.log({ formData });
+    console.log({ token });
+    resetPass({
+      token: token,
+      password: formData.password,
+    }).then((result) => result && setActiveStep(3));
   };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", padding: 4 }}>
@@ -78,9 +93,13 @@ export default function FormResetPass({ setActiveStep }) {
           justifyContent: "center",
         }}
       >
-        <Button variant="contained" onClick={handleResetPassword}>
+        <LoadingButton
+          loading={isLoadingResetPass}
+          variant="contained"
+          onClick={handleSubmit(handleResetPassword)}
+        >
           Reset Password
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );

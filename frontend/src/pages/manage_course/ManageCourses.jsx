@@ -118,7 +118,7 @@ export default function ManageSchedule() {
         }}
       >
         <Typography variant="h4">Schedule</Typography>
-        <Box sx={{}}>
+        <Box>
           <LoadingButton
             loading={false}
             loadingPosition="start"
@@ -136,6 +136,7 @@ export default function ManageSchedule() {
             loading={false}
             loadingPosition="start"
             startIcon={<AddCircleIcon />}
+            sx={{ marginLeft: 2 }}
             variant="outlined"
             onClick={() => {
               setOpenModal(true);

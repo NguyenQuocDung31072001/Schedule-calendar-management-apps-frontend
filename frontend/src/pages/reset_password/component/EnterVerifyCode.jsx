@@ -2,17 +2,11 @@ import { LoadingButton } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
-import { useForm } from "react-hook-form";
 import ReactInputVerificationCode from "react-input-verification-code";
 import { verifyCodeRePasswordMutationApi } from "../../../service/auth_api";
-export default function EnterVerifyCode({ setActiveStep, email }) {
+export default function EnterVerifyCode({ setActiveStep, email, setToken }) {
   const [code, setCode] = React.useState();
 
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      code: "",
-    },
-  });
   const { mutateAsync: verifyCodeMutation, isLoading: isLoadingVerify } =
     useMutation(verifyCodeRePasswordMutationApi);
 
@@ -21,7 +15,11 @@ export default function EnterVerifyCode({ setActiveStep, email }) {
       email: email,
       code: code,
     }).then((data) => {
-      data && setActiveStep(2);
+      if (data) {
+        console.log({ data });
+        setToken(data.data.data);
+        setActiveStep(2);
+      }
     });
   };
   return (

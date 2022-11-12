@@ -1,5 +1,7 @@
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
+import { pathName } from "../../config/pathName";
 import EnterEmail from "./component/EnterEmail";
 import EnterVerifyCode from "./component/EnterVerifyCode";
 import FormResetPass from "./component/FormResetPass";
@@ -17,8 +19,8 @@ const steps = [
 
 export default function ResetPassword() {
   const [email, setEmail] = React.useState("");
+  const [token, setToken] = React.useState();
   const [activeStep, setActiveStep] = React.useState(0);
-  console.log({ activeStep });
   return (
     <Box
       sx={{
@@ -45,10 +47,27 @@ export default function ResetPassword() {
           <EnterEmail setActiveStep={setActiveStep} setEmail={setEmail} />
         )}
         {activeStep === 1 && (
-          <EnterVerifyCode setActiveStep={setActiveStep} email={email} />
+          <EnterVerifyCode
+            setActiveStep={setActiveStep}
+            email={email}
+            setToken={setToken}
+          />
         )}
-        {activeStep === 2 && <FormResetPass setActiveStep={setActiveStep} />}
-        {activeStep === 3 && <p>Back to Link</p>}
+        {activeStep === 2 && (
+          <FormResetPass setActiveStep={setActiveStep} token={token} />
+        )}
+        {activeStep === 3 && (
+          <Link
+            to={pathName.auth.full_login}
+            style={{
+              textDecoration: "none",
+              fontFamily: "Arial, Helvetica, sans-serif",
+              color: "blue",
+            }}
+          >
+            Back to login
+          </Link>
+        )}
       </Box>
     </Box>
   );

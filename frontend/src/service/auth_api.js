@@ -21,14 +21,6 @@ export const verifyAccountMutationApi = async ({ email, code }) => {
 };
 
 export const forgotPasswordMutationApi = async (email) => {
-  // return await axios({
-  //   method:"post",
-  //   url:"https://sheca-api.azurewebsites.net/api/auth/forgot-password",
-  //   data:JSON.stringify(email),
-  //   config:{
-  //     headers: { "Content-Type": "application/json-patch+json" },
-  //   }
-  // })
   return await axiosInstance.post("/api/auth/forgot-password", {
     email: email,
   });

@@ -73,6 +73,12 @@ export const TypeWeekdaysOption = [
   },
 ];
 
+export const EnumNotiUnit = {
+  MINUTE: "MINUTE",
+  HOUR: "HOUR",
+  DAY: "DAY",
+  WEEK: "WEEK",
+};
 export const EnumColor = {
   red: "#e74c3c",
   orange: "#f39c12",
