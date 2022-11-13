@@ -23,22 +23,20 @@ import { connectProps } from "@devexpress/dx-react-core";
 //material component
 import { LinearProgress } from "@mui/material";
 
-//material icon
-
-// common component
-
 //data fake
-import { EnumTypeAppointment } from "../../../interface/enum";
 import { Resource } from "../../../fake_data/Resource";
 import TabPanelForm from "../../../components/schedule/TabPanelForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addNewCoursesMutation,
   getAllEventQuery,
+  updateCoursesMutation,
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
 import { parseNumberToTime } from "../../../util/time/parseNumberToTime";
 import { Box } from "@mui/system";
+import dayjs from "dayjs";
+import { getTime } from "../../../util/time/getTime";
 
 const startDayHour = 9;
 const endDayHour = 19;
@@ -71,7 +69,6 @@ export default function Schedule() {
       enabled: false,
     }
   );
-
   const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } =
     useMutation(addNewCoursesMutation, {
       onSuccess: () => {
@@ -81,6 +78,8 @@ export default function Schedule() {
         console.log("add schedule error");
       },
     });
+  const { mutateAsync: updateCourse, isLoading: isLoadingUpdateCourse } =
+    useMutation(updateCoursesMutation);
 
   const dataResponse = data?.data?.data;
   const dataRender = React.useMemo(() => {
@@ -98,6 +97,7 @@ export default function Schedule() {
 
   React.useEffect(() => {
     refetchGetAllEvent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDate, isLoadingAddNewCourses]);
 
   //function
@@ -109,10 +109,33 @@ export default function Schedule() {
     setEditFormVisible(!editFormVisible);
   };
   const commitChanges = (value) => {
-    if (value.type === EnumTypeAppointment.Add) {
-    } else if (value.type === EnumTypeAppointment.Change) {
-    } else if (value.changed) {
-    } else {
+    if (value["changed"]) {
+      let id = Object.keys(value["changed"]);
+      const {
+        getHourParseToNumber: getHourParseToNumberStartTime,
+        getMinusParseToNumber: getMinusParseToNumberStartTime,
+      } = getTime(value["changed"][Number(id[0])].startDate);
+      const {
+        getHourParseToNumber: getHourParseToNumberEndTime,
+        getMinusParseToNumber: getMinusParseToNumberEndTime,
+      } = getTime(value["changed"][Number(id[0])].endDate);
+      const startDateChange = value["changed"][Number(id[0])].startDate;
+      const endDateChange = value["changed"][Number(id[0])].endDate;
+      const dataChanged = data.data.data.find(
+        (item) => item.id.toString() === id[0]
+      );
+      updateCourse({
+        ...dataChanged,
+        id: id,
+        startDate: dayjs(startDateChange),
+        endDate: dayjs(endDateChange),
+        startTime:
+          getHourParseToNumberStartTime + getMinusParseToNumberStartTime,
+        endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndTime,
+        token: token,
+      }).then((result) => {
+        result && refetchGetAllEvent();
+      });
     }
   };
   const appointmentFormSchedule = connectProps(TabPanelForm, () => {
@@ -141,7 +164,9 @@ export default function Schedule() {
   return (
     <Box>
       <Box sx={{ width: 800, height: 700 }}>
-        {(isLoadingGetAllEvent || isFetchingGetAllEvent) && <LinearProgress />}
+        {(isLoadingGetAllEvent ||
+          isFetchingGetAllEvent ||
+          isLoadingUpdateCourse) && <LinearProgress />}
         <Scheduler data={dataRender}>
           <ViewState
             currentDate={currentDate}

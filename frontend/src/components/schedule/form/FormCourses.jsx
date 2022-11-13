@@ -60,7 +60,7 @@ export default function FormCourses({
     defaultValues: React.useMemo(() => {
       if (type === "create") {
         return {
-          subject: "",
+          title: "",
           code: "code example",
           startDate: dayjs(new Date()),
           startTime: dayjs(new Date()),
@@ -75,8 +75,9 @@ export default function FormCourses({
           color: "",
         };
       }
+      console.log({ endDate: dayjs(rowsSelected[0].endDate) });
       return {
-        subject: rowsSelected[0]?.title || "",
+        title: rowsSelected[0]?.title || "",
         code: rowsSelected[0]?.code || "",
         startDate: dayjs(rowsSelected[0].startDate) || "",
         startTime:
@@ -146,7 +147,7 @@ export default function FormCourses({
           <Grid item xs={6}>
             {renderItem(
               <Controller
-                name="subject"
+                name="title"
                 control={control}
                 render={({ field }) => (
                   <TextField

@@ -45,6 +45,7 @@ import { useMutation } from "@tanstack/react-query";
 import { addNewCoursesMutation } from "../../../service/schedule_api";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+import dayjs from "dayjs";
 
 export default function ScheduleFormAppointment({
   addNewCourses,
@@ -70,7 +71,7 @@ export default function ScheduleFormAppointment({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
         return {
-          subject: appointmentData.title,
+          title: appointmentData.title,
           code: "",
           startDate: appointmentData.startDate,
           startTime: appointmentData.startDate,
@@ -82,21 +83,21 @@ export default function ScheduleFormAppointment({
           notes: appointmentData.notes,
           color: appointmentData.color,
         };
-      } else {
-        return {
-          subject: "",
-          code: "",
-          startDate: appointmentData.startDate,
-          startTime: appointmentData.startDate,
-          endTime: appointmentData.endDate,
-          endDate: appointmentData.endDate,
-          notification: "",
-          numOfLessonsPerDay: "",
-          numOfLessons: "",
-          notes: "",
-          color: [],
-        };
       }
+      return {
+        title: "",
+        code: "",
+        startDate: appointmentData.startDate,
+        startTime: appointmentData.startDate,
+        endTime: appointmentData.endDate,
+        endDate: appointmentData.endDate,
+        notification: "",
+        numOfLessonsPerDay: "",
+        numOfLessons: "",
+        notes: "",
+        color: [],
+      };
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appointmentData]),
   });
@@ -113,10 +114,10 @@ export default function ScheduleFormAppointment({
       console.log("add schedule error");
     },
   });
-  //funtion
+  //function
   const onSubmitForm = (data) => {
     addNewCourses({
-      title: data.subject,
+      title: data.title,
       code: "string",
       description: data.notes,
       startTime:
@@ -142,7 +143,7 @@ export default function ScheduleFormAppointment({
         <div className={classes.wrapper}>
           <Create className={classes.icon} color="action" />
           <Controller
-            name="subject"
+            name="title"
             control={control}
             render={({ field }) => (
               <TextField
