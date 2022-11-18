@@ -23,7 +23,7 @@
             "timeStart":"Giờ bắt đầu",
             "timeEnd":"Giờ kết thúc",
             "chooseColor":"Chọn màu nền",
-            "notes":"Ghi chú",
+            "description":"Ghi chú",
             "repeat":{
                 "name":"Lặp lại",
                 "title":"Lặp lại tùy chỉnh",

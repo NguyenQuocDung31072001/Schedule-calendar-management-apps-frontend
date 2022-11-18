@@ -29,6 +29,7 @@ import TabPanelForm from "../../../components/schedule/TabPanelForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addNewCoursesMutation,
+  deleteCoursesMutation,
   getAllEventQuery,
   updateCoursesMutation,
 } from "../../../service/schedule_api";
@@ -69,6 +70,9 @@ export default function Schedule() {
       enabled: false,
     }
   );
+  const { mutateAsync: deleteCourses, isLoading: isLoadingDelete } =
+    useMutation(deleteCoursesMutation);
+
   const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } =
     useMutation(addNewCoursesMutation, {
       onSuccess: () => {
@@ -84,21 +88,39 @@ export default function Schedule() {
   const dataResponse = data?.data?.data;
   const dataRender = React.useMemo(() => {
     if (!dataResponse) return [];
-    return dataResponse.map((item) => ({
-      title: item.title,
-      startDate:
-        item.startDate.split("T")[0] + "T" + parseNumberToTime(item.startTime),
-      endDate:
-        item.startDate.split("T")[0] + "T" + parseNumberToTime(item.endTime),
-      id: item.id,
-      color: item.colorCode,
-    }));
+    return dataResponse.map((item) => {
+      return {
+        ...item,
+        title: item.title,
+        startDate:
+          item.startDate.split("T")[0] +
+          "T" +
+          parseNumberToTime(item.startTime),
+        endDate:
+          item.startDate.split("T")[0] + "T" + parseNumberToTime(item.endTime),
+        id: item.id,
+        color: Resource[0]?.instances?.find(
+          (resource) => resource.color === item.colorCode
+        )
+          ? [
+              Resource[0]?.instances?.find(
+                (resource) => resource.color === item.colorCode
+              ).id,
+            ]
+          : [],
+      };
+    });
   }, [dataResponse]);
 
   React.useEffect(() => {
     refetchGetAllEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDate, isLoadingAddNewCourses]);
+  }, [
+    currentDate,
+    isLoadingDelete,
+    isLoadingAddNewCourses,
+    isLoadingUpdateCourse,
+  ]);
 
   //function
   const onEditingAppointmentChange = (editingAppointment) => {
@@ -133,9 +155,15 @@ export default function Schedule() {
           getHourParseToNumberStartTime + getMinusParseToNumberStartTime,
         endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndTime,
         token: token,
-      }).then((result) => {
-        result && refetchGetAllEvent();
       });
+      return;
+    }
+    if (value.deleted) {
+      deleteCourses({
+        id: value.deleted,
+        token: token,
+      });
+      return;
     }
   };
   const appointmentFormSchedule = connectProps(TabPanelForm, () => {
@@ -153,6 +181,7 @@ export default function Schedule() {
 
     return {
       addNewCourses,
+      updateCourse,
       visible: editFormVisible,
       appointmentData: currentAppointment,
       commitChanges: commitChanges,
@@ -163,10 +192,11 @@ export default function Schedule() {
   });
   return (
     <Box>
-      <Box sx={{ width: 800, height: 700 }}>
+      <Box sx={{ width: 800, height: 900 }}>
         {(isLoadingGetAllEvent ||
           isFetchingGetAllEvent ||
-          isLoadingUpdateCourse) && <LinearProgress />}
+          isLoadingUpdateCourse ||
+          isLoadingDelete) && <LinearProgress />}
         <Scheduler data={dataRender}>
           <ViewState
             currentDate={currentDate}

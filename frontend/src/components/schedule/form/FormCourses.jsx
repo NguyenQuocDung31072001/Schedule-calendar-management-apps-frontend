@@ -75,7 +75,6 @@ export default function FormCourses({
           color: "",
         };
       }
-      console.log({ endDate: dayjs(rowsSelected[0].endDate) });
       return {
         title: rowsSelected[0]?.title || "",
         code: rowsSelected[0]?.code || "",

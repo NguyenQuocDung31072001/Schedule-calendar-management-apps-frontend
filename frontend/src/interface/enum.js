@@ -23,24 +23,6 @@ export const EnumWeekdays = {
   Saturday: "Saturday ",
   Sunday: "Sunday",
 };
-export const TypeTimeOptions = [
-  {
-    value: "day",
-    label: "day",
-  },
-  {
-    value: "week",
-    label: "week",
-  },
-  {
-    value: "month",
-    label: "month",
-  },
-  {
-    value: "year",
-    label: "year",
-  },
-];
 
 export const TypeWeekdaysOption = [
   {
@@ -79,6 +61,13 @@ export const EnumNotiUnit = {
   DAY: "DAY",
   WEEK: "WEEK",
 };
+export const EnumRecurringUnit = {
+  DAY: "DAY",
+  WEEK: "WEEK",
+  MONTH: "MONTH",
+  YEAR: "YEAR",
+};
+
 export const EnumColor = {
   red: "#e74c3c",
   orange: "#f39c12",

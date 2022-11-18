@@ -6,6 +6,7 @@ import React from "react";
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -29,26 +30,27 @@ import Create from "@mui/icons-material/Create";
 import AlarmIcon from "@mui/icons-material/Alarm";
 
 // material date picker
-// import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 // common component
 import { StyledDiv, classes } from "../../../components/schedule/common";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import { getDetailTime } from "../../../util/getDetailTime";
-import { EnumColor } from "../../../interface/enum";
+import {
+  EnumColor,
+  EnumNotiUnit,
+  TypeWeekdaysOption,
+} from "../../../interface/enum";
 import { CirclePicker } from "react-color";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "@tanstack/react-query";
-import { addNewCoursesMutation } from "../../../service/schedule_api";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import dayjs from "dayjs";
+import { getTime } from "../../../util/time/getTime";
 
 export default function ScheduleFormAppointment({
   addNewCourses,
+  updateCourse,
   visible,
   appointmentData,
   commitChanges,
@@ -65,22 +67,22 @@ export default function ScheduleFormAppointment({
   const [selectTypeEndSchedule, setSelectTypeEndSchedule] =
     React.useState("endDate");
   const isNewAppointment = appointmentData.id === undefined;
-  //true=add false=change
-
   const { control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
         return {
           title: appointmentData.title,
-          code: "",
+          code: appointmentData.code,
           startDate: appointmentData.startDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
           endDate: appointmentData.endDate,
-          numOfLessonsPerDay: "",
-          numOfLessons: "",
-          notification: "",
-          notes: appointmentData.notes,
+          numOfLessonsPerDay: appointmentData.numOfLessonsPerDay,
+          numOfLessons: appointmentData.numOfLessons,
+          dayOfWeeks: appointmentData.dayOfWeeks,
+          notification: appointmentData.notiBeforeTime,
+          notiUnit: EnumNotiUnit.MINUTE,
+          description: appointmentData.description,
           color: appointmentData.color,
         };
       }
@@ -91,13 +93,14 @@ export default function ScheduleFormAppointment({
         startTime: appointmentData.startDate,
         endTime: appointmentData.endDate,
         endDate: appointmentData.endDate,
-        notification: "",
         numOfLessonsPerDay: "",
         numOfLessons: "",
-        notes: "",
+        dayOfWeeks: [],
+        notification: "",
+        notiUnit: EnumNotiUnit.MINUTE,
+        description: "",
         color: [],
       };
-
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appointmentData]),
   });
@@ -106,41 +109,67 @@ export default function ScheduleFormAppointment({
     name: "color",
   });
 
-  const { mutateAsync: addNewSchedule } = useMutation(addNewCoursesMutation, {
-    onSuccess: () => {
-      console.log("add schedule success");
-    },
-    onError: () => {
-      console.log("add schedule error");
-    },
-  });
   //function
   const onSubmitForm = (data) => {
-    addNewCourses({
-      title: data.title,
-      code: "string",
-      description: data.notes,
-      startTime:
-        getDetailTime(data.startTime).hours * 3600 +
-        getDetailTime(data.startTime).minutes * 60,
-      endTime:
-        getDetailTime(data.endTime).hours * 3600 +
-        getDetailTime(data.endTime).minutes * 60,
-      numOfLessonsPerDay: 0,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      numOfLessons: 0,
-      notiBeforeTime: data.notification,
-      colorCode: "string",
-      token: currentUser.token,
-    });
-    visibleChange();
+    const {
+      getHourParseToNumber: getHourParseToNumberStartTime,
+      getMinusParseToNumber: getMinusParseToNumberStartime,
+    } = getTime(data.startTime);
+    const {
+      getHourParseToNumber: getHourParseToNumberEndTime,
+      getMinusParseToNumber: getMinusParseToNumberEndtime,
+    } = getTime(data.endTime);
+    if (isNewAppointment) {
+      addNewCourses({
+        title: data.title,
+        code: "string",
+        description: data.description,
+        startTime:
+          getHourParseToNumberStartTime + getMinusParseToNumberStartime,
+        endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndtime,
+        dayOfWeeks: data.dayOfWeeks,
+        numOfLessonsPerDay: 0,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        numOfLessons: data.numOfLessons,
+        notiBeforeTime: data.notification,
+        notiUnit: EnumNotiUnit.MINUTE,
+        colorCode: data.color.hex,
+        token: currentUser.token,
+      });
+      visibleChange();
+    } else {
+      updateCourse({
+        id: appointmentData.id,
+        title: data.title,
+        code: data.code,
+        description: data.description,
+        startTime:
+          getHourParseToNumberStartTime + getMinusParseToNumberStartime,
+        endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndtime,
+        dayOfWeeks: data.dayOfWeeks,
+        numOfLessonsPerDay: 0,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        numOfLessons: data.numOfLessons,
+        notiBeforeTime: data.notification,
+        notiUnit: EnumNotiUnit.MINUTE,
+        colorCode: data.color.hex,
+        token: currentUser.token,
+      });
+      visibleChange();
+    }
   };
-
   return (
     <StyledDiv>
       <div className={classes.content}>
-        <div className={classes.wrapper}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Create className={classes.icon} color="action" />
           <Controller
             name="title"
@@ -154,27 +183,39 @@ export default function ScheduleFormAppointment({
               />
             )}
           />
-        </div>
-        <Box sx={{ display: "flex", alignItem: "center" }}>
-          <CalendarToday className={classes.icon} color="action" />
-          <div className={classes.wrapper}>
-            <Controller
-              name="startDate"
-              control={control}
-              render={({ field }) => (
-                <LocalizationProvider dateAdapter={AdapterMoment}>
-                  <DatePicker
-                    label={t(`form.schedule.startDate`)}
-                    views={["year", "month", "day"]}
-                    renderInput={(params) => <TextField {...params} />}
-                    {...field}
-                  />
-                </LocalizationProvider>
-              )}
-            />
-          </div>
         </Box>
-        <div className={classes.wrapper}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            marginTop: 1,
+          }}
+        >
+          <CalendarToday className={classes.icon} color="action" />
+          <Controller
+            name="startDate"
+            control={control}
+            render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DatePicker
+                  label={t(`form.schedule.startDate`)}
+                  views={["year", "month", "day"]}
+                  renderInput={(params) => <TextField {...params} />}
+                  {...field}
+                />
+              </LocalizationProvider>
+            )}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 1,
+          }}
+        >
           <AlarmIcon className={classes.icon} color="action" />
           <Controller
             name="startTime"
@@ -202,163 +243,250 @@ export default function ScheduleFormAppointment({
               </LocalizationProvider>
             )}
           />
-        </div>
-        {/* <Box sx={{ display: "flex", alignItem: "center" }}>
-          <AlarmIcon className={classes.icon} color="action" />
-          <ScheduleRepeatModal />
-        </Box> */}
-        <Box sx={{ display: "flex", alignItem: "center" }}>
-          <AlarmIcon className={classes.icon} color="action" />
-          <div className={classes.wrapper}>
-            <FormControl>
-              <RadioGroup
-                row
-                aria-labelledby="choose-end-schedule"
-                name="row-radio-buttons-group"
-                onChange={(e) => setSelectTypeEndSchedule(e.target.value)}
-                defaultValue="endDate"
-              >
-                <FormControlLabel
-                  value="endDate"
-                  control={<Radio />}
-                  label={
-                    <>
-                      <Controller
-                        name="endDate"
-                        control={control}
-                        render={({ field }) => (
-                          <LocalizationProvider dateAdapter={AdapterMoment}>
-                            <DatePicker
-                              disabled={selectTypeEndSchedule !== "endDate"}
-                              label={t(`form.schedule.endDate`)}
-                              views={["year", "month", "day"]}
-                              renderInput={(params) => (
-                                <TextField {...params} />
-                              )}
-                              {...field}
-                            />
-                          </LocalizationProvider>
-                        )}
-                      />
-                    </>
-                  }
-                />
-                <FormControlLabel
-                  value="numOfLessonsPerDay"
-                  control={<Radio />}
-                  label={
-                    <>
-                      <Controller
-                        name="numOfLessonsPerDay"
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            disabled={
-                              selectTypeEndSchedule !== "numOfLessonsPerDay"
-                            }
-                            label="numLessons"
-                            size="small"
-                            type="number"
-                            inputProps={{
-                              inputMode: "numeric",
-                              pattern: "[0-9]*",
-                              min: 0,
-                              max: 10,
-                            }}
-                          />
-                        )}
-                      />
-                    </>
-                  }
-                />
-              </RadioGroup>
-            </FormControl>
-          </div>
-        </Box>
-        <Box sx={{ display: "flex", alignItem: "center" }}>
-          <AlarmIcon className={classes.icon} color="action" />
-          <div className={classes.wrapper}>
-            <Controller
-              name="notification"
-              control={control}
-              render={({ field }) => (
-                <FormControl sx={{ m: 1, minWidth: 80 }}>
-                  <InputLabel id="notification-select">Notification</InputLabel>
-                  <Select
-                    {...field}
-                    labelId="notification-select"
-                    // value={5}
-                    autoWidth
-                    label="Notification"
-                  >
-                    <MenuItem value={5}>5 minutes</MenuItem>
-                    <MenuItem value={10}>10 minutes</MenuItem>
-                    <MenuItem value={15}>15 minutes</MenuItem>
-                    <MenuItem value={20}>20 minutes</MenuItem>
-                    <MenuItem value={30}>30 minutes</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-            />
-          </div>
         </Box>
         <Box
-          style={{
+          sx={{
             display: "flex",
+            justifyContent: "start",
             alignItems: "center",
           }}
         >
           <AlarmIcon className={classes.icon} color="action" />
-          <div
-            className={classes.wrapper}
-            style={{
+          <FormControl>
+            <RadioGroup
+              row
+              aria-labelledby="choose-end-schedule"
+              name="row-radio-buttons-group"
+              onChange={(e) => setSelectTypeEndSchedule(e.target.value)}
+              defaultValue="endDate"
+            >
+              <FormControlLabel
+                sx={{
+                  width: "300px",
+                }}
+                value="endDate"
+                control={<Radio />}
+                label={
+                  <>
+                    <Controller
+                      name="endDate"
+                      control={control}
+                      render={({ field }) => (
+                        <LocalizationProvider dateAdapter={AdapterMoment}>
+                          <DatePicker
+                            disabled={selectTypeEndSchedule !== "endDate"}
+                            label={t(`form.schedule.endDate`)}
+                            views={["year", "month", "day"]}
+                            renderInput={(params) => <TextField {...params} />}
+                            {...field}
+                          />
+                        </LocalizationProvider>
+                      )}
+                    />
+                  </>
+                }
+              />
+              <FormControlLabel
+                sx={{
+                  width: "150px",
+                }}
+                value="numOfLessons"
+                control={<Radio />}
+                label={
+                  <>
+                    <Controller
+                      name="numOfLessons"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          sx={{
+                            marginTop: 2,
+                            minWidth: "200px",
+                            width: "100%",
+                          }}
+                          disabled={selectTypeEndSchedule !== "numOfLessons"}
+                          label="numLessons"
+                          type="number"
+                          inputProps={{
+                            inputMode: "numeric",
+                            pattern: "[0-9]*",
+                            min: 0,
+                            max: 10,
+                          }}
+                        />
+                      )}
+                    />
+                  </>
+                }
+              />
+            </RadioGroup>
+          </FormControl>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+          }}
+        >
+          <AlarmIcon className={classes.icon} color="action" />
+          <Controller
+            name="dayOfWeeks"
+            control={control}
+            render={({ field }) => (
+              <FormControl sx={{ width: "200px" }}>
+                <InputLabel id="label-day-of-week">Day of week</InputLabel>
+                <Select
+                  {...field}
+                  id="label-day-of-week"
+                  displayEmpty
+                  multiple
+                  label="Day of week"
+                  inputProps={{ "aria-label": "Without label" }}
+                  sx={{ minWidth: "100px" }}
+                  renderValue={(selected) => (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 0.5,
+                      }}
+                    >
+                      {selected.map((value) => (
+                        <Chip key={value} label={value} />
+                      ))}
+                    </Box>
+                  )}
+                >
+                  {TypeWeekdaysOption.map((day) => {
+                    return (
+                      <MenuItem key={day.value} value={day.value}>
+                        {day.label}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            marginTop: 1,
+          }}
+        >
+          <AlarmIcon className={classes.icon} color="action" />
+          <Controller
+            name="notification"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                sx={{ marginRight: 2 }}
+                type="number"
+                inputProps={{
+                  inputMode: "numeric",
+                  pattern: "[0-60]*",
+                  min: 0,
+                  max: 60,
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="notiUnit"
+            control={control}
+            render={({ field }) => (
+              <FormControl sx={{}}>
+                <Select {...field} sx={{}}>
+                  <MenuItem value={EnumNotiUnit.MINUTE}>
+                    {EnumNotiUnit.MINUTE}
+                  </MenuItem>
+                  <MenuItem value={EnumNotiUnit.HOUR}>
+                    {EnumNotiUnit.HOUR}
+                  </MenuItem>
+                  <MenuItem value={EnumNotiUnit.DAY}>
+                    {EnumNotiUnit.DAY}
+                  </MenuItem>
+                  <MenuItem value={EnumNotiUnit.WEEK}>
+                    {EnumNotiUnit.WEEK}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+          }}
+        >
+          <AlarmIcon className={classes.icon} color="action" />
+          <Box
+            sx={{
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
             }}
           >
             <Typography sx={{ marginRight: "20px", height: "30px" }}>
               {t(`form.schedule.chooseColor`)}
             </Typography>
-            <Box>
-              <Controller
-                name="color"
-                control={control}
-                render={({ field }) => (
-                  <CirclePicker
-                    {...field}
-                    circleSize={20}
-                    color={colorWatch.hex}
-                    colors={[
-                      EnumColor.red,
-                      EnumColor.orange,
-                      EnumColor.violet,
-                      EnumColor.gray,
-                    ]}
-                  />
-                )}
-              />
-            </Box>
-          </div>
+            <Controller
+              name="color"
+              control={control}
+              render={({ field }) => (
+                <CirclePicker
+                  {...field}
+                  circleSize={20}
+                  color={colorWatch.hex}
+                  colors={[
+                    EnumColor.red,
+                    EnumColor.orange,
+                    EnumColor.violet,
+                    EnumColor.gray,
+                  ]}
+                />
+              )}
+            />
+          </Box>
         </Box>
-        <div className={classes.wrapper}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Notes className={classes.icon} color="action" />
           <Controller
-            name="notes"
+            name="description"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
                 variant="outlined"
-                label={t(`form.schedule.notes`)}
+                label={t(`form.schedule.description`)}
                 className={classes.textField}
                 multiline
                 rows="6"
               />
             )}
           />
-        </div>
-        <div className={classes.buttonGroup}>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           {!isNewAppointment && (
             <Button
               variant="outlined"
@@ -381,7 +509,7 @@ export default function ScheduleFormAppointment({
               ? t(`form.schedule.create`)
               : t(`form.schedule.save`)}
           </LoadingButton>
-        </div>
+        </Box>
 
         <Dialog open={confirmVisible} onClose={() => setConfirmVisible(false)}>
           <DialogTitle>{t(`form.dialog.title`)}</DialogTitle>
@@ -412,4 +540,3 @@ export default function ScheduleFormAppointment({
     </StyledDiv>
   );
 }
-/* eslint-disable-next-line react/no-multi-comp */

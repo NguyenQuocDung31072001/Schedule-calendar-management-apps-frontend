@@ -18,6 +18,7 @@ import { ScheduleFormAppointment, TaskFormAppointment } from "./form/index";
 
 export default function TabPanelForm({
   addNewCourses,
+  updateCourse,
   visible,
   appointmentData,
   commitChanges,
@@ -27,7 +28,7 @@ export default function TabPanelForm({
   target,
   onHide,
 }) {
-  const [t] = useTranslation('common');
+  const [t] = useTranslation("common");
   const [tabValue, setTabValue] = React.useState("schedule");
 
   //function
@@ -70,6 +71,7 @@ export default function TabPanelForm({
         <TabPanel value="schedule">
           <ScheduleFormAppointment
             addNewCourses={addNewCourses}
+            updateCourse={updateCourse}
             visible={visible}
             appointmentData={appointmentData}
             commitChanges={commitChanges}

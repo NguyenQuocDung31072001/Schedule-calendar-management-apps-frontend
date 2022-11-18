@@ -107,3 +107,40 @@ export const getAllEventQuery = ({ token, fromDate, toDate }) => {
     }
   );
 };
+
+export const addNewEventMutation = ({
+  title,
+  description,
+  startTime,
+  endTime,
+  colorCode,
+  notiBeforeTime,
+  notiUnit,
+  recurringInterval,
+  recurringUnit,
+  recurringDetails,
+  recurringEnd,
+  token,
+}) => {
+  return axiosInstance.post(
+    "/api/events",
+    {
+      title: title,
+      description: description,
+      startTime: startTime,
+      endTime: endTime,
+      colorCode: colorCode,
+      notiBeforeTime: notiBeforeTime,
+      notiUnit: notiUnit,
+      recurringInterval: recurringInterval,
+      recurringUnit: recurringUnit,
+      recurringDetails: recurringDetails,
+      recurringEnd: recurringEnd,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

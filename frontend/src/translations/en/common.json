@@ -23,7 +23,7 @@
             "timeStart":"Time Start",
             "timeEnd":"Time End",
             "chooseColor":"Choose Color",
-            "notes":"Notes",
+            "description":"Description",
             "repeat":{
                 "name":"Repeat",
                 "title":"Customize Repeat",
@@ -43,7 +43,7 @@
             "title":"Title",
             "startDate":"Start Date",
             "endDate":"End Date",
-            "notes":"Notes",
+            "description":"Description",
             "delete":"Delete",
             "save":"Save",
             "create":"Create"
