@@ -97,9 +97,9 @@ export const deleteCoursesMutation = ({ id, token }) => {
     },
   });
 };
-export const getAllEventQuery = ({ token, fromDate, toDate }) => {
+export const getAllEventQuery = ({ token, type, fromDate, toDate }) => {
   return axiosInstance.get(
-    `/api/courses?FromDate=${fromDate}&ToDate=${toDate}`,
+    `/api/events?FromDate=${fromDate}&ToDate=${toDate}&Type=${type}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -21,7 +21,7 @@ import {
 import { connectProps } from "@devexpress/dx-react-core";
 
 //material component
-import { LinearProgress } from "@mui/material";
+import { Checkbox, LinearProgress, Typography } from "@mui/material";
 
 //data fake
 import { Resource } from "../../../fake_data/Resource";
@@ -34,13 +34,13 @@ import {
   updateCoursesMutation,
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
-import { parseNumberToTime } from "../../../util/time/parseNumberToTime";
 import { Box } from "@mui/system";
 import dayjs from "dayjs";
 import { getTime } from "../../../util/time/getTime";
+import { EnumTypeGetEvent } from "../../../interface/enum";
 
-const startDayHour = 9;
-const endDayHour = 19;
+const startDayHour = 0;
+const endDayHour = 23;
 
 export default function Schedule() {
   //data || hook get data
@@ -51,7 +51,9 @@ export default function Schedule() {
   const [editingAppointment, setEditingAppointment] = React.useState();
   const [addedAppointment, setAddedAppointment] = React.useState({});
   const [isNewAppointment, setIsNewAppointment] = React.useState(false);
-
+  const [typeGetEvent, setTypeGetEvent] = React.useState(EnumTypeGetEvent.All);
+  const [isCourseChecked, setIsCourseChecked] = React.useState(false);
+  const [isEventChecked, setIsEventChecked] = React.useState(false);
   const {
     data,
     isLoading: isLoadingGetAllEvent,
@@ -62,6 +64,7 @@ export default function Schedule() {
     () =>
       getAllEventQuery({
         token: token,
+        type: typeGetEvent,
         fromDate: getFromDate_ToDate(currentDate).fromDate,
         toDate: getFromDate_ToDate(currentDate).toDate,
       }),
@@ -86,18 +89,15 @@ export default function Schedule() {
     useMutation(updateCoursesMutation);
 
   const dataResponse = data?.data?.data;
+  console.log({ dataResponse });
   const dataRender = React.useMemo(() => {
     if (!dataResponse) return [];
     return dataResponse.map((item) => {
       return {
         ...item,
         title: item.title,
-        startDate:
-          item.startDate.split("T")[0] +
-          "T" +
-          parseNumberToTime(item.startTime),
-        endDate:
-          item.startDate.split("T")[0] + "T" + parseNumberToTime(item.endTime),
+        startDate: item.startTime,
+        endDate: item.endTime,
         id: item.id,
         color: Resource[0]?.instances?.find(
           (resource) => resource.color === item.colorCode
@@ -116,13 +116,33 @@ export default function Schedule() {
     refetchGetAllEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    typeGetEvent,
     currentDate,
     isLoadingDelete,
     isLoadingAddNewCourses,
     isLoadingUpdateCourse,
   ]);
-
+  React.useEffect(() => {
+    handleChecked();
+  }, [isCourseChecked, isEventChecked]);
   //function
+  const handleChecked = () => {
+    if (
+      (isCourseChecked && isEventChecked) ||
+      (!isCourseChecked && !isEventChecked)
+    ) {
+      setTypeGetEvent(EnumTypeGetEvent.All);
+      return;
+    }
+    if (isCourseChecked) {
+      setTypeGetEvent(EnumTypeGetEvent.Course);
+      return;
+    }
+    if (isEventChecked) {
+      setTypeGetEvent(EnumTypeGetEvent.Event);
+      return;
+    }
+  };
   const onEditingAppointmentChange = (editingAppointment) => {
     setEditingAppointment(editingAppointment);
   };
@@ -192,7 +212,7 @@ export default function Schedule() {
   });
   return (
     <Box>
-      <Box sx={{ width: 800, height: 900 }}>
+      <Box sx={{ width: 1100, height: 500, position: "relative" }}>
         {(isLoadingGetAllEvent ||
           isFetchingGetAllEvent ||
           isLoadingUpdateCourse ||
@@ -225,7 +245,36 @@ export default function Schedule() {
           <EditRecurrenceMenu />
           <Appointments />
           <AppointmentTooltip showOpenButton showCloseButton showDeleteButton />
-          <Toolbar />
+          <Toolbar
+            flexibleSpaceComponent={() => (
+              <Box sx={{ display: "flex", width: "45%", marginX: "50px" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography>Course</Typography>
+                  <Checkbox
+                    checked={isCourseChecked}
+                    onChange={(e) => setIsCourseChecked(e.target.checked)}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography>Event</Typography>
+                  <Checkbox
+                    checked={isEventChecked}
+                    onChange={(e) => setIsEventChecked(e.target.checked)}
+                  />
+                </Box>
+              </Box>
+            )}
+          />
           <DateNavigator />
           <ViewSwitcher />
           <TodayButton />

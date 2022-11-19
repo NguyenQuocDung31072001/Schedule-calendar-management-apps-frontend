@@ -37,6 +37,7 @@ import { CirclePicker } from "react-color";
 import { useMutation } from "@tanstack/react-query";
 import { addNewEventMutation } from "../../../service/schedule_api";
 import { useSelector } from "react-redux";
+import { TimePicker } from "@mui/x-date-pickers";
 
 export default function TaskFormAppointment({
   visible,
@@ -53,6 +54,7 @@ export default function TaskFormAppointment({
   const token = useSelector((state) => state.account.token);
 
   const isNewAppointment = appointmentData.id === undefined;
+  console.log(new Date());
   const { control, handleSubmit } = useForm({
     defaultValues: {
       title: "",
@@ -148,15 +150,13 @@ export default function TaskFormAppointment({
           }}
         >
           <AlarmIcon className={classes.icon} color="action" />
-
           <Controller
             name="startTime"
             control={control}
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  label="startTime"
-                  views={["year", "month", "day"]}
+                <TimePicker
+                  label="Start time"
                   renderInput={(params) => <TextField {...params} />}
                   {...field}
                 />
@@ -179,9 +179,8 @@ export default function TaskFormAppointment({
             control={control}
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DatePicker
-                  label="endTime"
-                  views={["year", "month", "day"]}
+                <TimePicker
+                  label="End time"
                   renderInput={(params) => <TextField {...params} />}
                   {...field}
                 />

@@ -23,7 +23,6 @@ export const EnumWeekdays = {
   Saturday: "Saturday ",
   Sunday: "Sunday",
 };
-
 export const TypeWeekdaysOption = [
   {
     value: EnumWeekdays.Monday,
@@ -74,7 +73,11 @@ export const EnumColor = {
   violet: "#8e44ad",
   gray: "#34495e",
 };
-
+export const EnumTypeGetEvent = {
+  All: "ALL",
+  Event: "EVENT",
+  Course: "COURSE",
+};
 export const language = {
   en: "English",
   vi: "Viet Nam",
