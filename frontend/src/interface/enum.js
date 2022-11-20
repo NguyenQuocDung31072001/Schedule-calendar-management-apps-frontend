@@ -78,6 +78,11 @@ export const EnumTypeGetEvent = {
   Event: "EVENT",
   Course: "COURSE",
 };
+export const EnumTargetType = {
+  THIS: "THIS",
+  THIS_AND_FOLLOWING: "THIS_AND_FOLLOWING",
+  ALL: "ALL",
+};
 export const language = {
   en: "English",
   vi: "Viet Nam",

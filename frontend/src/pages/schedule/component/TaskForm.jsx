@@ -34,20 +34,15 @@ import { useTranslation } from "react-i18next";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers";
 import { CirclePicker } from "react-color";
-import { useMutation } from "@tanstack/react-query";
-import { addNewEventMutation } from "../../../service/schedule_api";
 import { useSelector } from "react-redux";
 import { TimePicker } from "@mui/x-date-pickers";
 
 export default function TaskFormAppointment({
-  visible,
-  appointmentData,
-  commitChanges,
+  addNewEvent,
+  updateEvent,
+  deleteEvent,
   visibleChange,
-  onEditingAppointmentChange,
-  cancelAppointment,
-  target,
-  onHide,
+  appointmentData,
 }) {
   //state | data | hook get data
   const [t] = useTranslation("common");
@@ -70,7 +65,6 @@ export default function TaskFormAppointment({
       recurringEnd: new Date(),
     },
   });
-  const { mutateAsync: addNewEvent } = useMutation(addNewEventMutation);
   const colorWatch = useWatch({
     control: control,
     name: "colorCode",

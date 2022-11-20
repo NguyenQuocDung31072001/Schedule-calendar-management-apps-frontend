@@ -50,15 +50,8 @@ import { getTime } from "../../../util/time/getTime";
 
 export default function ScheduleFormAppointment({
   addNewCourses,
-  updateCourse,
-  visible,
-  appointmentData,
-  commitChanges,
   visibleChange,
-  onEditingAppointmentChange,
-  cancelAppointment,
-  target,
-  onHide,
+  appointmentData,
 }) {
   //state | data | hook get data
   const [t] = useTranslation("common");
@@ -123,26 +116,6 @@ export default function ScheduleFormAppointment({
       addNewCourses({
         title: data.title,
         code: "string",
-        description: data.description,
-        startTime:
-          getHourParseToNumberStartTime + getMinusParseToNumberStartime,
-        endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndtime,
-        dayOfWeeks: data.dayOfWeeks,
-        numOfLessonsPerDay: 0,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        numOfLessons: data.numOfLessons,
-        notiBeforeTime: data.notification,
-        notiUnit: EnumNotiUnit.MINUTE,
-        colorCode: data.color.hex,
-        token: currentUser.token,
-      });
-      visibleChange();
-    } else {
-      updateCourse({
-        id: appointmentData.id,
-        title: data.title,
-        code: data.code,
         description: data.description,
         startTime:
           getHourParseToNumberStartTime + getMinusParseToNumberStartime,

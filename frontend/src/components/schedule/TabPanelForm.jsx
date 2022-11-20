@@ -18,12 +18,12 @@ import { ScheduleFormAppointment, TaskFormAppointment } from "./form/index";
 
 export default function TabPanelForm({
   addNewCourses,
-  updateCourse,
+  addNewEvent,
+  updateEvent,
+  deleteEvent,
   visible,
   appointmentData,
-  commitChanges,
   visibleChange,
-  onEditingAppointmentChange,
   cancelAppointment,
   target,
   onHide,
@@ -71,28 +71,17 @@ export default function TabPanelForm({
         <TabPanel value="schedule">
           <ScheduleFormAppointment
             addNewCourses={addNewCourses}
-            updateCourse={updateCourse}
-            visible={visible}
             appointmentData={appointmentData}
-            commitChanges={commitChanges}
             visibleChange={visibleChange}
-            onEditingAppointmentChange={onEditingAppointmentChange}
-            cancelAppointment={cancelAppointment}
-            target={target}
-            onHide={onHide}
           />
         </TabPanel>
         <TabPanel value="task">
           <TaskFormAppointment
-            addNewCourses={addNewCourses}
-            visible={visible}
-            appointmentData={appointmentData}
-            commitChanges={commitChanges}
+            addNewEvent={addNewEvent}
+            updateEvent={updateEvent}
+            deleteEvent={deleteEvent}
             visibleChange={visibleChange}
-            onEditingAppointmentChange={onEditingAppointmentChange}
-            cancelAppointment={cancelAppointment}
-            target={target}
-            onHide={onHide}
+            appointmentData={appointmentData}
           />
         </TabPanel>
       </TabContext>

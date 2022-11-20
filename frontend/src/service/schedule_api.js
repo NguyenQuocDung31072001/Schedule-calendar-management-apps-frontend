@@ -144,3 +144,75 @@ export const addNewEventMutation = ({
     }
   );
 };
+export const updateEventMutation = ({
+  title,
+  description,
+  beforeStartTime,
+  startTime,
+  endTime,
+  colorCode,
+  notiBeforeTime,
+  notiUnit,
+  recurringStart,
+  recurringInterval,
+  recurringUnit,
+  recurringDetails,
+  recurringEnd,
+  id,
+  baseEventId,
+  cloneEventId,
+  targetType,
+  token,
+}) => {
+  return axiosInstance.post(
+    "/api/events/update",
+    {
+      title: title,
+      description: description,
+      beforeStartTime: beforeStartTime,
+      startTime: startTime,
+      endTime: endTime,
+      colorCode: colorCode,
+      notiBeforeTime: notiBeforeTime,
+      notiUnit: notiUnit,
+      recurringStart: recurringStart,
+      recurringInterval: recurringInterval,
+      recurringUnit: recurringUnit,
+      recurringDetails: recurringDetails,
+      recurringEnd: recurringEnd,
+      id: id,
+      baseEventId: baseEventId,
+      cloneEventId: cloneEventId,
+      targetType: targetType,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+export const deleteEventMutation = ({
+  id,
+  baseEventId,
+  cloneEventId,
+  startTime,
+  targetType,
+  token,
+}) => {
+  return axiosInstance.post(
+    "/api/events/delete",
+    {
+      id: id,
+      baseEventId: baseEventId,
+      cloneEventId: cloneEventId,
+      startTime: startTime,
+      targetType: targetType,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

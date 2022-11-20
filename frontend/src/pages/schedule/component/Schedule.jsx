@@ -29,9 +29,12 @@ import TabPanelForm from "../../../components/schedule/TabPanelForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addNewCoursesMutation,
+  addNewEventMutation,
   deleteCoursesMutation,
+  deleteEventMutation,
   getAllEventQuery,
   updateCoursesMutation,
+  updateEventMutation,
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
 import { Box } from "@mui/system";
@@ -73,23 +76,20 @@ export default function Schedule() {
       enabled: false,
     }
   );
+  //api courses
+  const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } =
+    useMutation(addNewCoursesMutation);
   const { mutateAsync: deleteCourses, isLoading: isLoadingDelete } =
     useMutation(deleteCoursesMutation);
-
-  const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } =
-    useMutation(addNewCoursesMutation, {
-      onSuccess: () => {
-        console.log("add schedule success");
-      },
-      onError: () => {
-        console.log("add schedule error");
-      },
-    });
   const { mutateAsync: updateCourse, isLoading: isLoadingUpdateCourse } =
     useMutation(updateCoursesMutation);
+  //api event
+
+  const { mutateAsync: addNewEvent } = useMutation(addNewEventMutation);
+  const { mutateAsync: updateEvent } = useMutation(updateEventMutation);
+  const { mutateAsync: deleteEvent } = useMutation(deleteEventMutation);
 
   const dataResponse = data?.data?.data;
-  console.log({ dataResponse });
   const dataRender = React.useMemo(() => {
     if (!dataResponse) return [];
     return dataResponse.map((item) => {
@@ -124,6 +124,7 @@ export default function Schedule() {
   ]);
   React.useEffect(() => {
     handleChecked();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCourseChecked, isEventChecked]);
   //function
   const handleChecked = () => {
@@ -201,7 +202,9 @@ export default function Schedule() {
 
     return {
       addNewCourses,
-      updateCourse,
+      addNewEvent,
+      updateEvent,
+      deleteEvent,
       visible: editFormVisible,
       appointmentData: currentAppointment,
       commitChanges: commitChanges,
