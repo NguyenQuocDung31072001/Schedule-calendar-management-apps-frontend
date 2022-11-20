@@ -84,7 +84,6 @@ export default function Schedule() {
   const { mutateAsync: updateCourse, isLoading: isLoadingUpdateCourse } =
     useMutation(updateCoursesMutation);
   //api event
-
   const { mutateAsync: addNewEvent } = useMutation(addNewEventMutation);
   const { mutateAsync: updateEvent } = useMutation(updateEventMutation);
   const { mutateAsync: deleteEvent } = useMutation(deleteEventMutation);
@@ -115,13 +114,7 @@ export default function Schedule() {
   React.useEffect(() => {
     refetchGetAllEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    typeGetEvent,
-    currentDate,
-    isLoadingDelete,
-    isLoadingAddNewCourses,
-    isLoadingUpdateCourse,
-  ]);
+  }, [typeGetEvent, currentDate]);
   React.useEffect(() => {
     handleChecked();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -201,6 +194,7 @@ export default function Schedule() {
     };
 
     return {
+      refetchGetAllEvent,
       addNewCourses,
       addNewEvent,
       updateEvent,

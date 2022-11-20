@@ -28,6 +28,7 @@ import {
   EnumColor,
   EnumNotiUnit,
   EnumRecurringUnit,
+  EnumTargetType,
   TypeWeekdaysOption,
 } from "../../../interface/enum";
 import { useTranslation } from "react-i18next";
@@ -38,6 +39,7 @@ import { useSelector } from "react-redux";
 import { TimePicker } from "@mui/x-date-pickers";
 
 export default function TaskFormAppointment({
+  refetchGetAllEvent,
   addNewEvent,
   updateEvent,
   deleteEvent,
@@ -47,44 +49,97 @@ export default function TaskFormAppointment({
   //state | data | hook get data
   const [t] = useTranslation("common");
   const token = useSelector((state) => state.account.token);
-
+  console.log({ appointmentData });
   const isNewAppointment = appointmentData.id === undefined;
   console.log(new Date());
   const { control, handleSubmit } = useForm({
-    defaultValues: {
-      title: "",
-      description: "",
-      startTime: new Date(),
-      endTime: new Date(),
-      colorCode: "",
-      notiBeforeTime: 0,
-      notiUnit: EnumNotiUnit.MINUTE,
-      recurringInterval: 0,
-      recurringUnit: EnumRecurringUnit.DAY,
-      recurringDetails: [],
-      recurringEnd: new Date(),
-    },
+    defaultValues: React.useMemo(() => {
+      if (!isNewAppointment) {
+        return {
+          title: appointmentData.title,
+          description: appointmentData.description,
+          startTime: appointmentData.startTime,
+          endTime: appointmentData.endTime,
+          colorCode: appointmentData.colorCode,
+          notiBeforeTime: appointmentData.notiBeforeTime,
+          notiUnit: appointmentData.notiUnit,
+          recurringInterval: appointmentData.recurringInterval,
+          recurringUnit: appointmentData.recurringUnit,
+          recurringDetails: appointmentData.recurringDetails,
+          recurringEnd: appointmentData.recurringEnd,
+          beforeStartTime: appointmentData.startTime,
+          recurringStart: appointmentData.recurringStart,
+          id: appointmentData.id,
+          baseEventId: appointmentData.baseEventId,
+          cloneEventId: appointmentData.cloneEventId,
+          targetType: EnumTargetType.THIS,
+        };
+      }
+      return {
+        title: "",
+        description: "",
+        startTime: new Date(),
+        endTime: new Date(),
+        colorCode: "",
+        notiBeforeTime: 0,
+        notiUnit: EnumNotiUnit.MINUTE,
+        recurringInterval: 0,
+        recurringUnit: EnumRecurringUnit.DAY,
+        recurringDetails: [],
+        recurringEnd: new Date(),
+        baseEventId: "",
+        cloneEventId: "",
+        targetType: EnumTargetType.THIS,
+      };
+    }, [appointmentData]),
   });
   const colorWatch = useWatch({
     control: control,
     name: "colorCode",
   });
-  const handleSubmitEvent = (formData) => {
+  const handleSubmitEvent = async (formData) => {
     console.log({ formData });
-    addNewEvent({
+    if (isNewAppointment) {
+      await addNewEvent({
+        title: formData.title,
+        description: formData.description,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        colorCode: formData.colorCode.hex,
+        notiBeforeTime: formData.notiBeforeTime,
+        notiUnit: formData.notiUnit,
+        recurringInterval: formData.recurringInterval,
+        recurringUnit: formData.recurringUnit,
+        recurringDetails: formData.recurringDetails,
+        recurringEnd: formData.recurringEnd,
+        token: token,
+      });
+      refetchGetAllEvent();
+      visibleChange();
+      return;
+    }
+    await updateEvent({
       title: formData.title,
       description: formData.description,
+      beforeStartTime: formData.startTime,
       startTime: formData.startTime,
       endTime: formData.endTime,
       colorCode: formData.colorCode.hex,
       notiBeforeTime: formData.notiBeforeTime,
       notiUnit: formData.notiUnit,
+      recurringStart: formData.recurringStart,
       recurringInterval: formData.recurringInterval,
       recurringUnit: formData.recurringUnit,
       recurringDetails: formData.recurringDetails,
       recurringEnd: formData.recurringEnd,
+      id: formData.id,
+      baseEventId: formData.baseEventId,
+      cloneEventId: formData.cloneEventId,
+      targetType: formData.targetType,
       token: token,
     });
+    refetchGetAllEvent();
+    visibleChange();
   };
 
   return (
@@ -366,7 +421,6 @@ export default function TaskFormAppointment({
           }}
         >
           <AlarmIcon className={classes.icon} color="action" />
-
           <Controller
             name="recurringEnd"
             control={control}
@@ -380,6 +434,43 @@ export default function TaskFormAppointment({
                 />
               </LocalizationProvider>
             )}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            marginTop: 1,
+          }}
+        >
+          <AlarmIcon className={classes.icon} color="action" />
+          <Controller
+            name="targetType"
+            control={control}
+            render={({ field }) => {
+              return (
+                <FormControl sx={{ width: "200px" }}>
+                  <InputLabel id="select-target-type">Target Type</InputLabel>
+                  <Select
+                    {...field}
+                    labelId="select-target-type"
+                    id="select-target-type"
+                    label="Target Type"
+                  >
+                    {[
+                      EnumTargetType.ALL,
+                      EnumTargetType.THIS,
+                      EnumTargetType.THIS_AND_FOLLOWING,
+                    ].map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              );
+            }}
           />
         </Box>
       </div>

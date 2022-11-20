@@ -49,6 +49,7 @@ import { LoadingButton } from "@mui/lab";
 import { getTime } from "../../../util/time/getTime";
 
 export default function ScheduleFormAppointment({
+  refetchGetAllEvent,
   addNewCourses,
   visibleChange,
   appointmentData,
@@ -71,8 +72,10 @@ export default function ScheduleFormAppointment({
           endTime: appointmentData.endDate,
           endDate: appointmentData.endDate,
           numOfLessonsPerDay: appointmentData.numOfLessonsPerDay,
-          numOfLessons: appointmentData.numOfLessons,
-          dayOfWeeks: appointmentData.dayOfWeeks,
+          numOfLessons: appointmentData.numOfLessons | 0,
+          dayOfWeeks: appointmentData.dayOfWeeks
+            ? appointmentData.dayOfWeeks
+            : [],
           notification: appointmentData.notiBeforeTime,
           notiUnit: EnumNotiUnit.MINUTE,
           description: appointmentData.description,
@@ -103,7 +106,7 @@ export default function ScheduleFormAppointment({
   });
 
   //function
-  const onSubmitForm = (data) => {
+  const onSubmitForm = async (data) => {
     const {
       getHourParseToNumber: getHourParseToNumberStartTime,
       getMinusParseToNumber: getMinusParseToNumberStartime,
@@ -113,7 +116,7 @@ export default function ScheduleFormAppointment({
       getMinusParseToNumber: getMinusParseToNumberEndtime,
     } = getTime(data.endTime);
     if (isNewAppointment) {
-      addNewCourses({
+      await addNewCourses({
         title: data.title,
         code: "string",
         description: data.description,
@@ -130,6 +133,7 @@ export default function ScheduleFormAppointment({
         colorCode: data.color.hex,
         token: currentUser.token,
       });
+      refetchGetAllEvent();
       visibleChange();
     }
   };
@@ -307,41 +311,45 @@ export default function ScheduleFormAppointment({
           <Controller
             name="dayOfWeeks"
             control={control}
-            render={({ field }) => (
-              <FormControl sx={{ width: "200px" }}>
-                <InputLabel id="label-day-of-week">Day of week</InputLabel>
-                <Select
-                  {...field}
-                  id="label-day-of-week"
-                  displayEmpty
-                  multiple
-                  label="Day of week"
-                  inputProps={{ "aria-label": "Without label" }}
-                  sx={{ minWidth: "100px" }}
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: 0.5,
-                      }}
-                    >
-                      {selected?.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </Box>
-                  )}
-                >
-                  {TypeWeekdaysOption.map((day) => {
-                    return (
-                      <MenuItem key={day.value} value={day.value}>
-                        {day.label}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            )}
+            render={({ field }) => {
+              return (
+                <FormControl sx={{ width: "200px" }}>
+                  <InputLabel id="label-day-of-week">Day of week</InputLabel>
+                  <Select
+                    {...field}
+                    id="label-day-of-week"
+                    displayEmpty
+                    multiple
+                    label="Day of week"
+                    inputProps={{ "aria-label": "Without label" }}
+                    sx={{ minWidth: "100px" }}
+                    renderValue={(selected) => {
+                      return (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 0.5,
+                          }}
+                        >
+                          {selected?.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      );
+                    }}
+                  >
+                    {TypeWeekdaysOption.map((day) => {
+                      return (
+                        <MenuItem key={day.value} value={day.value}>
+                          {day.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              );
+            }}
           />
         </Box>
         <Box

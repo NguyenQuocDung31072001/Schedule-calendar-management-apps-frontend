@@ -17,6 +17,7 @@ import { classes } from "./common";
 import { ScheduleFormAppointment, TaskFormAppointment } from "./form/index";
 
 export default function TabPanelForm({
+  refetchGetAllEvent,
   addNewCourses,
   addNewEvent,
   updateEvent,
@@ -70,6 +71,7 @@ export default function TabPanelForm({
 
         <TabPanel value="schedule">
           <ScheduleFormAppointment
+            refetchGetAllEvent={refetchGetAllEvent}
             addNewCourses={addNewCourses}
             appointmentData={appointmentData}
             visibleChange={visibleChange}
@@ -77,6 +79,7 @@ export default function TabPanelForm({
         </TabPanel>
         <TabPanel value="task">
           <TaskFormAppointment
+            refetchGetAllEvent={refetchGetAllEvent}
             addNewEvent={addNewEvent}
             updateEvent={updateEvent}
             deleteEvent={deleteEvent}
