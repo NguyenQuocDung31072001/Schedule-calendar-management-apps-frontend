@@ -280,10 +280,14 @@ export default function Schedule() {
           <TodayButton />
           <AppointmentForm
             overlayComponent={appointmentFormSchedule}
-            visible={editFormVisible}
+            visible={false}
             onVisibilityChange={() => setEditFormVisible(!editFormVisible)}
           />
-          <DragDropProvider allowDrag={() => true} />
+          <DragDropProvider
+            allowDrag={(appointment) => {
+              return appointment.courseId ? false : true;
+            }}
+          />
           <Resources data={Resource} mainResourceName="color" />
         </Scheduler>
       </Box>

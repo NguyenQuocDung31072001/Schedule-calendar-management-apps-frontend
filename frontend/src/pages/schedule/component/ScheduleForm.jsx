@@ -353,7 +353,7 @@ export default function ScheduleFormAppointment({
                         gap: 0.5,
                       }}
                     >
-                      {selected.map((value) => (
+                      {selected?.map((value) => (
                         <Chip key={value} label={value} />
                       ))}
                     </Box>
