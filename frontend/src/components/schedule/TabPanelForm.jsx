@@ -30,8 +30,16 @@ export default function TabPanelForm({
   onHide,
 }) {
   const [t] = useTranslation("common");
-  const [tabValue, setTabValue] = React.useState("schedule");
-
+  const [tabValue, setTabValue] = React.useState(
+    appointmentData.title
+      ? appointmentData.courseId
+        ? "course"
+        : "event"
+      : "course"
+  );
+  const isNewOpen = !appointmentData.title;
+  const isShowCourse = appointmentData.courseId;
+  const isShowEvent = !appointmentData.courseId;
   //function
   const cancelChanges = () => {
     visibleChange();
@@ -57,8 +65,10 @@ export default function TabPanelForm({
             onChange={(_, value) => setTabValue(value)}
             aria-label="lab API tabs example"
           >
-            <Tab label={t(`tabPanel.schedule`)} value="schedule" />
-            <Tab label={t(`tabPanel.task`)} value="task" />
+            {isNewOpen && <Tab label="Course" value="course" />}
+            {isNewOpen && <Tab label="Event" value="event" />}
+            {isShowCourse && <Tab label="Course" value="course" />}
+            {!isNewOpen && isShowEvent && <Tab label="Event" value="event" />}
           </TabList>
           <IconButton
             className={classes.closeButton}
@@ -69,7 +79,7 @@ export default function TabPanelForm({
           </IconButton>
         </Box>
 
-        <TabPanel value="schedule">
+        <TabPanel value="course">
           <ScheduleFormAppointment
             refetchGetAllEvent={refetchGetAllEvent}
             addNewCourses={addNewCourses}
@@ -77,7 +87,7 @@ export default function TabPanelForm({
             visibleChange={visibleChange}
           />
         </TabPanel>
-        <TabPanel value="task">
+        <TabPanel value="event">
           <TaskFormAppointment
             refetchGetAllEvent={refetchGetAllEvent}
             addNewEvent={addNewEvent}

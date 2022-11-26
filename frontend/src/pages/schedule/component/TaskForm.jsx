@@ -37,6 +37,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { CirclePicker } from "react-color";
 import { useSelector } from "react-redux";
 import { TimePicker } from "@mui/x-date-pickers";
+import { getTime } from "../../../util/time/getTime";
 
 export default function TaskFormAppointment({
   refetchGetAllEvent,
@@ -51,13 +52,13 @@ export default function TaskFormAppointment({
   const token = useSelector((state) => state.account.token);
   console.log({ appointmentData });
   const isNewAppointment = appointmentData.id === undefined;
-  console.log(new Date());
   const { control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
       if (!isNewAppointment) {
         return {
           title: appointmentData.title,
           description: appointmentData.description,
+          startDate: appointmentData.startTime,
           startTime: appointmentData.startTime,
           endTime: appointmentData.endTime,
           colorCode: appointmentData.colorCode,
@@ -78,6 +79,7 @@ export default function TaskFormAppointment({
       return {
         title: "",
         description: "",
+        startDate: new Date(),
         startTime: new Date(),
         endTime: new Date(),
         colorCode: "",
@@ -97,14 +99,23 @@ export default function TaskFormAppointment({
     control: control,
     name: "colorCode",
   });
+  const recurringUnitWatch = useWatch({
+    control: control,
+    name: "recurringUnit",
+  });
   const handleSubmitEvent = async (formData) => {
     console.log({ formData });
+    const parseStartDate = getTime(formData.startDate);
+    const parseStartTime = getTime(formData.startTime);
+    console.log({ parseStartTime });
+    const parseEndTime = getTime(formData.endTime);
+
     if (isNewAppointment) {
       await addNewEvent({
         title: formData.title,
         description: formData.description,
-        startTime: formData.startTime,
-        endTime: formData.endTime,
+        startTime: `${parseStartDate.getYear}-${parseStartDate.getMonth}-${parseStartDate.getDay}T${parseStartTime.getHour}:${parseStartTime.getMinus}:00:000Z`,
+        endTime: `${parseStartDate.getYear}-${parseStartDate.getMonth}-${parseStartDate.getDay}T${parseEndTime.getHour}:${parseEndTime.getMinus}:00:000Z`,
         colorCode: formData.colorCode.hex,
         notiBeforeTime: formData.notiBeforeTime,
         notiUnit: formData.notiUnit,
@@ -122,8 +133,8 @@ export default function TaskFormAppointment({
       title: formData.title,
       description: formData.description,
       beforeStartTime: formData.startTime,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
+      startTime: `${parseStartDate.getYear}-${parseStartDate.getMonth}-${parseStartDate.getDay}T${parseStartTime.getHour}:${parseStartTime.getMinus}:00:000Z`,
+      endTime: `${parseStartDate.getYear}-${parseStartDate.getMonth}-${parseStartDate.getDay}T${parseEndTime.getHour}:${parseEndTime.getMinus}:00:000Z`,
       colorCode: formData.colorCode.hex,
       notiBeforeTime: formData.notiBeforeTime,
       notiUnit: formData.notiUnit,
@@ -169,105 +180,53 @@ export default function TaskFormAppointment({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: 1,
-          }}
-        >
-          <Notes className={classes.icon} color="action" />
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                variant="outlined"
-                label={t(`form.schedule.description`)}
-                className={classes.textField}
-                multiline
-                rows="6"
-              />
-            )}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
             justifyContent: "start",
             alignItems: "center",
             marginTop: 1,
           }}
         >
           <AlarmIcon className={classes.icon} color="action" />
+          <Controller
+            name="startDate"
+            control={control}
+            render={({ field }) => {
+              return (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DatePicker
+                    {...field}
+                    label="Choose Date"
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              );
+            }}
+          />
           <Controller
             name="startTime"
             control={control}
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <TimePicker
+                  {...field}
                   label="Start time"
                   renderInput={(params) => <TextField {...params} />}
-                  {...field}
                 />
               </LocalizationProvider>
             )}
           />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center",
-            marginTop: 1,
-          }}
-        >
-          <AlarmIcon className={classes.icon} color="action" />
-
           <Controller
             name="endTime"
             control={control}
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <TimePicker
+                  {...field}
                   label="End time"
                   renderInput={(params) => <TextField {...params} />}
-                  {...field}
                 />
               </LocalizationProvider>
             )}
           />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center",
-            marginTop: 1,
-          }}
-        >
-          <AlarmIcon className={classes.icon} color="action" />
-          <Box>
-            <Typography sx={{ marginRight: "20px", height: "30px" }}>
-              colorCode
-            </Typography>
-            <Controller
-              name="colorCode"
-              control={control}
-              render={({ field }) => (
-                <CirclePicker
-                  {...field}
-                  circleSize={20}
-                  color={colorWatch.hex}
-                  colors={[
-                    EnumColor.red,
-                    EnumColor.orange,
-                    EnumColor.violet,
-                    EnumColor.gray,
-                  ]}
-                />
-              )}
-            />
-          </Box>
         </Box>
         <Box
           sx={{
@@ -334,9 +293,9 @@ export default function TaskFormAppointment({
             control={control}
             render={({ field }) => (
               <TextField
-                sx={{ marginRight: 2 }}
+                sx={{ marginRight: 2, width: 100 }}
                 variant="outlined"
-                label="recurringInterval"
+                label="Recurring Interval"
                 type="number"
                 inputProps={{
                   inputMode: "numeric",
@@ -353,7 +312,7 @@ export default function TaskFormAppointment({
             control={control}
             render={({ field }) => (
               <FormControl sx={{}}>
-                <Select {...field} sx={{}}>
+                <Select {...field} sx={{ width: 150 }}>
                   <MenuItem value={EnumRecurringUnit.DAY}>
                     {EnumRecurringUnit.DAY}
                   </MenuItem>
@@ -370,47 +329,49 @@ export default function TaskFormAppointment({
               </FormControl>
             )}
           />
-          <Controller
-            name="recurringDetails"
-            control={control}
-            render={({ field }) => (
-              <FormControl sx={{ width: "200px" }}>
-                <InputLabel id="label-recurring-details">
-                  Recurring Details
-                </InputLabel>
-                <Select
-                  {...field}
-                  id="label-recurring-details"
-                  displayEmpty
-                  multiple
-                  label="Recurring Details"
-                  inputProps={{ "aria-label": "Without label" }}
-                  sx={{ minWidth: "100px", marginLeft: 1 }}
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: 0.5,
-                      }}
-                    >
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </Box>
-                  )}
-                >
-                  {TypeWeekdaysOption.map((day) => {
-                    return (
-                      <MenuItem key={day.value} value={day.value}>
-                        {day.label}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            )}
-          />
+          {recurringUnitWatch !== EnumRecurringUnit.DAY && (
+            <Controller
+              name="recurringDetails"
+              control={control}
+              render={({ field }) => (
+                <FormControl sx={{ width: "200px" }}>
+                  <InputLabel id="label-recurring-details">
+                    Recurring Details
+                  </InputLabel>
+                  <Select
+                    {...field}
+                    id="label-recurring-details"
+                    displayEmpty
+                    multiple
+                    label="Recurring Details"
+                    // inputProps={{ "aria-label": "Without label" }}
+                    sx={{ minWidth: "100px", marginLeft: 1 }}
+                    renderValue={(selected) => (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 0.5,
+                        }}
+                      >
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))}
+                      </Box>
+                    )}
+                  >
+                    {TypeWeekdaysOption.map((day) => {
+                      return (
+                        <MenuItem key={day.value} value={day.value}>
+                          {day.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          )}
         </Box>
         <Box
           sx={{
@@ -427,9 +388,11 @@ export default function TaskFormAppointment({
             render={({ field }) => (
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DatePicker
-                  label="recurringEnd"
+                  label="Recurring End"
                   views={["year", "month", "day"]}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => (
+                    <TextField sx={{ width: 200 }} {...params} />
+                  )}
                   {...field}
                 />
               </LocalizationProvider>
@@ -457,6 +420,7 @@ export default function TaskFormAppointment({
                     labelId="select-target-type"
                     id="select-target-type"
                     label="Target Type"
+                    defaultValue={EnumTargetType.THIS}
                   >
                     {[
                       EnumTargetType.ALL,
@@ -471,6 +435,63 @@ export default function TaskFormAppointment({
                 </FormControl>
               );
             }}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            marginTop: 1,
+          }}
+        >
+          <AlarmIcon className={classes.icon} color="action" />
+          <Box>
+            <Typography sx={{ marginRight: "20px", height: "30px" }}>
+              Color Code
+            </Typography>
+            <Controller
+              name="colorCode"
+              control={control}
+              render={({ field }) => (
+                <CirclePicker
+                  {...field}
+                  circleSize={20}
+                  color={colorWatch.hex}
+                  colors={[
+                    EnumColor.red,
+                    EnumColor.orange,
+                    EnumColor.violet,
+                    EnumColor.gray,
+                  ]}
+                />
+              )}
+            />
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: 1,
+            marginBottom: 2,
+          }}
+        >
+          <Notes className={classes.icon} color="action" />
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                variant="outlined"
+                label="Description"
+                className={classes.textField}
+                multiline
+                rows="6"
+              />
+            )}
           />
         </Box>
       </div>

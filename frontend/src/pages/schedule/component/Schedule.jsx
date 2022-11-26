@@ -38,9 +38,7 @@ import {
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
 import { Box } from "@mui/system";
-import dayjs from "dayjs";
-import { getTime } from "../../../util/time/getTime";
-import { EnumTypeGetEvent } from "../../../interface/enum";
+import { EnumTargetType, EnumTypeGetEvent } from "../../../interface/enum";
 
 const startDayHour = 0;
 const endDayHour = 23;
@@ -50,6 +48,7 @@ export default function Schedule() {
   const token = useSelector((state) => state.account.token);
 
   const [currentDate, setCurrentDate] = React.useState(new Date());
+  console.log({ currentDate });
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [editingAppointment, setEditingAppointment] = React.useState();
   const [addedAppointment, setAddedAppointment] = React.useState({});
@@ -85,7 +84,8 @@ export default function Schedule() {
     useMutation(updateCoursesMutation);
   //api event
   const { mutateAsync: addNewEvent } = useMutation(addNewEventMutation);
-  const { mutateAsync: updateEvent } = useMutation(updateEventMutation);
+  const { mutateAsync: updateEvent, isLoading: isLoadingUpdateEvent } =
+    useMutation(updateEventMutation);
   const { mutateAsync: deleteEvent } = useMutation(deleteEventMutation);
 
   const dataResponse = data?.data?.data;
@@ -144,39 +144,43 @@ export default function Schedule() {
   const changeFormVisible = () => {
     setEditFormVisible(!editFormVisible);
   };
-  const commitChanges = (value) => {
+  const commitChanges = async (value) => {
     if (value["changed"]) {
       let id = Object.keys(value["changed"]);
-      const {
-        getHourParseToNumber: getHourParseToNumberStartTime,
-        getMinusParseToNumber: getMinusParseToNumberStartTime,
-      } = getTime(value["changed"][Number(id[0])].startDate);
-      const {
-        getHourParseToNumber: getHourParseToNumberEndTime,
-        getMinusParseToNumber: getMinusParseToNumberEndTime,
-      } = getTime(value["changed"][Number(id[0])].endDate);
-      const startDateChange = value["changed"][Number(id[0])].startDate;
-      const endDateChange = value["changed"][Number(id[0])].endDate;
+      const startDateChange = value["changed"][id[0]].startDate;
+      const endDateChange = value["changed"][id[0]].endDate;
       const dataChanged = data.data.data.find(
         (item) => item.id.toString() === id[0]
       );
-      updateCourse({
-        ...dataChanged,
-        id: id,
-        startDate: dayjs(startDateChange),
-        endDate: dayjs(endDateChange),
-        startTime:
-          getHourParseToNumberStartTime + getMinusParseToNumberStartTime,
-        endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndTime,
+      await updateEvent({
+        title: null,
+        description: null,
+        beforeStartTime: dataChanged.startTime,
+        startTime: startDateChange,
+        endTime: endDateChange,
+        colorCode: null,
+        notiBeforeTime: null,
+        notiUnit: null,
+        recurringStart: null,
+        recurringInterval: null,
+        recurringUnit: null,
+        recurringDetails: null,
+        recurringEnd: null,
+        id: dataChanged.id,
+        baseEventId: dataChanged.baseEventId,
+        cloneEventId: dataChanged.cloneEventId,
+        targetType: EnumTargetType.THIS,
         token: token,
       });
+      refetchGetAllEvent();
       return;
     }
     if (value.deleted) {
-      deleteCourses({
-        id: value.deleted,
-        token: token,
-      });
+      console.log({ value });
+      // deleteCourses({
+      //   id: value.deleted,
+      //   token: token,
+      // });
       return;
     }
   };
@@ -213,15 +217,17 @@ export default function Schedule() {
         {(isLoadingGetAllEvent ||
           isFetchingGetAllEvent ||
           isLoadingUpdateCourse ||
-          isLoadingDelete) && <LinearProgress />}
+          isLoadingDelete ||
+          isLoadingUpdateEvent) && <LinearProgress />}
         <Scheduler data={dataRender}>
           <ViewState
             currentDate={currentDate}
             onCurrentDateChange={(e) => {
+              console.log({ e });
               setCurrentDate(e);
             }}
             // currentViewName="weak"
-            // onCurrentViewNameChange={(e) => console.log("view change ", e)}
+            onCurrentViewNameChange={(e) => console.log("view change ", e)}
           />
           <EditingState
             onCommitChanges={(e) => {

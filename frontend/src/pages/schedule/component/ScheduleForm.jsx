@@ -13,11 +13,8 @@ import {
   DialogContentText,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography,
@@ -58,8 +55,6 @@ export default function ScheduleFormAppointment({
   const [t] = useTranslation("common");
   const currentUser = useSelector((state) => state.account);
   const [confirmVisible, setConfirmVisible] = React.useState(false);
-  const [selectTypeEndSchedule, setSelectTypeEndSchedule] =
-    React.useState("endDate");
   const isNewAppointment = appointmentData.id === undefined;
   const { control, handleSubmit } = useForm({
     defaultValues: React.useMemo(() => {
@@ -70,6 +65,7 @@ export default function ScheduleFormAppointment({
           startDate: appointmentData.startDate,
           startTime: appointmentData.startDate,
           endTime: appointmentData.endDate,
+          endType: appointmentData.endType,
           endDate: appointmentData.endDate,
           numOfLessonsPerDay: appointmentData.numOfLessonsPerDay,
           numOfLessons: appointmentData.numOfLessons | 0,
@@ -88,6 +84,7 @@ export default function ScheduleFormAppointment({
         startDate: appointmentData.startDate,
         startTime: appointmentData.startDate,
         endTime: appointmentData.endDate,
+        endType: "EndDate",
         endDate: appointmentData.endDate,
         numOfLessonsPerDay: "",
         numOfLessons: "",
@@ -105,6 +102,10 @@ export default function ScheduleFormAppointment({
     name: "color",
   });
 
+  const endTypeWatch = useWatch({
+    control: control,
+    name: "endType",
+  });
   //function
   const onSubmitForm = async (data) => {
     const {
@@ -126,10 +127,11 @@ export default function ScheduleFormAppointment({
         dayOfWeeks: data.dayOfWeeks,
         numOfLessonsPerDay: 0,
         startDate: data.startDate,
-        endDate: data.endDate,
-        numOfLessons: data.numOfLessons,
+        endDate: data.endType === "EndDate" ? data.endDate : null,
+        numOfLessons: data.endType !== "EndDate" ? data.numOfLessons : null,
         notiBeforeTime: data.notification,
         notiUnit: EnumNotiUnit.MINUTE,
+        endType: data.endType,
         colorCode: data.color.hex,
         token: currentUser.token,
       });
@@ -178,7 +180,9 @@ export default function ScheduleFormAppointment({
                 <DatePicker
                   label={t(`form.schedule.startDate`)}
                   views={["year", "month", "day"]}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => (
+                    <TextField sx={{ width: 200 }} {...params} />
+                  )}
                   {...field}
                 />
               </LocalizationProvider>
@@ -188,123 +192,113 @@ export default function ScheduleFormAppointment({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 1,
+          }}
+        >
+          <AlarmIcon className={classes.icon} color="action" />
+          <Box>
+            <Controller
+              name="startTime"
+              control={control}
+              render={({ field }) => (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <TimePicker
+                    {...field}
+                    label="Start Time"
+                    renderInput={(params) => (
+                      <TextField
+                        sx={{ width: 200, marginRight: 2 }}
+                        {...params}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              )}
+            />
+            <Controller
+              name="endTime"
+              control={control}
+              render={({ field }) => (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <TimePicker
+                    label="End Time"
+                    renderInput={(params) => (
+                      <TextField sx={{ width: 200 }} {...params} />
+                    )}
+                    {...field}
+                  />
+                </LocalizationProvider>
+              )}
+            />
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
             alignItems: "center",
             marginTop: 1,
           }}
         >
           <AlarmIcon className={classes.icon} color="action" />
           <Controller
-            name="startTime"
+            name="endType"
             control={control}
             render={({ field }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <TimePicker
-                  label={t(`form.schedule.timeStart`)}
-                  renderInput={(params) => <TextField {...params} />}
-                  {...field}
-                />
-              </LocalizationProvider>
+              <Select {...field} sx={{ width: 200, marginRight: 2 }}>
+                <MenuItem value="NumberOfLessons">NumberOfLessons</MenuItem>
+                <MenuItem value="EndDate">EndDate</MenuItem>
+              </Select>
             )}
           />
-          <Controller
-            name="endTime"
-            control={control}
-            render={({ field }) => (
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <TimePicker
-                  label={t(`form.schedule.timeEnd`)}
-                  renderInput={(params) => <TextField {...params} />}
+          {endTypeWatch === "EndDate" && (
+            <Controller
+              name="endDate"
+              control={control}
+              render={({ field }) => (
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                  <DatePicker
+                    label="End date"
+                    views={["year", "month", "day"]}
+                    renderInput={(params) => (
+                      <TextField sx={{ width: 200 }} {...params} />
+                    )}
+                    {...field}
+                  />
+                </LocalizationProvider>
+              )}
+            />
+          )}
+          {endTypeWatch === "NumberOfLessons" && (
+            <Controller
+              name="numOfLessons"
+              control={control}
+              render={({ field }) => (
+                <TextField
                   {...field}
+                  sx={{
+                    width: 200,
+                  }}
+                  label="Num Lessons"
+                  type="number"
+                  inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    min: 0,
+                    max: 10,
+                  }}
                 />
-              </LocalizationProvider>
-            )}
-          />
+              )}
+            />
+          )}
         </Box>
         <Box
           sx={{
             display: "flex",
             justifyContent: "start",
             alignItems: "center",
-          }}
-        >
-          <AlarmIcon className={classes.icon} color="action" />
-          <FormControl>
-            <RadioGroup
-              row
-              aria-labelledby="choose-end-schedule"
-              name="row-radio-buttons-group"
-              onChange={(e) => setSelectTypeEndSchedule(e.target.value)}
-              defaultValue="endDate"
-            >
-              <FormControlLabel
-                sx={{
-                  width: "300px",
-                }}
-                value="endDate"
-                control={<Radio />}
-                label={
-                  <>
-                    <Controller
-                      name="endDate"
-                      control={control}
-                      render={({ field }) => (
-                        <LocalizationProvider dateAdapter={AdapterMoment}>
-                          <DatePicker
-                            disabled={selectTypeEndSchedule !== "endDate"}
-                            label={t(`form.schedule.endDate`)}
-                            views={["year", "month", "day"]}
-                            renderInput={(params) => <TextField {...params} />}
-                            {...field}
-                          />
-                        </LocalizationProvider>
-                      )}
-                    />
-                  </>
-                }
-              />
-              <FormControlLabel
-                sx={{
-                  width: "150px",
-                }}
-                value="numOfLessons"
-                control={<Radio />}
-                label={
-                  <>
-                    <Controller
-                      name="numOfLessons"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          sx={{
-                            marginTop: 2,
-                            minWidth: "200px",
-                            width: "100%",
-                          }}
-                          disabled={selectTypeEndSchedule !== "numOfLessons"}
-                          label="numLessons"
-                          type="number"
-                          inputProps={{
-                            inputMode: "numeric",
-                            pattern: "[0-9]*",
-                            min: 0,
-                            max: 10,
-                          }}
-                        />
-                      )}
-                    />
-                  </>
-                }
-              />
-            </RadioGroup>
-          </FormControl>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center",
+            marginTop: 1,
           }}
         >
           <AlarmIcon className={classes.icon} color="action" />
@@ -368,6 +362,7 @@ export default function ScheduleFormAppointment({
               <TextField
                 {...field}
                 sx={{ marginRight: 2 }}
+                defaultValue={0}
                 type="number"
                 inputProps={{
                   inputMode: "numeric",
@@ -453,8 +448,9 @@ export default function ScheduleFormAppointment({
               <TextField
                 {...field}
                 variant="outlined"
-                label={t(`form.schedule.description`)}
+                label="Description"
                 className={classes.textField}
+                sx={{ marginBottom: 2 }}
                 multiline
                 rows="6"
               />
@@ -464,7 +460,7 @@ export default function ScheduleFormAppointment({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "end",
             alignItems: "center",
           }}
         >
@@ -477,7 +473,7 @@ export default function ScheduleFormAppointment({
                 setConfirmVisible(true);
               }}
             >
-              {t(`form.schedule.delete`)}
+              Delete
             </Button>
           )}
           <LoadingButton
@@ -486,9 +482,7 @@ export default function ScheduleFormAppointment({
             className={classes.button}
             onClick={handleSubmit(onSubmitForm)}
           >
-            {isNewAppointment
-              ? t(`form.schedule.create`)
-              : t(`form.schedule.save`)}
+            {isNewAppointment ? "Create" : "Save"}
           </LoadingButton>
         </Box>
 

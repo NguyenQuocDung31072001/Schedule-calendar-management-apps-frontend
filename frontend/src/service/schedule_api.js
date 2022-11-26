@@ -14,6 +14,7 @@ export const addNewCoursesMutation = ({
   description,
   startTime,
   endTime,
+  endType,
   dayOfWeeks,
   numOfLessonsPerDay,
   startDate,
@@ -32,6 +33,7 @@ export const addNewCoursesMutation = ({
       description: description,
       startTime: startTime,
       endTime: endTime,
+      endType: endType,
       dayOfWeeks: dayOfWeeks,
       numOfLessonsPerDay: numOfLessonsPerDay,
       startDate: startDate,
@@ -99,7 +101,7 @@ export const deleteCoursesMutation = ({ id, token }) => {
 };
 export const getAllEventQuery = ({ token, type, fromDate, toDate }) => {
   return axiosInstance.get(
-    `/api/events?FromDate=${fromDate}&ToDate=${toDate}&Type=${type}`,
+    `/api/events?FromDate=${"2022-10-01"}&ToDate=${"2022-12-31"}&Type=${type}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
