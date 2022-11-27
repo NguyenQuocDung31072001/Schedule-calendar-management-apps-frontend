@@ -56,6 +56,7 @@ export default function Schedule() {
   const [typeGetEvent, setTypeGetEvent] = React.useState(EnumTypeGetEvent.All);
   const [isCourseChecked, setIsCourseChecked] = React.useState(false);
   const [isEventChecked, setIsEventChecked] = React.useState(false);
+  const getFormDate_toDate = getFromDate_ToDate(currentDate);
   const {
     data,
     isLoading: isLoadingGetAllEvent,
@@ -67,8 +68,8 @@ export default function Schedule() {
       getAllEventQuery({
         token: token,
         type: typeGetEvent,
-        fromDate: getFromDate_ToDate(currentDate).fromDate,
-        toDate: getFromDate_ToDate(currentDate).toDate,
+        fromDate: getFormDate_toDate.fromDate,
+        toDate: getFormDate_toDate.toDate,
       }),
     {
       // retry: 1
@@ -219,7 +220,11 @@ export default function Schedule() {
           isLoadingUpdateCourse ||
           isLoadingDelete ||
           isLoadingUpdateEvent) && <LinearProgress />}
-        <Scheduler data={dataRender}>
+        <Scheduler
+          data={dataRender}
+          locale={["vi-VI", "en-US"]}
+          firstDayOfWeek={1}
+        >
           <ViewState
             currentDate={currentDate}
             onCurrentDateChange={(e) => {
@@ -242,7 +247,11 @@ export default function Schedule() {
               setEditingAppointment();
             }}
           />
-          <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
+          <WeekView
+            startDayHour={startDayHour}
+            endDayHour={endDayHour}
+            cellDuration={45}
+          />
           <MonthView />
           <AllDayPanel />
           <EditRecurrenceMenu />
