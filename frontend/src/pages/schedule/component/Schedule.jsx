@@ -48,7 +48,6 @@ export default function Schedule() {
   const token = useSelector((state) => state.account.token);
 
   const [currentDate, setCurrentDate] = React.useState(new Date());
-  console.log({ currentDate });
   const [editFormVisible, setEditFormVisible] = React.useState(false);
   const [editingAppointment, setEditingAppointment] = React.useState();
   const [addedAppointment, setAddedAppointment] = React.useState({});
@@ -214,7 +213,7 @@ export default function Schedule() {
   });
   return (
     <Box>
-      <Box sx={{ width: 1100, height: 500, position: "relative" }}>
+      <Box sx={{ width: "100%", height: "85vh", position: "relative" }}>
         {(isLoadingGetAllEvent ||
           isFetchingGetAllEvent ||
           isLoadingUpdateCourse ||

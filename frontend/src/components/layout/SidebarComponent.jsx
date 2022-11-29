@@ -17,6 +17,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Button,
 } from "@mui/material";
 
 //material icon
@@ -72,14 +73,8 @@ export default function SideBarComponent() {
   const [t] = useTranslation("common");
   const token = useSelector((state) => state.account.token);
   const navigate = useNavigate();
-  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+
   React.useEffect(() => {
     if (!token) {
       navigate(`${pathName.auth.full_login}`);
@@ -88,39 +83,19 @@ export default function SideBarComponent() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: "none" }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h6" noWrap component="div">
-              {t(`navbar.title`)}
-            </Typography>
-          </Box>
-          <Box sx={{ flexGrow: 3 }}></Box>
-          <NavBarRight />
-        </Toolbar>
-      </AppBar>
       <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
+        <div className=" flex flex-col items-center my-4">
+          <img
+            src="https://media.istockphoto.com/id/1309328823/photo/headshot-portrait-of-smiling-male-employee-in-office.jpg?b=1&s=170667a&w=0&k=20&c=MRMqc79PuLmQfxJ99fTfGqHL07EDHqHLWg0Tb4rPXQc="
+            alt="profile avatar"
+            className="w-[40px] h-[40px] object-cover rounded-[50%]"
+          />
+          {open ? (
+            <span className="text-gray-600 text-[12px]">Dung Nguyen</span>
+          ) : (
+            <div className="h-[24px] w-[10px]"></div>
+          )}
+        </div>
         <Divider />
         <List>
           {ListMenuItem(t).map((item) => (
@@ -151,9 +126,15 @@ export default function SideBarComponent() {
             </Link>
           ))}
         </List>
+        <Button
+          style={{ backgroundColor: "#d3eaf2" }}
+          className="w-full flex justify-center items-center cursor-pointer h-[50px]"
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        </Button>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
         {token && <Outlet />}
       </Box>
     </Box>
