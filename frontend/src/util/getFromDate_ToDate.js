@@ -1,6 +1,7 @@
 import { getDetailTime } from "./getDetailTime";
 
 export const getFromDate_ToDate = (_fromDate) => {
+  const fromDate = _fromDate;
   const mondayOfWeeek = new Date(
     _fromDate.setDate(
       _fromDate.getDate() -
@@ -8,6 +9,7 @@ export const getFromDate_ToDate = (_fromDate) => {
         (_fromDate.getDay() === 0 ? -6 : 1)
     )
   );
+
   const detailFormDate = getDetailTime(mondayOfWeeek);
   let detailToDate = {
     year: detailFormDate.year,
@@ -106,5 +108,15 @@ export const getFromDate_ToDate = (_fromDate) => {
     toDate: `${detailToDate.year}-${
       detailToDate.month < 10 ? `0${detailToDate.month}` : detailToDate.month
     }-${detailToDate.day}`,
+    fromDateMonth: new Date(
+      fromDate.getFullYear(),
+      fromDate.getMonth(),
+      1
+    ).toISOString(),
+    toDateMonth: new Date(
+      fromDate.getFullYear(),
+      fromDate.getMonth() + 1,
+      0
+    ).toISOString(),
   };
 };

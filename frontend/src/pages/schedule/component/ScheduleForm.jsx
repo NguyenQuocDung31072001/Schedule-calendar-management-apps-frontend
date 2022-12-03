@@ -86,10 +86,10 @@ export default function ScheduleFormAppointment({
         endTime: appointmentData.endDate,
         endType: "EndDate",
         endDate: appointmentData.endDate,
-        numOfLessonsPerDay: "",
-        numOfLessons: "",
+        numOfLessonsPerDay: 0,
+        numOfLessons: 0,
         dayOfWeeks: [],
-        notification: "",
+        notification: 0,
         notiUnit: EnumNotiUnit.MINUTE,
         description: "",
         color: [],
@@ -108,6 +108,7 @@ export default function ScheduleFormAppointment({
   });
   //function
   const onSubmitForm = async (data) => {
+    console.log({ data });
     const {
       getHourParseToNumber: getHourParseToNumberStartTime,
       getMinusParseToNumber: getMinusParseToNumberStartime,
@@ -116,6 +117,8 @@ export default function ScheduleFormAppointment({
       getHourParseToNumber: getHourParseToNumberEndTime,
       getMinusParseToNumber: getMinusParseToNumberEndtime,
     } = getTime(data.endTime);
+    const parseStartDate = new Date(data.startDate);
+    const parseEndDate = new Date(data.endDate);
     if (isNewAppointment) {
       await addNewCourses({
         title: data.title,
@@ -126,10 +129,19 @@ export default function ScheduleFormAppointment({
         endTime: getHourParseToNumberEndTime + getMinusParseToNumberEndtime,
         dayOfWeeks: data.dayOfWeeks,
         numOfLessonsPerDay: 0,
-        startDate: data.startDate,
-        endDate: data.endType === "EndDate" ? data.endDate : null,
-        numOfLessons: data.endType !== "EndDate" ? data.numOfLessons : null,
-        notiBeforeTime: data.notification,
+        startDate: new Date(
+          parseStartDate.getTime() - parseStartDate.getTimezoneOffset() * 60000
+        ).toISOString(),
+        endDate:
+          data.endType === "EndDate"
+            ? new Date(
+                parseEndDate.getTime() -
+                  parseEndDate.getTimezoneOffset() * 60000
+              ).toISOString()
+            : null,
+        numOfLessons:
+          data.endType !== "EndDate" ? Number(data.numOfLessons) : null,
+        notiBeforeTime: Number(data.notification),
         notiUnit: EnumNotiUnit.MINUTE,
         endType: data.endType,
         colorCode: data.color.hex,

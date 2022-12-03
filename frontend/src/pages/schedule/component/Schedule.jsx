@@ -21,7 +21,22 @@ import {
 import { connectProps } from "@devexpress/dx-react-core";
 
 //material component
-import { Checkbox, LinearProgress, Typography } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  LinearProgress,
+  Radio,
+  RadioGroup,
+  Typography,
+} from "@mui/material";
 
 //data fake
 import { Resource } from "../../../fake_data/Resource";
@@ -30,19 +45,23 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addNewCoursesMutation,
   addNewEventMutation,
-  deleteCoursesMutation,
+  dayOffCoursesMutation,
   deleteEventMutation,
   getAllEventQuery,
-  updateCoursesMutation,
   updateEventMutation,
 } from "../../../service/schedule_api";
 import { getFromDate_ToDate } from "../../../util/getFromDate_ToDate";
 import { Box } from "@mui/system";
 import { EnumTargetType, EnumTypeGetEvent } from "../../../interface/enum";
-
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 const startDayHour = 0;
 const endDayHour = 23;
-
+const enumViewName = {
+  Week: "Week",
+  Month: "Month",
+};
 export default function Schedule() {
   //data || hook get data
   const token = useSelector((state) => state.account.token);
@@ -55,6 +74,8 @@ export default function Schedule() {
   const [typeGetEvent, setTypeGetEvent] = React.useState(EnumTypeGetEvent.All);
   const [isCourseChecked, setIsCourseChecked] = React.useState(false);
   const [isEventChecked, setIsEventChecked] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [viewName, setViewName] = React.useState(enumViewName.Week);
   const getFormDate_toDate = getFromDate_ToDate(currentDate);
   const {
     data,
@@ -67,8 +88,14 @@ export default function Schedule() {
       getAllEventQuery({
         token: token,
         type: typeGetEvent,
-        fromDate: getFormDate_toDate.fromDate,
-        toDate: getFormDate_toDate.toDate,
+        fromDate:
+          viewName === enumViewName.Week
+            ? getFormDate_toDate.fromDate
+            : getFormDate_toDate.fromDateMonth,
+        toDate:
+          viewName === enumViewName.Week
+            ? getFormDate_toDate.toDate
+            : getFormDate_toDate.toDateMonth,
       }),
     {
       // retry: 1
@@ -78,15 +105,14 @@ export default function Schedule() {
   //api courses
   const { mutateAsync: addNewCourses, isLoading: isLoadingAddNewCourses } =
     useMutation(addNewCoursesMutation);
-  const { mutateAsync: deleteCourses, isLoading: isLoadingDelete } =
-    useMutation(deleteCoursesMutation);
-  const { mutateAsync: updateCourse, isLoading: isLoadingUpdateCourse } =
-    useMutation(updateCoursesMutation);
+  const { mutateAsync: dayOffCourses, isLoading: isLoadingDayOffCourses } =
+    useMutation(dayOffCoursesMutation);
   //api event
   const { mutateAsync: addNewEvent } = useMutation(addNewEventMutation);
   const { mutateAsync: updateEvent, isLoading: isLoadingUpdateEvent } =
     useMutation(updateEventMutation);
-  const { mutateAsync: deleteEvent } = useMutation(deleteEventMutation);
+  const { mutateAsync: deleteEvent, isLoading: isLoadingDeleteEvent } =
+    useMutation(deleteEventMutation);
 
   const dataResponse = data?.data?.data;
   const dataRender = React.useMemo(() => {
@@ -114,7 +140,7 @@ export default function Schedule() {
   React.useEffect(() => {
     refetchGetAllEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeGetEvent, currentDate]);
+  }, [typeGetEvent, currentDate, viewName]);
   React.useEffect(() => {
     handleChecked();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -145,6 +171,7 @@ export default function Schedule() {
     setEditFormVisible(!editFormVisible);
   };
   const commitChanges = async (value) => {
+    console.log({ valueChange: value["changed"] });
     if (value["changed"]) {
       let id = Object.keys(value["changed"]);
       const startDateChange = value["changed"][id[0]].startDate;
@@ -156,8 +183,13 @@ export default function Schedule() {
         title: null,
         description: null,
         beforeStartTime: dataChanged.startTime,
-        startTime: startDateChange,
-        endTime: endDateChange,
+        startTime: new Date(
+          startDateChange.getTime() -
+            startDateChange.getTimezoneOffset() * 60000
+        ).toISOString(),
+        endTime: new Date(
+          endDateChange.getTime() - endDateChange.getTimezoneOffset() * 60000
+        ).toISOString(),
         colorCode: null,
         notiBeforeTime: null,
         notiUnit: null,
@@ -185,6 +217,7 @@ export default function Schedule() {
     }
   };
   const appointmentFormSchedule = connectProps(TabPanelForm, () => {
+    console.log({ editingAppointment });
     let currentAppointment =
       dataRender.filter(
         (appointment) =>
@@ -196,7 +229,6 @@ export default function Schedule() {
         setIsNewAppointment(false);
       }
     };
-
     return {
       refetchGetAllEvent,
       addNewCourses,
@@ -216,8 +248,6 @@ export default function Schedule() {
       <Box sx={{ width: "100%", height: "85vh", position: "relative" }}>
         {(isLoadingGetAllEvent ||
           isFetchingGetAllEvent ||
-          isLoadingUpdateCourse ||
-          isLoadingDelete ||
           isLoadingUpdateEvent) && <LinearProgress />}
         <Scheduler
           data={dataRender}
@@ -227,18 +257,19 @@ export default function Schedule() {
           <ViewState
             currentDate={currentDate}
             onCurrentDateChange={(e) => {
-              console.log({ e });
               setCurrentDate(e);
             }}
             // currentViewName="weak"
-            onCurrentViewNameChange={(e) => console.log("view change ", e)}
+            onCurrentViewNameChange={(e) => setViewName(e)}
           />
           <EditingState
             onCommitChanges={(e) => {
               commitChanges(e);
+              console.log({ e });
             }}
             onEditingAppointmentChange={(editingAppointment) => {
               setEditingAppointment(editingAppointment);
+              console.log({ alo: editingAppointment });
             }}
             onAddedAppointmentChange={(newAppoiment) => {
               changeFormVisible();
@@ -255,10 +286,62 @@ export default function Schedule() {
           <AllDayPanel />
           <EditRecurrenceMenu />
           <Appointments />
-          <AppointmentTooltip showOpenButton showCloseButton showDeleteButton />
+          <AppointmentTooltip
+            headerComponent={({ appointmentData }) => {
+              return (
+                <div className=" flex justify-end">
+                  {appointmentData.courseId && (
+                    <RemoveCircleIcon
+                      className="cursor-pointer"
+                      onClick={async () => {
+                        await dayOffCourses({
+                          id: appointmentData.courseId,
+                          date: appointmentData.startDate,
+                          token: token,
+                        });
+                        refetchGetAllEvent();
+                      }}
+                    />
+                  )}
+                  {!appointmentData.courseId && (
+                    <EditIcon
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setEditingAppointment(appointmentData);
+                        setEditFormVisible(true);
+                      }}
+                    />
+                  )}
+
+                  {!appointmentData.courseId && (
+                    <DeleteIcon
+                      className="cursor-pointer"
+                      onClick={async () => {
+                        await deleteEvent({
+                          baseEventId: appointmentData.baseEventId,
+                          cloneEventId: appointmentData.cloneEventId,
+                          id: appointmentData.id,
+                          startTime: appointmentData.startTime,
+                          targetType: appointmentData.targetType,
+                          token: token,
+                        });
+                        refetchGetAllEvent();
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            }}
+          />
           <Toolbar
             flexibleSpaceComponent={() => (
-              <Box sx={{ display: "flex", width: "45%", marginX: "50px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  width: "200px",
+                  marginX: "50px",
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
@@ -291,16 +374,61 @@ export default function Schedule() {
           <TodayButton />
           <AppointmentForm
             overlayComponent={appointmentFormSchedule}
-            visible={false}
-            onVisibilityChange={() => setEditFormVisible(!editFormVisible)}
+            onVisibilityChange={() => {
+              setEditFormVisible(!editFormVisible);
+            }}
           />
           <DragDropProvider
             allowDrag={(appointment) => {
               return appointment.courseId ? false : true;
             }}
+            allowResize={(appointment) => {
+              return appointment.courseId ? false : true;
+            }}
           />
           <Resources data={Resource} mainResourceName="color" />
         </Scheduler>
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Delete Event</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <FormControl>
+                <FormLabel id="demo-radio-buttons-group-label">
+                  Gender
+                </FormLabel>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue="female"
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="female"
+                    control={<Radio />}
+                    label="Female"
+                  />
+                  <FormControlLabel
+                    value="male"
+                    control={<Radio />}
+                    label="Male"
+                  />
+                  <FormControlLabel
+                    value="other"
+                    control={<Radio />}
+                    label="Other"
+                  />
+                </RadioGroup>
+              </FormControl>{" "}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button color="primary" variant="outlined">
+              Cancel
+            </Button>
+            <Button color="secondary" variant="outlined">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );

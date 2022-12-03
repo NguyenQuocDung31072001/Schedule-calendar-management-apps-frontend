@@ -99,6 +99,21 @@ export const deleteCoursesMutation = ({ id, token }) => {
     },
   });
 };
+
+export const dayOffCoursesMutation = ({ id, date, token }) => {
+  return axiosInstance.post(
+    `/api/courses/${id}/day-off`,
+    {
+      action: "Create",
+      date: date,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
 export const getAllEventQuery = ({ token, type, fromDate, toDate }) => {
   return axiosInstance.get(
     `/api/events?FromDate=${fromDate}&ToDate=${toDate}&Type=${type}`,

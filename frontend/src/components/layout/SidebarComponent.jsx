@@ -1,18 +1,12 @@
 import * as React from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
-//material style
-import { useTheme } from "@mui/material/styles";
-
 //material component
 import {
   Box,
-  Toolbar,
   List,
   CssBaseline,
-  Typography,
   Divider,
-  IconButton,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -21,17 +15,14 @@ import {
 } from "@mui/material";
 
 //material icon
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-
+import LogoutIcon from "@mui/icons-material/Logout";
 // style component
-import { AppBar, Drawer, DrawerHeader } from "./common";
-import NavBarRight from "./NavBarRight";
+import { Drawer } from "./common";
 import { useTranslation } from "react-i18next";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useSelector } from "react-redux";
 import { pathName } from "../../config/pathName";
@@ -52,14 +43,14 @@ const ListMenuItem = (t) => {
       name: "Manage Courses",
     },
     {
-      path: `${pathName.manage_event}`,
-      icon: <EventAvailableIcon />,
-      name: "Manage Event",
-    },
-    {
       path: `${pathName.setting}`,
       icon: <SettingsOutlinedIcon />,
       name: Setting,
+    },
+    {
+      path: `auth/logout`,
+      icon: <LogoutIcon />,
+      name: "Logout",
     },
   ];
 };
@@ -74,7 +65,9 @@ export default function SideBarComponent() {
   const token = useSelector((state) => state.account.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-
+  React.useEffect(() => {
+    navigate("/schedule");
+  }, []);
   React.useEffect(() => {
     if (!token) {
       navigate(`${pathName.auth.full_login}`);

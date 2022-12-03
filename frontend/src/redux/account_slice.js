@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   email: "",
   password: "",
-  token: ""
+  token: "",
 };
 
 const accountSlice = createSlice({
@@ -12,16 +12,15 @@ const accountSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.email = action.payload.data.email;
-      state.token = action.payload.data.token
+      state.token = action.payload.data.token;
     },
     update: (state, action) => {
       state.email = action.payload.data.email;
-      state.token = action.payload.data.token
+      state.token = action.payload.data.token;
     },
     logout: (state, _) => {
       state.email = "";
-      state.token = ""
-
+      state.token = "";
     },
   },
 });

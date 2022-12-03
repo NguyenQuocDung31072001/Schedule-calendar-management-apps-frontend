@@ -29,26 +29,32 @@ export default function SettingPages() {
           <Button size="small">Upload</Button>
           <Button size="small">Delete</Button>
         </Box>
-        <Grid container spacing={2}>
-          <Box className="flex items-center">
-            <Grid item xs={4}>
-              <span>Email</span>
-            </Grid>
-            <Grid item xs={8}>
-              <TextField size="small" placeholder="Enter your email" />
-            </Grid>
-          </Box>
-        </Grid>{" "}
-        <Grid container spacing={2}>
-          <Box className="flex items-center">
-            <Grid item xs={4}>
-              <span>Username</span>
-            </Grid>
-            <Grid item xs={8}>
-              <TextField size="small" placeholder="Enter your username" />
-            </Grid>
-          </Box>
-        </Grid>
+        <div>
+          <Grid>
+            <Box className="flex items-center">
+              <Grid item xs={4}>
+                <span>Email</span>
+              </Grid>
+              <Grid item xs={8}>
+                <TextField size="small" placeholder="Enter your email" />
+              </Grid>
+            </Box>
+          </Grid>
+        </div>
+        {/* <div className="w-[100px] h-[20px]"></div> */}
+
+        <div className="">
+          <Grid>
+            <Box className="flex items-center">
+              <Grid item xs={4}>
+                <span>Username</span>
+              </Grid>
+              <Grid item xs={8}>
+                <TextField size="small" placeholder="Enter your username" />
+              </Grid>
+            </Box>
+          </Grid>
+        </div>
       </div>
     </div>
   );
